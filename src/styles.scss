@@ -1,0 +1,46 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container-grid {
+  margin-top: 90px !important;
+}
+
+div .container-edit {
+  margin-top:100px;
+  margin-left: 20px;
+}
+
+div .container-form {
+  margin-top:100px;
+  margin-left: 20px;
+}
+
+.example-card {
+  margin-top:7em;
+}
+
+.card {
+  margin-top:-2em;
+}
+
+.mat-list {
+  position: fixed;
+  top: 6em;
+  left: 1em;
+}
+
+.card-btn {
+  width:100%;
+}
+
+.SCContainer, .login-btn {
+  margin-top:5.5em;
+  margin-left: 20px;
+}
+
+.navbar-chip {
+  border-radius: 30%;
+}
+

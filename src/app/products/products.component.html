@@ -1,0 +1,19 @@
+<div class="container-grid">
+  <mat-grid-list cols="4" rowHeight="1:14.3">
+    <mat-grid-tile [colspan]=1>
+      <product-filter></product-filter>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]=3 >
+      <div class='internalMatGrid' >
+      <mat-grid-list cols="3" rowHeight="1:1.2">
+        <mat-grid-tile *ngFor="let product of filteredProducts">
+          <product-card [product]="product" [shopping-cart]="this.cart"></product-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+      </div>
+    </mat-grid-tile>
+
+
+  </mat-grid-list>
+</div>
