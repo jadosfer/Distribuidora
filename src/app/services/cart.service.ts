@@ -1,25 +1,32 @@
-import { ShoppingCartItem } from './../models/shopping-cart-item';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import 'rxjs/add/operator/take';
-import { ShoppingCart } from '../models/shopping-cart';
+
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class ShoppingCartService {
+export class CartService {
 
   cart: any;
+  cartId: any;
+  userName: string;
 
   constructor(private db: AngularFireDatabase) { }
 
   private create() {
-    let result = this.db.list('/shopping-carts').push({
-      dateCreated: new Date().getTime()
-    })
+    localStorage.clear();
+    let time = new Date().getTime()
+    let result = this.db.list('/carts').push({
+      "creationDate": time
+    });
     return result;
+  }
+
+  updateCart(key: any, cart:any) {
+    return this.db.object('/carts/' + key).update(cart);
   }
 
   public getCart() {
@@ -28,10 +35,13 @@ export class ShoppingCartService {
       let cart = localStorage.getItem(cartId);
       if (cart) {
         return JSON.parse(cart);
-
       }
     }
     return null;
+  }
+
+  public getAll() {
+    return this.db.list('/carts').snapshotChanges();
   }
 
   private async getOrCreateCartId() {
@@ -41,9 +51,10 @@ export class ShoppingCartService {
 
     let result = await this.create();
     if (result.key) {
-      localStorage.setItem('cartId', result.key);
-      localStorage.setItem(result.key, JSON.stringify({items:[], shoppingCartItemCount: 0}));
-      return result.key;
+      this.cartId = result.key;
+      localStorage.setItem('cartId', this.cartId);
+      localStorage.setItem(this.cartId, JSON.stringify({items:[], cartItemCount: 0}));
+      return this.cartId;
     }
     return cartId;
   }
@@ -62,44 +73,59 @@ export class ShoppingCartService {
 
       for (let i=0;i<cartObject.items.length;i++) {
         if (cartObject.items[i].productId == product.key) {
-          console.log("entró");
           cartObject.items[i].quantity += change;
           if (cartObject.items[i].quantity == 0) cartObject.items.splice(i, 1) //borra item
           else {}
-          cartObject.shoppingCartItemCount += change;
+          cartObject.cartItemCount += change;
           break;
         }
 
         //"no estaba el producto => creo nuevo item"
-        else if (i == (cartObject.items.length - 1) && change == 1) {
+        //else if (i == (cartObject.items.length - 1) && change == 1) {
+        else if (i == (cartObject.items.length - 1)) {
           console.log("no estaria el prod");
-          let shoppItem =
+          let item =
           {
             "productId":[product.key],
-            "quantity": 1,
+            "quantity": change,
             "title": product.payload.val().title,
             "price": product.payload.val().price
           }
-          cartObject.shoppingCartItemCount += 1;
-          cartObject.items.push(shoppItem);
+          cartObject.cartItemCount += 1;
+          cartObject.items.push(item);
           break;
         }
       }
     }
 
     //"creo el primer item en session storage"
-    else if (change == 1){
+    else {//if (change == 1){ esto para que pueda ser negativo
       let item =
         {
           ["productId"]:[product.key],
-          "quantity": 1,
+          "quantity": change, //"quantity": 1  cambio esto para que pueda ser negativo
           "title": product.payload.val().title,
           "price": product.payload.val().price
         }
       cartObject.items[0] = item;
-      cartObject.shoppingCartItemCount = 1;
+      cartObject.cartItemCount = change; //cartObject.cartItemCount = 1;  cambio esto para que pueda ser negativo
     }
 
     localStorage.setItem(cartId, JSON.stringify(cartObject));
+  }
+
+  sendPedido(cart: any) {
+    this.updateCart(this.cartId, cart)
+    localStorage.clear();
+  }
+
+  getTotalCost(cart: any) {
+    let totalCost = 0;
+    if (cart.payload.val().items) {
+      for (let i = 0;i < cart.payload.val().items.length;i++) {
+        totalCost += cart.payload.val().items[i].price * cart.payload.val().items[i].quantity
+      }
+    }
+    return totalCost;
   }
 }

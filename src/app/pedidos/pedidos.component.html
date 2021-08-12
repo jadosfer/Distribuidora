@@ -1,0 +1,51 @@
+<div class="container-pedidos">
+  <span>Barras</span>
+  <button mat-button [matMenuTriggerFor]="barras">Producto<mat-icon>expand_more</mat-icon></button>
+  <mat-menu #barras="matMenu" >
+
+    <div *ngFor="let product of this.products">
+        <button mat-button>{{product.payload.val().title}}</button>
+    </div>
+  </mat-menu>
+</div>
+<div>
+  <span>Proteínas</span>
+  <button mat-button [matMenuTriggerFor]="appMenu">Producto<mat-icon>expand_more</mat-icon></button>
+  <mat-menu #appMenu="matMenu" >
+    <a mat-menu-item routerLink="/my/pedidos">Pedidos</a>
+    <ng-container>
+      <a mat-menu-item routerLink="/admin/pedidos">Administrar Pedidos</a>
+      <a mat-menu-item routerLink="/admin/products">Administrar Productos</a>
+    </ng-container>
+  </mat-menu>
+</div>
+<div>
+  <span>Quemadores</span>
+  <button mat-button [matMenuTriggerFor]="appMenu">Producto<mat-icon>expand_more</mat-icon></button>
+  <mat-menu #appMenu="matMenu" >
+    <a mat-menu-item routerLink="/my/pedidos">Pedidos</a>
+    <ng-container>
+      <a mat-menu-item routerLink="/admin/pedidos">Administrar Pedidos</a>
+      <a mat-menu-item routerLink="/admin/products">Administrar Productos</a>
+    </ng-container>
+  </mat-menu>
+</div>
+<div>
+  <span>Recuperadores</span>
+  <button mat-button [matMenuTriggerFor]="appMenu">Producto<mat-icon>expand_more</mat-icon></button>
+  <mat-menu #appMenu="matMenu" >
+    <a mat-menu-item routerLink="/my/pedidos">Pedidos</a>
+     </mat-menu>
+</div>
+<div>
+  <span>Otros</span>
+  <button mat-button [matMenuTriggerFor]="appMenu">Producto<mat-icon>expand_more</mat-icon></button>
+  <mat-menu #appMenu="matMenu" >
+    <a mat-menu-item routerLink="/my/pedidos">Pedidos</a>
+    <ng-container>
+      <a mat-menu-item routerLink="/admin/pedidos">Administrar Pedidos</a>
+      <a mat-menu-item routerLink="/admin/products">Administrar Productos</a>
+    </ng-container>
+  </mat-menu>
+</div>
+

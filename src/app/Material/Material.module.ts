@@ -13,6 +13,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 
 
@@ -31,7 +32,8 @@ const MaterialsComponents = [
   MatSortModule,
   MatGridListModule,
   MatListModule,
-  MatChipsModule
+  MatChipsModule,
+  MatExpansionModule
 
 ]
 @NgModule({

@@ -1,6 +1,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
-import { ShoppingCartService } from '../services/shopping-cart.service';
+import { CartService } from '../services/cart.service';
 
 
 @Component({
@@ -11,10 +11,10 @@ import { ShoppingCartService } from '../services/shopping-cart.service';
 export class ProductCardComponent {
   @Input('product') product: any;
   @Input('show-actions') showActions=true;
-  @Input('shopping-cart') shoppingCart: any;
+  @Input('cart') Cart: any;
 
 
-  constructor(private cartService: ShoppingCartService) { }
+  constructor(private cartService: CartService) { }
 
    updateItemQuantity(product: any, change: number) {
     this.cartService.updateItemQuantity(product, change);

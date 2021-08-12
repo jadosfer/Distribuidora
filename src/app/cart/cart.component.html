@@ -1,0 +1,50 @@
+<div class="SCContainer">
+  <h1>Pedidos</h1>
+
+  <table matSort (matSortChange)="sortData($event)">
+    <tr>
+      <th mat-sort-header="title">Nro. Pedido</th>
+      <th mat-sort-header="quantity">Fecha</th>
+      <th mat-sort-header="unitPrice">Importe</th>
+    </tr>
+
+    <tr *ngFor="let cart of this.carts; let i = index">
+      <td>{{i + 1}}&nbsp;&nbsp;</td>
+      <td>{{cart.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      <td>${{this.cartService.getTotalCost(cart)}}</td>
+      <mat-accordion>
+        <mat-expansion-panel hideToggle>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Detalle
+            </mat-panel-title>
+
+          </mat-expansion-panel-header>
+          <tr>
+            <th mat-sort-header="title">Cantidad</th>
+            <th mat-sort-header="quantity">Producto</th>
+            <th mat-sort-header="unitPrice">Importe/unidad</th>
+            <th mat-sort-header="Price">Importe</th>
+          </tr>
+          <tr *ngFor="let item of cart.payload.val().items; let i = index">
+            <td>{{item.quantity}}&nbsp;&nbsp;</td>
+            <td>{{item.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>${{item.price}}</td>
+            <td>${{item.price * item.quantity}}</td>
+          </tr>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </tr>
+    <tr>
+      <th mat-sort-header="total">TOTAL</th>
+      <th mat-sort-header="showTotal">${{getTotal()}}</th>
+    </tr>
+
+  </table>
+
+
+</div>
+
+
+
+
