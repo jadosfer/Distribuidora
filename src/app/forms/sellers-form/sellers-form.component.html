@@ -1,0 +1,44 @@
+<div fxLayout="row" fxLayout.xs="column">
+  <div class="container-form" fxFlex="40%;" fxFlex.xs="80%">
+    <form #f="ngForm" (ngSubmit)="save(f.value)">
+      <p>
+        <mat-form-field appearance="legacy">
+          <mat-label>Nombre Completo</mat-label>
+          <input #name="ngModel" matInput [(ngModel)]="seller.name" name="name" placeholder="" required>
+
+          <mat-hint>Campo requerido</mat-hint>
+          <div class="alert alert-danger" *ngIf="name.touched && name.invalid">El nombre es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>CUIL</mat-label>
+          <input #cuil="ngModel" matInput [(ngModel)]="seller.cuil" name="cuil" placeholder="" required [min]="0">
+          <div class="alert alert-danger" *ngIf="cuil.touched && cuil.invalid">
+            <div *ngIf="cuil.errors?.required">El CUIL es requerido</div>
+            <div *ngIf="cuil.errors?.min">El CUIL debe ser mayor a 0 y sin guiones</div>
+          </div>
+          <mat-hint>Campo requerido</mat-hint>
+        </mat-form-field>
+      </p>
+
+        <p>
+          <mat-form-field appearance="legacy">
+            <mat-label>Dirección</mat-label>
+            <input #address="ngModel" matInput [(ngModel)]="seller.address" name="address" placeholder="" required>
+            <mat-hint>Campo requerido</mat-hint>
+            <div class="alert alert-danger" *ngIf="address.touched && address.invalid">La dirección es requerida</div>
+          </mat-form-field>
+
+          <mat-form-field appearance="legacy">
+            <mat-label>Teléfono</mat-label>
+            <input #phone="ngModel" matInput [(ngModel)]="seller.phone" name="phone" placeholder="" required>
+            <mat-hint>Campo requerido</mat-hint>
+            <div class="alert alert-danger" *ngIf="phone.touched && phone.invalid">El teléfono es requerido</div>
+          </mat-form-field>
+        </p>
+
+      <button mat-raised-button type="submit" color="primary" >Save</button>
+      <button (click)="delete()" mat-raised-button type="button" color="warn">Delete</button>
+    </form>
+  </div>
+ </div>

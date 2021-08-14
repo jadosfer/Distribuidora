@@ -6,16 +6,36 @@
 
     <mat-grid-tile [colspan]=3 >
       <div class='internalMatGrid' >
+
       <mat-grid-list cols="3" rowHeight="1:1.2">
         <div class="SCContainer">
           <h1>Pedido</h1>
+
+          <form class="example-form">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Cliente</mat-label>
+              <input type="text"
+                     placeholder="Elija uno"
+                     aria-label="Number"
+                     matInput
+                     [formControl]="myControl"
+                     [matAutocomplete]="auto"
+                     [(ngModel)]="clientFantasyName">
+
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
+                  {{client.payload.val().fantasyName}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
 
           <table matSort (matSortChange)="sortData($event)">
             <tr>
               <th mat-sort-header="title">Producto</th>
               <th mat-sort-header="quantity">Cantidad</th>
               <th mat-sort-header="unitPrice">Precio unitario</th>
-              <th mat-sort-header="totalPrice">Precio Total(por Producto)</th>
+              <th mat-sort-header="totalPriceProduct">Precio Total(por Producto)</th>
             </tr>
 
             <tr *ngFor="let p of filteredProducts">
@@ -27,14 +47,18 @@
               <button class="left-btn" (click)="updateItemQuantity(p.key, 1)" mat-raised-button color="basic">+</button>
             </tr>
             <tr>
-              <th mat-sort-header="total">TOTAL</th>
+              <th mat-sort-header="total">UNIDADES TOTALES</th>
+              <th mat-sort-header="showTotalQuantity">{{getTotalUnits()}}&nbsp; Unidades</th>
+              <th mat-sort-header="totalPrice">IMPORTE TOTAL</th>
               <th mat-sort-header="showTotal">${{getTotal()}}</th>
             </tr>
           </table>
           <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>
-          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Borrar Pedido</button>
+          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
           <div>
-            <span *ngIf="sended">&nbsp;&nbsp;&nbsp;&nbsp;Pedido enviado</span>
+            <span *ngIf="!sended">&nbsp;&nbsp;&nbsp;&nbsp;Haga su pedido</span>
+            <span *ngIf="clientFantasyName != ''  && sended">&nbsp;&nbsp;&nbsp;&nbsp;Pedido enviado</span>
+            <span *ngIf="clientFantasyName == '' && sended">&nbsp;&nbsp;&nbsp;&nbsp;Especifique el cliente</span>
           </div>
         </div>
 

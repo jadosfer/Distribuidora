@@ -1,8 +1,7 @@
-
 import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { CartService } from '../services/cart.service';
+import { PedidosService } from '../services/pedidos.service';
 
 @Component({
   selector: 'mat-navbar',
@@ -12,7 +11,7 @@ export class MatNavbarComponent implements OnInit{
 
   appUser: AppUser;
 
-  constructor(private auth: AuthService, private cartService: CartService) {
+  constructor(private auth: AuthService, private pedidosService: PedidosService) {
   }
 
   logout() {
@@ -20,15 +19,15 @@ export class MatNavbarComponent implements OnInit{
   }
 
   getTotalItems() {
-    let cart = this.cartService.getCart();
-    if (cart) return cart.cartItemCount;
+    let pedido = this.pedidosService.getPedido();
+    if (pedido) return pedido.pedidoItemCount;
     return 0;
   }
 
   ngOnInit() {
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.cartService.userName = this.appUser.name;
+      this.pedidosService.userName = this.appUser.name;
     });
   }
 }

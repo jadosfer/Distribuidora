@@ -4,17 +4,18 @@
   <ng-template #anonymousUser>
     <a mat-button routerLink="/login">Login</a>
   </ng-template>
-  <a mat-button routerLink="/cart">Mis Pedidos</a>
-  <mat-chip class="navbar-chip" *ngIf="getTotalItems() !== 0" color="accent" selected>&nbsp;&nbsp;&nbsp;{{getTotalItems()}}&nbsp;&nbsp;&nbsp;</mat-chip>
+  <a mat-button routerLink="pedidos/pedidos">Mis Pedidos</a>
+  <a mat-button routerLink="client/client">Mis Clientes</a>
+  <!-- <mat-chip class="navbar-chip" *ngIf="getTotalItems() !== 0" color="accent" selected>&nbsp;&nbsp;&nbsp;{{getTotalItems()}}&nbsp;&nbsp;&nbsp;</mat-chip> -->
 
   <a mat-menu-item></a>
 
   <button mat-button *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser.name}}<mat-icon>expand_more</mat-icon></button>
   <mat-menu #appMenu="matMenu" >
-    <a mat-menu-item routerLink="/my/pedidos">Pedidos</a>
     <ng-container *ngIf="appUser!=undefined && appUser.isAdmin">
-      <a mat-menu-item routerLink="/admin/pedidos">Administrar Pedidos</a>
+      <a mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>
       <a mat-menu-item routerLink="/admin/products">Administrar Productos</a>
+      <a mat-menu-item routerLink="/admin/sellers">Administrar Vendedores</a>
     </ng-container>
     <a mat-menu-item (click)="logout()">Log Out</a>
   </mat-menu>

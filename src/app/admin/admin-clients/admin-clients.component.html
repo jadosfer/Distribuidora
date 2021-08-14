@@ -1,0 +1,41 @@
+<div class="container-edit">
+  <p>
+    <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
+  </p>
+  <div>
+    <table><tr>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+      <td>
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Search...">
+      </td>
+    </tr></table>
+  </div>
+
+    <table mat-table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
+
+          <!-- businessName Column -->
+      <ng-container matColumnDef="businessName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h2> Razon Social </h2></th>
+        <td mat-cell *matCellDef="let c"> {{c.payload.val().businessName}} &nbsp;&nbsp;</td>
+      </ng-container>
+
+      <!-- fantasyName Column -->
+      <ng-container matColumnDef="fantasyName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h2> Nombre de Fantasía </h2></th>
+        <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
+      </ng-container>
+
+        <!-- Edit Column -->
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
+          <td mat-cell *matCellDef="let c"><a [routerLink]="['/admin/clients', c.key]">Edit</a></td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+ </div>

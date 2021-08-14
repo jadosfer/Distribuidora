@@ -9,6 +9,7 @@ export class ProductService {
   constructor(private db: AngularFireDatabase) { }
 
   create(product: any) {
+    if (!product.imageUrl) product.imageUrl = "";
     return this.db.list('/products').push(product);
   }
 
@@ -21,6 +22,7 @@ export class ProductService {
   }
 
   update(productId: any, product:any) {
+    if (!product.imageUrl) product.imageUrl = "";
     return this.db.object('/products/' + productId).update(product);
   }
 

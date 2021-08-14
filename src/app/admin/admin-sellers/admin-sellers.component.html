@@ -1,0 +1,42 @@
+<div class="container-edit">
+  <p>
+    <a mat-raised-button color="accent" routerLink="/admin/sellers/new">Nuevo Vendedor</a>
+  </p>
+  <div>
+    <table><tr>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+      <td>
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Search...">
+      </td>
+    </tr></table>
+  </div>
+
+    <table mat-table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
+
+          <!-- businessName Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="name"><h2>Nombre Completo</h2></th>
+        <td mat-cell *matCellDef="let s"> {{s.payload.val().name}} &nbsp;&nbsp;</td>
+      </ng-container>
+
+      <!-- fantasyName Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="phone"><h2>Teléfono </h2></th>
+        <td mat-cell *matCellDef="let s"> {{s.payload.val().phone}} &nbsp;&nbsp;</td>
+      </ng-container>
+
+        <!-- Edit Column -->
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
+          <td mat-cell *matCellDef="let s"><a [routerLink]="['/admin/sellers', s.key]">Edit</a></td>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+ </div>
+

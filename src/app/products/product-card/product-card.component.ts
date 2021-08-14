@@ -1,6 +1,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CartService } from '../services/cart.service';
+import { PedidosService } from '../../services/pedidos.service';
 
 
 @Component({
@@ -11,21 +11,21 @@ import { CartService } from '../services/cart.service';
 export class ProductCardComponent {
   @Input('product') product: any;
   @Input('show-actions') showActions=true;
-  @Input('cart') Cart: any;
+  @Input('pedido') pedido: any;
 
 
-  constructor(private cartService: CartService) { }
+  constructor(private pedidosService: PedidosService) { }
 
    updateItemQuantity(product: any, change: number) {
-    this.cartService.updateItemQuantity(product, change);
+    this.pedidosService.updateItemQuantity(product, change);
   }
 
   getQuantity() {
-    let cart = this.cartService.getCart();
+    let pedido = this.pedidosService.getPedido();
     let result = 0;
-    if (cart) {
-      if (cart.items) {
-        cart.items.forEach((item: any) => {
+    if (pedido) {
+      if (pedido.items) {
+        pedido.items.forEach((item: any) => {
           if (item.productId == this.product.key) {
             result = item.quantity;
           }

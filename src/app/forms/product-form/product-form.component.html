@@ -40,10 +40,9 @@
       <p>
         <mat-form-field appearance="legacy">
           <mat-label>Image URL</mat-label>
-          <input #imageUrl="ngModel" matInput [(ngModel)]="product.imageUrl" name="imageUrl" required url>
+          <input #imageUrl="ngModel" matInput [(ngModel)]="product.imageUrl" name="imageUrl">
           <mat-hint>Image URL</mat-hint>
           <div class="alert alert-danger" *ngIf="imageUrl.touched && imageUrl.invalid">
-            <div *ngIf="imageUrl.errors?.required">Image URL is required</div>
             <div *ngIf="imageUrl.errors?.url">Please enter a valid URL</div>
           </div>
         </mat-form-field>

@@ -14,6 +14,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 
 
@@ -33,7 +34,8 @@ const MaterialsComponents = [
   MatGridListModule,
   MatListModule,
   MatChipsModule,
-  MatExpansionModule
+  MatExpansionModule,
+  MatAutocompleteModule
 
 ]
 @NgModule({
