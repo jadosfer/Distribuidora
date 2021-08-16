@@ -7,6 +7,8 @@ import { PedidosService } from '../services/pedidos.service';
 import { ClientsService } from '../services/clients.service';
 import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
+import { AppUser } from '../models/app-user';
+import { AuthService } from '../services/auth.service';
 
 
 
@@ -16,6 +18,8 @@ import { map, startWith } from 'rxjs/operators';
   styleUrls: ['./pedido.component.scss']
 })
 export class PedidoComponent implements OnInit {
+
+  appUser: AppUser;
 
   myControl = new FormControl();
   //options: string[] = ['One', 'Two', 'Three'];
@@ -40,13 +44,15 @@ export class PedidoComponent implements OnInit {
   quantity: number;
   sortedData: any[];
   sended: boolean = false;
-  noClient: boolean = true;
+  client: boolean = false;
+  pedidoEmpty: boolean = false;
 
   constructor(
     public productService: ProductService,
     public route: ActivatedRoute,
     public pedidosService: PedidosService,
     public clientsService: ClientsService,
+    private auth: AuthService
   ) {
     this.pedido = this.pedidosService.getPedido();
 
@@ -72,6 +78,12 @@ export class PedidoComponent implements OnInit {
         startWith(''),
         map(value =>  value? this._filter(value) : this._filter(""))
         )
+    });
+  }
+
+  ngOnInit(){
+    this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
     });
   }
 
@@ -107,11 +119,6 @@ export class PedidoComponent implements OnInit {
 
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
-
-  ngOnInit(){
-
   }
 
   private _filter(value: any): any {
@@ -156,17 +163,18 @@ export class PedidoComponent implements OnInit {
 
   sendPedido() {
     let pedido = this.pedidosService.getPedido();
-    if (!pedido) return;
-    this.sended = true;
-    setTimeout(()=>{
-      this.sended = false;
-  }, 3000);
-    if (this.clientFantasyName == "") return;
+    if (!pedido) {
+      this.pedidoEmpty = true;
+      return;
+    }
+    this.pedidoEmpty = false;
+    if (this.clientFantasyName == "") {
+      this.client = false;
+      return;
+    }
     this.pedidosService.sendPedido(pedido, this.clientFantasyName);
-    setTimeout(()=>{
-      this.clientFantasyName = "";
-  }, 2000);
-
+    this.sended = true;
+    this.clientFantasyName = "";
   }
 
   reset() {

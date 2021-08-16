@@ -5,6 +5,7 @@ import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { AppUser } from '../models/app-user';
 
 
 @Component({
@@ -13,6 +14,8 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./pedidos.component.scss']
 })
 export class PedidosComponent implements OnInit {
+
+  appUser: AppUser;
 
   pedido: any;
   pedidos: any[];
@@ -33,11 +36,20 @@ export class PedidosComponent implements OnInit {
 
     this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
       this.pedidos = pedidos;
-      for (let i=0;i<this.pedidos.length;i++) {
+      let auxPedidos = [];
+      for (let i=0;i<pedidos.length;i++) {
         if (!this.pedidos[i].payload.val().pedidoItemCount && i<this.pedidos.length-1){
           this.removePedido(this.pedidos[i].key);
         }
+        if (this.pedidos[i].payload.val().sellerName == this.pedidosService.userName) auxPedidos.push(this.pedidos[i]);
       }
+      this.pedidos = auxPedidos;
+    });
+  }
+
+  ngOnInit(){
+    this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
     });
   }
 
@@ -66,12 +78,6 @@ export class PedidosComponent implements OnInit {
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
-
-
-  async ngOnInit(){
-
-  }
-
 
   getTotalItems() {
     let pedido = this.pedidosService.getPedido();
