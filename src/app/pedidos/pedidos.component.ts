@@ -19,9 +19,11 @@ export class PedidosComponent implements OnInit {
 
   pedido: any;
   pedidos: any[];
+  userPedidos: any[] = [];
   titles: string[]=[];
   subscription: Subscription;
   filteredProduct:any[];
+  filteredPedidos:any[];
   products:any[];
   date: any;
 
@@ -33,24 +35,37 @@ export class PedidosComponent implements OnInit {
   private productService: ProductService,
   private route: ActivatedRoute,
   private auth: AuthService) {
-
-    this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
-      this.pedidos = pedidos;
-      let auxPedidos = [];
-      for (let i=0;i<pedidos.length;i++) {
-        if (!this.pedidos[i].payload.val().pedidoItemCount && i<this.pedidos.length-1){
-          this.removePedido(this.pedidos[i].key);
-        }
-        if (this.pedidos[i].payload.val().sellerName == this.pedidosService.userName) auxPedidos.push(this.pedidos[i]);
-      }
-      this.pedidos = auxPedidos;
-    });
   }
 
   ngOnInit(){
-    this.auth.appUser$.subscribe(appUser => {
-      this.appUser = appUser;
+    this.filter("");
+
+    this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
+      this.auth.appUser$.subscribe(appUser => {
+        this.appUser = appUser;
+        this.pedidos = pedidos;
+      //this.userPedidos = [];
+      for (let i=0;i<this.pedidos.length;i++) {
+        //console.log("aca1", this.appUser.name);
+        // if (!this.pedidos[i].payload.val().pedidoItemCount && i<this.pedidos.length-1){
+        //   this.removePedido(this.pedidos[i].key);
+        //}
+        if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) this.userPedidos.push(this.pedidos[i]);
+      }
+
+
+
+      });
+
     });
+
+
+  }
+
+  filter(query: string) {
+    this.filteredPedidos = (query) ?
+    this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+    this.userPedidos;
   }
 
   sortData(sort: Sort) {

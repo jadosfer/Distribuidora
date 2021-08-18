@@ -13,9 +13,12 @@ import { AppUser } from '../models/app-user';
 export class AuthService {
 
   user$: Observable<firebase.User | null>;
+  appUser: AppUser;
+  isAdmin: boolean;
 
   constructor(public afAuth: AngularFireAuth, private route: ActivatedRoute, private router: Router, private userService: UserService) {
       this.user$ = afAuth.authState;
+      console.log("en auth this.user$: ", this.user$)
   }
 
 
@@ -31,8 +34,8 @@ export class AuthService {
   }
 
   logout() {
-    this.afAuth.signOut()
     this.router.navigateByUrl('/');
+    this.afAuth.signOut()
     localStorage.clear();
     location.reload();
   }

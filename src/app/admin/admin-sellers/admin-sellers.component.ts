@@ -39,7 +39,6 @@ export class AdminSellersComponent implements OnInit {
       this.sellers;
     this.dataSource = new MatTableDataSource<any>(this.filteredSellers);
     this.dataSource.paginator = this.paginator;
-
   }
 
   sortData(sort: Sort) {

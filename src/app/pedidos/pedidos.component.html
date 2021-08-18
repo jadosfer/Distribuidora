@@ -1,6 +1,17 @@
 <div class="SCContainer" *ngIf="appUser">
   <h1>Pedidos</h1>
 
+  <div>
+    <table><tr>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+      <td>
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar cliente...">
+      </td>
+    </tr></table>
+  </div>
+
   <table matSort (matSortChange)="sortData($event)">
     <tr>
       <th mat-sort-header="nroPedido">Nro. Pedido</th>
@@ -11,7 +22,7 @@
     </tr>
 
 
-      <tr *ngFor="let pedido of this.pedidos; let i = index">
+      <tr *ngFor="let pedido of filteredPedidos; let i = index">
 
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{i + 1}}&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>

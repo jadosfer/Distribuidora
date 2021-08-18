@@ -12,7 +12,7 @@ export class PedidosService {
 
   pedido: any;
   pedidoId: any;
-  userName: string;
+  appUser: any;
 
   constructor(private db: AngularFireDatabase) { }
 
@@ -120,7 +120,7 @@ export class PedidosService {
 
   sendPedido(pedido: any, clientFantasyName: string) {
     pedido.clientFantasyName = clientFantasyName;
-    pedido.sellerName = this.userName;
+    pedido.sellerName = this.appUser.userName;
     this.updatePedido(this.pedidoId, pedido)
     localStorage.clear();
   }
