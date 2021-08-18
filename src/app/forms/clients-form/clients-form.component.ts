@@ -1,3 +1,4 @@
+import { SellersService } from 'src/app/services/sellers.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -13,6 +14,7 @@ export class ClientsFormComponent implements OnInit {
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
   clientsCategories$: Observable<any>;
+  sellers$: Observable<any>;
   client:any = {};
   id:any;
 
@@ -20,9 +22,11 @@ export class ClientsFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private clientsCategoryService: ClientsCategoryService,
-    private clientsService: ClientsService) {
+    private clientsService: ClientsService,
+    private sellersService: SellersService) {
 
     this.clientsCategories$ = clientsCategoryService.getAll();
+    this.sellers$ = sellersService.getAll();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) this.clientsService.get(this.id).take(1).subscribe(p => {
       this.client = p.payload.val();

@@ -41,6 +41,16 @@
           <div class="alert alert-danger" *ngIf="sellCondition.touched && sellCondition.invalid">La condición de venta es requerida</div>
         </mat-form-field>
 
+        <mat-form-field appearance="fill">
+          <mat-label>Vendedor asignado</mat-label>
+          <mat-select #designatedSeller="ngModel" [(ngModel)]="client.designatedSeller" name="designatedSeller" required>
+            <mat-option *ngFor="let ds of sellers$ | async" [value]="ds.payload.val().name">
+              {{ds.payload.val().name}}
+            </mat-option>
+          </mat-select>
+          <div class="alert alert-danger" *ngIf="designatedSeller.touched && designatedSeller.invalid">La condición de venta es requerida</div>
+        </mat-form-field>
+
         <p>
           <mat-form-field appearance="legacy">
             <mat-label>CUIT</mat-label>

@@ -1,8 +1,28 @@
-<p>client works!</p>
-<p>client works!</p>
-<p>client works!</p>
-<p>client works!</p>
-<p>client works!</p>
-<p>client works!</p>
+<div class="SCContainer" *ngIf="appUser">
+  <h1>Mis Clientes</h1>
+
+  <div>
+    <table><tr>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+       <td>
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
+      </td>
+    </tr></table>
+  </div>
+
+  <table matSort (matSortChange)="sortData($event)">
+    <tr>
+      <th mat-sort-header="nroCliente">Nro. Cliente</th>
+      <th mat-sort-header="cliente">Nombre Cliente</th>
+    </tr>
+
+    <tr *ngFor="let client of filteredClients; let i = index">
+      <td>{{i + 1}}&nbsp;&nbsp;</td>
+      <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;</td>
+    </tr>
+  </table>
+</div>
 
 

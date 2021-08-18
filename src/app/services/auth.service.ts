@@ -18,7 +18,6 @@ export class AuthService {
 
   constructor(public afAuth: AngularFireAuth, private route: ActivatedRoute, private router: Router, private userService: UserService) {
       this.user$ = afAuth.authState;
-      console.log("en auth this.user$: ", this.user$)
   }
 
 

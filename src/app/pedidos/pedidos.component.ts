@@ -39,7 +39,6 @@ export class PedidosComponent implements OnInit {
 
   ngOnInit(){
     this.filter("");
-
     this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
@@ -51,12 +50,8 @@ export class PedidosComponent implements OnInit {
         //   this.removePedido(this.pedidos[i].key);
         //}
         if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) this.userPedidos.push(this.pedidos[i]);
-      }
-
-
-
+        }
       });
-
     });
 
 
