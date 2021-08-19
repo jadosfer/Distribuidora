@@ -1,5 +1,5 @@
 import { PedidosService } from '../services/pedidos.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
@@ -53,8 +53,6 @@ export class PedidosComponent implements OnInit {
         }
       });
     });
-
-
   }
 
   filter(query: string) {

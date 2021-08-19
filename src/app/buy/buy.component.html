@@ -1,0 +1,42 @@
+
+<div class="container-grid">
+  <mat-grid-list cols="4" rowHeight="1:14.3">
+    <mat-grid-tile [colspan]=1>
+      <product-filter></product-filter>
+    </mat-grid-tile>
+
+    <mat-grid-tile [colspan]=3 >
+      <div class='internalMatGrid' >
+
+      <mat-grid-list cols="3" rowHeight="1:1.2">
+        <div class="SCContainer">
+          <h1>Nueva Compra</h1>
+
+
+          <table matSort (matSortChange)="sortData($event)">
+            <tr>
+              <th mat-sort-header="title">Producto</th>
+              <th mat-sort-header="quantity">Cantidad</th>
+            </tr>
+
+            <tr *ngFor="let p of filteredBuy">
+              <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              <td>{{p.payload.val().quantity}}</td>
+              <button class="left-btn" (click)="updateBuyItemQuantity(p, -1)" mat-raised-button color="basic">-</button>
+              <button class="left-btn" (click)="updateBuyItemQuantity(p, 1)" mat-raised-button color="basic">+</button>
+            </tr>
+          </table>
+          <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Enviar Pedido</button>
+          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+          <div>
+
+          </div>
+        </div>
+
+
+      </mat-grid-list>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
+

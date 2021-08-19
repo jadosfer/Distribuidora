@@ -1,4 +1,4 @@
-import { AdminAuthGuard as AdminAuthGuard } from './admin-auth-guard.service';
+
 import { MatNavbarComponent } from './mat-navbar/mat-navbar.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -33,6 +33,9 @@ import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.compo
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
 import { ProductFormComponent } from './forms/product-form/product-form.component';
 import { ReactiveFormsModule} from '@angular/forms';
+import { StockComponent } from './stock/stock.component';
+import { BuyComponent } from './buy/buy.component';
+import { AdminAuthGuard } from './services/admin-auth-guard.service';
 
 
 
@@ -52,8 +55,9 @@ import { ReactiveFormsModule} from '@angular/forms';
     ClientsComponent,
     ClientsFormComponent,
     AdminSellersComponent,
-    SellersFormComponent
-
+    SellersFormComponent,
+    StockComponent,
+    BuyComponent
 
   ],
   imports: [

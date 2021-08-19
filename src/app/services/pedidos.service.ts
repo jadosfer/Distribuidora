@@ -120,7 +120,8 @@ export class PedidosService {
 
   sendPedido(pedido: any, clientFantasyName: string) {
     pedido.clientFantasyName = clientFantasyName;
-    pedido.sellerName = this.appUser.userName;
+    pedido.sellerName = this.appUser.name;
+    console.log(pedido);
     this.updatePedido(this.pedidoId, pedido)
     localStorage.clear();
   }

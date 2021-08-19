@@ -1,4 +1,4 @@
-<div class="container-grid" *ngIf="appUser">
+<div class="container-grid">
   <mat-grid-list cols="4" rowHeight="1:14.3">
     <mat-grid-tile [colspan]=1>
       <product-filter></product-filter>
@@ -57,7 +57,7 @@
           <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
           <div>
 
-            <span *ngIf="sended">&nbsp;&nbsp;&nbsp;&nbsp;Pedido enviado</span>
+            <span *ngIf="sended">&nbsp;&nbsp;&nbsp;&nbsp;*Pedido enviado!</span>
             <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
             <span *ngIf="pedidoEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
           </div>

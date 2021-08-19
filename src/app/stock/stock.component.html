@@ -1,0 +1,21 @@
+<div class="SCContainer" *ngIf="appUser">
+  <div>
+    <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
+  </div>
+  <div>&nbsp;</div>
+  <div>
+    <h1>STOCK</h1>
+    <table matSort>
+      <tr>
+        <th mat-sort-header="title">Producto</th>
+        <th mat-sort-header="quantity">Cantidad</th>
+      </tr>
+
+      <tr *ngFor="let p of stock">
+        <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>{{p.payload.val().quantity}}</td>
+      </tr>
+    </table>
+  </div>
+
+</div>

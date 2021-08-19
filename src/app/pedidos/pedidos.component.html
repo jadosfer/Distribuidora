@@ -1,13 +1,16 @@
 <div class="SCContainer" *ngIf="appUser">
-  <h1>Pedidos</h1>
+  <div>
+    <a mat-raised-button color="accent" routerLink="/pedidos/pedido">Nuevo Pedido</a>
+  </div>
 
   <div>
     <table><tr>
+      <h2 style="display: inline;">Mis pedidos&nbsp;&nbsp;</h2>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar pedido por cliente...">
       </td>
     </tr></table>
   </div>
@@ -58,8 +61,6 @@
     </tr>
 
   </table>
-
-
 </div>
 
 

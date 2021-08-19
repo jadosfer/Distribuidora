@@ -26,7 +26,6 @@ export class MatNavbarComponent implements OnInit{
 
   ngOnInit() {
     this.auth.appUser$.subscribe(appUser => {
-      console.log("actualizo user");
       this.appUser = appUser;
       if (appUser) this.pedidosService.appUser = this.appUser;
     });

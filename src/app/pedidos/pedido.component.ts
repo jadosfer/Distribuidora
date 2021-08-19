@@ -44,7 +44,7 @@ export class PedidoComponent implements OnInit {
   quantity: number;
   sortedData: any[];
   sended: boolean = false;
-  client: boolean = false;
+  client: boolean = true;
   pedidoEmpty: boolean = false;
 
   constructor(
@@ -123,9 +123,7 @@ export class PedidoComponent implements OnInit {
 
   private _filter(value: any): any {
     const filterValue = value.toLowerCase();
-    console.log("filterValue", filterValue, this.clients);
     let listFiltrada = this.clients.filter(client => client.payload.val().fantasyName.toLowerCase().includes(filterValue));
-    console.log("listaFiltrada", listFiltrada)
     return listFiltrada
   }
 
@@ -170,8 +168,12 @@ export class PedidoComponent implements OnInit {
     this.pedidoEmpty = false;
     if (this.clientFantasyName == "") {
       this.client = false;
+      setTimeout(()=> {
+         this.client = true;
+        }, 500);
       return;
     }
+    pedido.sellerName = this.appUser.name;
     this.pedidosService.sendPedido(pedido, this.clientFantasyName);
     this.sended = true;
     this.clientFantasyName = "";

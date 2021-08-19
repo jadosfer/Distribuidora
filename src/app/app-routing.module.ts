@@ -6,22 +6,27 @@ import { RouterModule, Routes } from '@angular/router';
 import { PedidoComponent } from './pedidos/pedido.component';
 import { LoginComponent } from './login/login.component';
 import { AdminProductsComponent } from './admin/admin-products/admin-products.component';
-import { AdminAuthGuard } from './admin-auth-guard.service';
 import { AuthGuard } from './services/auth-guard.service';
 import { ClientsComponent} from './clients/clients.component';
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
 import { ProductFormComponent } from './forms/product-form/product-form.component';
 import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.component';
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
+import { StockComponent } from './stock/stock.component';
+import { BuyComponent } from './buy/buy.component';
+import { AdminAuthGuard } from './services/admin-auth-guard.service';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
-  { path: '', component: PedidoComponent },
+  { path: "pedidos/pedido", component: PedidoComponent },
   { path: "client/client", component: ClientsComponent },
   { path: "pedidos/pedidos", component: PedidosComponent },
   { path: "login", component: LoginComponent },
+
   { path: "check-out", component: CheckOutComponent, canActivate: [AuthGuard] },
+  { path: "stock/stock", component: StockComponent, canActivate: [AuthGuard] },
+  { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard] },
 
   { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
