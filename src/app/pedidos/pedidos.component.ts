@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
-
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'pedidos',
@@ -30,11 +30,13 @@ export class PedidosComponent implements OnInit {
   title: string;
   quantity: number;
   sortedData: any[];
+  states: string[] = ["pendiente", "aprobado"];
+  selected: string = "pendiente";
 
   constructor(public pedidosService: PedidosService,
   private productService: ProductService,
   private route: ActivatedRoute,
-  private auth: AuthService) {
+  private auth: AuthService, public datepipe: DatePipe) {
   }
 
   ngOnInit(){
@@ -42,14 +44,13 @@ export class PedidosComponent implements OnInit {
     this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-        this.pedidos = pedidos;
-      //this.userPedidos = [];
+        this.pedidos =  pedidos;
+        this.userPedidos = [];
       for (let i=0;i<this.pedidos.length;i++) {
-        //console.log("aca1", this.appUser.name);
-        // if (!this.pedidos[i].payload.val().pedidoItemCount && i<this.pedidos.length-1){
-        //   this.removePedido(this.pedidos[i].key);
-        //}
-        if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) this.userPedidos.push(this.pedidos[i]);
+        if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) {
+          this.userPedidos.push(this.pedidos[i]);
+        }
+        this.filteredPedidos = this.userPedidos;
         }
       });
     });
@@ -58,6 +59,13 @@ export class PedidosComponent implements OnInit {
   filter(query: string) {
     this.filteredPedidos = (query) ?
     this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+    this.userPedidos;
+  }
+
+  filterByDate(query: string) {
+    console.log("this.userPedidos: ", this.userPedidos);
+    this.filteredPedidos = (query) ?
+    this.userPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
     this.userPedidos;
   }
 
@@ -105,5 +113,9 @@ export class PedidosComponent implements OnInit {
 
   removePedido(pedidoId: any) {
     this.pedidosService.removePedido(pedidoId);
+  }
+
+  aprove() {
+
   }
 }

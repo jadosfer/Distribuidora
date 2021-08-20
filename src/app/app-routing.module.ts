@@ -15,10 +15,12 @@ import { SellersFormComponent } from './forms/sellers-form/sellers-form.componen
 import { StockComponent } from './stock/stock.component';
 import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
+  { path: "", component: DashboardComponent },
   { path: "pedidos/pedido", component: PedidoComponent },
   { path: "client/client", component: ClientsComponent },
   { path: "pedidos/pedidos", component: PedidosComponent },

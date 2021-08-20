@@ -29,19 +29,8 @@ export class StockComponent implements OnInit {
       this.stock = stock;
      });
 
-    //this.filter("");
-    //this.subscription = this.pedidosService.getAll().subscribe(pedidos => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-      //this.userPedidos = [];
-      //for (let i=0;i<this.pedidos.length;i++) {
-        //console.log("aca1", this.appUser.name);
-        // if (!this.pedidos[i].payload.val().pedidoItemCount && i<this.pedidos.length-1){
-        //   this.removePedido(this.pedidos[i].key);
-        //}
-      //   if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) this.userPedidos.push(this.pedidos[i]);
-      //   }
-      // });
     });
   }
 

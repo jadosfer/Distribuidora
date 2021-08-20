@@ -59,16 +59,6 @@ export class StockService {
       });
      }
 
-  // ngOnInit() {
-  // }
-
-  // async getOrCreateStock() {
-  //   let result = await this.getAll();
-  //   console.log("result", result)
-  //   if (result) return result;
-  //   return this.create();
-  // }
-
   public create() {
     for (let i=0;i<this.products.length;i++) {
       this.db.list('/stock').push({
@@ -130,9 +120,30 @@ export class StockService {
     this.db.object('/buy/').remove();
   }
 
+  sendPedido(pedido: any) {
+    for (let i=0;i<this.buy.length;i++) {
+      let quantity = this.stock[i].payload.val().quantity + this.buy[i].payload.val().quantity;
+      this.db.object('/stock/' + this.stock[i].key).update({
+        product: this.stock[i].payload.val().product,
+        "quantity": quantity
+      });
+    }
+    this.db.object('/buy/').remove();
+  }
+
   reset() {
     this.db.object('/buy/').remove();
   }
+
+  getQuantityOfP(pBuy: any) {
+    for (let i=0;i<this.stock.length;i++) {
+      if (pBuy.payload.val().product.title == this.stock[i].payload.val().product.title) {
+        return this.stock[i].payload.val().quantity;
+      }
+    }
+    return 0;
+  }
+
 
 
 }

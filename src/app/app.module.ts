@@ -36,6 +36,8 @@ import { ReactiveFormsModule} from '@angular/forms';
 import { StockComponent } from './stock/stock.component';
 import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -57,7 +59,8 @@ import { AdminAuthGuard } from './services/admin-auth-guard.service';
     AdminSellersComponent,
     SellersFormComponent,
     StockComponent,
-    BuyComponent
+    BuyComponent,
+    DashboardComponent
 
   ],
   imports: [
@@ -74,7 +77,7 @@ import { AdminAuthGuard } from './services/admin-auth-guard.service';
     ReactiveFormsModule
   ],
   providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService,
-    ProductService, AuthService, PedidosService],
+    ProductService, AuthService, PedidosService, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

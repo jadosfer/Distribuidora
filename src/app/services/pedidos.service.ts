@@ -20,7 +20,8 @@ export class PedidosService {
     localStorage.clear();
     let time = new Date().getTime()
     let result = this.db.list('/pedidos').push({
-      "creationDate": time
+      "creationDate": time,
+      "state": "pendiente"
     });
     return result;
   }
@@ -121,7 +122,6 @@ export class PedidosService {
   sendPedido(pedido: any, clientFantasyName: string) {
     pedido.clientFantasyName = clientFantasyName;
     pedido.sellerName = this.appUser.name;
-    console.log(pedido);
     this.updatePedido(this.pedidoId, pedido)
     localStorage.clear();
   }

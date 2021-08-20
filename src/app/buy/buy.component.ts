@@ -45,7 +45,6 @@ export class BuyComponent implements OnInit {
 
           for (let i=0;i<this.buy.length;i++) {
             if (this.buy[i].payload.val().product.category == this.category)  {
-              //console.log("aca", this.stock)
               this.filteredBuy.push(this.buy[i]);
             }
           }
@@ -87,6 +86,10 @@ export class BuyComponent implements OnInit {
 
     reset() {
       this.stockService.reset();
+    }
+
+    getQuantityOfP(pBuy: any) {
+      return this.stockService.getQuantityOfP(pBuy);
     }
 
 

@@ -12,6 +12,12 @@
       <td>
         <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar pedido por cliente...">
       </td>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+      <td>
+        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="buscar pedido por fecha...">
+      </td>
     </tr></table>
   </div>
 
@@ -22,16 +28,26 @@
       <th mat-sort-header="vendedor">Vendedor</th>
       <th mat-sort-header="date">Fecha</th>
       <th mat-sort-header="import">Importe</th>
+      <th mat-sort-header="state">Estado</th>
     </tr>
 
 
-      <tr *ngFor="let pedido of filteredPedidos; let i = index">
+      <tr *ngFor="let pedido of filteredPedidos; let i = index" >
 
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{i + 1}}&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().sellerName}}&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">${{this.pedidosService.getTotalCost(pedido)}}</td>
+        <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().state}}&nbsp;&nbsp;</td>
+        <td *ngIf="pedido.payload.val().pedidoItemCount">
+          <button mat-raised-button color="primary" (click)="aprove()" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
+        </td>
+        <td>
+          &nbsp;&nbsp;
+        </td>
+
+
         <mat-accordion *ngIf="pedido.payload.val().pedidoItemCount">
           <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header>

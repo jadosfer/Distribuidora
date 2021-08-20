@@ -26,7 +26,6 @@ export class AdminClientsComponent implements OnInit {
 
   ngOnInit() {
      this.subscription = this.clientsService.getAll().subscribe(clients => {
-       console.log(clients)
        this.filteredClients = this.clients = clients;
        this.dataSource = new MatTableDataSource<any>(this.filteredClients);
        this.dataSource.paginator = this.paginator;

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute} from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ProductService } from '../services/product.service';
 import { Sort } from '@angular/material/sort';
@@ -52,7 +52,8 @@ export class PedidoComponent implements OnInit {
     public route: ActivatedRoute,
     public pedidosService: PedidosService,
     public clientsService: ClientsService,
-    private auth: AuthService
+    private auth: AuthService,
+    private router: Router
   ) {
     this.pedido = this.pedidosService.getPedido();
 
@@ -174,9 +175,10 @@ export class PedidoComponent implements OnInit {
       return;
     }
     pedido.sellerName = this.appUser.name;
-    this.pedidosService.sendPedido(pedido, this.clientFantasyName);
     this.sended = true;
+    this.pedidosService.sendPedido(pedido, this.clientFantasyName);
     this.clientFantasyName = "";
+    this.router.navigateByUrl('/pedidos/pedidos');
   }
 
   reset() {
