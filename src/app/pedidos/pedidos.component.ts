@@ -1,3 +1,4 @@
+import { StockService } from './../services/stock.service';
 import { PedidosService } from '../services/pedidos.service';
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
@@ -36,7 +37,8 @@ export class PedidosComponent implements OnInit {
   constructor(public pedidosService: PedidosService,
   private productService: ProductService,
   private route: ActivatedRoute,
-  private auth: AuthService, public datepipe: DatePipe) {
+  private auth: AuthService, public datepipe: DatePipe,
+  public stockService: StockService) {
   }
 
   ngOnInit(){
@@ -115,7 +117,9 @@ export class PedidosComponent implements OnInit {
     this.pedidosService.removePedido(pedidoId);
   }
 
-  aprove() {
+  aprove(pedido: any) {
+    this.stockService.aprove(pedido);
+    this.pedidosService.aprove(pedido);
 
   }
 }

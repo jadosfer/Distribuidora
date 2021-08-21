@@ -135,4 +135,16 @@ export class PedidosService {
     }
     return totalCost;
   }
+
+  aprove(pedido:any) {
+    let miPedido = {
+      "clientFantasyName": pedido.payload.val().clientFantasyName,
+      "creationDate": pedido.payload.val().creationDate,
+      "items": pedido.payload.val().items,
+      "pedidoItemCount": pedido.payload.val().pedidoItemCount,
+      "sellerName": pedido.payload.val().sellerName,
+      "state": "aprobado"
+    }
+    this.updatePedido(pedido.key, miPedido)
+  }
 }

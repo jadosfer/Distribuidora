@@ -40,8 +40,8 @@
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">${{this.pedidosService.getTotalCost(pedido)}}</td>
         <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().state}}&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">
-          <button mat-raised-button color="primary" (click)="aprove()" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
+        <td>
+          <button mat-raised-button color="primary" [disabled]="pedido.payload.val().state != 'pendiente'" (click)="aprove(pedido)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
         </td>
         <td>
           &nbsp;&nbsp;

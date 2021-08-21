@@ -91,11 +91,10 @@ export class StockService {
     return result;
   }
 
-  updateItemQuantity(p:any, change: number){
-    p.payload.val().quantity += change;
-    let quantity = p.payload.val().quantity + change;
-    this.db.object('/stock/' + p.key).update({
-      product: p.payload.val().product,
+  updateItemQuantity(p:any, quantity: number, stockKey: number){
+
+    this.db.object('/stock/' + stockKey).update({
+      product: p,
       "quantity": quantity
     })
   }
@@ -144,6 +143,21 @@ export class StockService {
     return 0;
   }
 
+  aprove(pedido: any) {
 
+    //console.log("quantity",this.stock[0].payload.val().quantity);
+    for (let i=0;i<pedido.payload.val().items.length;i++) {
+      for (let j=0;j<this.stock.length;j++) {
+        if (this.stock[j].payload.val().product.title == pedido.payload.val().items[i].title) {
+            let quantity = this.stock[j].payload.val().quantity - pedido.payload.val().items[i].quantity;
+            this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
+        //this.stock[j].payload.val().quantity -= pedido.payload.val().items[i].quantity;
+        //auxStockQuantities.push(this.stock[j].payload.val().quantity - pedido.payload.val().items[i].quantity)
+        //console.log("quantity2", this.stock[j].payload.val().quantity);
+        }
+      }
+    }
+
+  }
 
 }
