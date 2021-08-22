@@ -5,7 +5,7 @@
   <div>&nbsp;</div>
   <div>
     <h1>STOCK</h1>
-    <table matSort>
+    <table matSort (matSortChange)="sortData($event)">
       <tr>
         <th mat-sort-header="title">Producto</th>
         <th mat-sort-header="quantity">Cantidad</th>

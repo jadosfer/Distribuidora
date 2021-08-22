@@ -22,9 +22,17 @@
       </ng-container>
 
       <!-- Price Column -->
-      <ng-container matColumnDef="price">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="price"><h2> Price </h2></th>
-        <td mat-cell *matCellDef="let p"> {{p.payload.val().price | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      <ng-container matColumnDef="price1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="price1"><h2> Precio Distribuidor </h2></th>
+        <td mat-cell *matCellDef="let p"> {{p.payload.val().price1 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      </ng-container>
+      <ng-container matColumnDef="price2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="price2"><h2> Precio Comercio </h2></th>
+        <td mat-cell *matCellDef="let p"> {{p.payload.val().price2 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      </ng-container>
+      <ng-container matColumnDef="price3">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="price3"><h2> Precio Gimnasio </h2></th>
+        <td mat-cell *matCellDef="let p"> {{p.payload.val().price3 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
       </ng-container>
 
         <!-- Edit Column -->

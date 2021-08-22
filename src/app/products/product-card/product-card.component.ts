@@ -17,15 +17,14 @@ export class ProductCardComponent {
   constructor(private pedidosService: PedidosService) { }
 
    updateItemQuantity(product: any, change: number) {
-    this.pedidosService.updateItemQuantity(product, change);
+    this.pedidosService.updatePedidoItemQuantity(this.pedido, product, change);
   }
 
   getQuantity() {
-    let pedido = this.pedidosService.getPedido();
     let result = 0;
-    if (pedido) {
-      if (pedido.items) {
-        pedido.items.forEach((item: any) => {
+    if (this.pedido) {
+      if (this.pedido.payload.val().items) {
+        this.pedido.items.forEach((item: any) => {
           if (item.productId == this.product.key) {
             result = item.quantity;
           }

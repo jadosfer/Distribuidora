@@ -44,7 +44,7 @@ export class ClientsComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    const data = this.clients.slice();
+    const data = this.filteredClients;
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -53,8 +53,7 @@ export class ClientsComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'title': return this.compare(a.title, b.title, isAsc);
-        case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
+        case 'cliente': return this.compare(a.payload.val().fantasyName, b.payload.val().fantasyName, isAsc);
         default: return 0;
       }
     });

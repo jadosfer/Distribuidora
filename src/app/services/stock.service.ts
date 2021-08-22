@@ -17,7 +17,6 @@ export class StockService {
   buy: any;
   filteredProducts:any;
   products:any;
-  products$:any;
   category: string | null;
   subscription: Subscription;
   subscription2: Subscription;
@@ -51,7 +50,7 @@ export class StockService {
 
         });
       });
-      this.subscription3 = this.getAllBuy().subscribe(buy => {
+      this.subscription3 = this.getBuy().subscribe(buy => {
         this.buy = buy;
         if (this.buy.length == 0) {
           this.createBuy();
@@ -86,7 +85,7 @@ export class StockService {
     return result;
   }
 
-  public getAllBuy() {
+  public getBuy() {
     let result = this.db.list('/buy').snapshotChanges();
     return result;
   }
@@ -151,9 +150,6 @@ export class StockService {
         if (this.stock[j].payload.val().product.title == pedido.payload.val().items[i].title) {
             let quantity = this.stock[j].payload.val().quantity - pedido.payload.val().items[i].quantity;
             this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
-        //this.stock[j].payload.val().quantity -= pedido.payload.val().items[i].quantity;
-        //auxStockQuantities.push(this.stock[j].payload.val().quantity - pedido.payload.val().items[i].quantity)
-        //console.log("quantity2", this.stock[j].payload.val().quantity);
         }
       }
     }

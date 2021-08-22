@@ -72,7 +72,7 @@ export class PedidosComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    const data = this.pedidos.slice();
+    const data = this.filteredPedidos;
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -81,8 +81,14 @@ export class PedidosComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'title': return this.compare(a.title, b.title, isAsc);
-        case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
+        //case 'nroPedido': return this.compare(a.i, b.i, isAsc);
+        case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
+        case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
+        case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
+        case 'import': return this.compare(this.pedidosService.getTotalCost(a), this.pedidosService.getTotalCost(b), isAsc);
+        case 'state': return this.compare(a.payload.val().state, b.payload.val().state, isAsc);
+
+
         default: return 0;
       }
     });
@@ -97,11 +103,11 @@ export class PedidosComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  getTotalItems() {
-    let pedido = this.pedidosService.getPedido();
-    if (pedido) return pedido.pedidoItemCount;
-    return 0;
-  }
+  // getTotalItems() {
+  //   let pedido = this.pedidosService.getPedido();
+  //   if (pedido) return pedido.pedidoItemCount;
+  //   return 0;
+  // }
 
   getTotal() {
     let total = 0;

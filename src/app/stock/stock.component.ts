@@ -17,6 +17,7 @@ export class StockComponent implements OnInit {
 
   appUser: AppUser;
   stock: any;
+  sortedData: any[];
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -32,6 +33,27 @@ export class StockComponent implements OnInit {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
     });
+  }
+
+  sortData(sort: Sort) {
+    const data = this.stock;
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
+    }
+
+    this.sortedData = data.sort((a: any, b: any) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'title': return this.compare(a.payload.val().product.title, b.payload.val().product.title, isAsc);
+        case 'quantity': return this.compare(a.payload.val().quantity, b.payload.val().quantity, isAsc);
+        default: return 0;
+      }
+    });
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
 }

@@ -19,9 +19,9 @@ export class MatNavbarComponent implements OnInit{
   }
 
   getTotalItems() {
-    let pedido = this.pedidosService.getPedido();
-    if (pedido) return pedido.pedidoItemCount;
-    return 0;
+    // let pedido = this.pedidosService.getPedido();
+    // if (pedido) return pedido.pedidoItemCount;
+    // return 0;
   }
 
   ngOnInit() {

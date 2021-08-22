@@ -32,7 +32,7 @@ export class BuyComponent implements OnInit {
 
   ngOnInit() {
     //this.filter("");
-    this.stockService.getAllBuy().subscribe(buy => {
+    this.stockService.getBuy().subscribe(buy => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
       });
@@ -42,7 +42,6 @@ export class BuyComponent implements OnInit {
 
         this.filteredBuy = [];
         if (this.buy) {
-
           for (let i=0;i<this.buy.length;i++) {
             if (this.buy[i].payload.val().product.category == this.category)  {
               this.filteredBuy.push(this.buy[i]);
@@ -69,8 +68,9 @@ export class BuyComponent implements OnInit {
       this.sortedData = data.sort((a: any, b: any) => {
         const isAsc = sort.direction === 'asc';
         switch (sort.active) {
-          case 'title': return this.compare(a.title, b.title, isAsc);
-          case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
+          case 'title': return this.compare(a.payload.val().product.title, b.payload.val().product.title, isAsc);
+          case 'quantity': return this.compare(a.payload.val().quantity, b.payload.val().quantity, isAsc);
+          case 'stock': return this.compare(this.getQuantityOfP(a), this.getQuantityOfP(b), isAsc);
           default: return 0;
         }
       });
