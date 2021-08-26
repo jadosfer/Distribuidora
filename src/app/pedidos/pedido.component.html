@@ -34,18 +34,18 @@
             <tr>
               <th mat-sort-header="title">Producto</th>
               <th mat-sort-header="quantity">Cantidad</th>
-              <th mat-sort-header="unitPrice">Precio unitario distribuidor</th>
+              <th mat-sort-header="unitPrice">Precio unitario distribuidor {{getCategory()}}</th>
               <th mat-sort-header="totalPriceProduct">Precio Total(por Producto)</th>
             </tr>
 
             <tr *ngFor="let p of filteredPedido">
-              <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td>{{p.payload.val().quantity}}</td>
-              <td>${{p.payload.val().product.price1}}</td>
-              <td>${{p.payload.val().product.price1*p.payload.val().quantity}}</td>
+              <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              <td>{{p.quantity}}</td>
+              <td>${{getClientPrice(p)}}</td>
+              <td>${{getClientPrice(p)*p.quantity}}</td>
               <button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, -1)" mat-raised-button color="basic">-</button>
               <button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, 1)" mat-raised-button color="basic">+</button>
-            </tr>
+            </tr>  <!---->
             <tr>
               <th mat-sort-header="total">UNIDADES TOTALES</th>
               <th mat-sort-header="showTotalQuantity">{{getTotalUnits()}}&nbsp; Unidades</th>

@@ -144,11 +144,10 @@ export class StockService {
 
   aprove(pedido: any) {
 
-    //console.log("quantity",this.stock[0].payload.val().quantity);
-    for (let i=0;i<pedido.payload.val().items.length;i++) {
+    for (let i=0;i<pedido.payload.val().pedido.products.length;i++) {
       for (let j=0;j<this.stock.length;j++) {
-        if (this.stock[j].payload.val().product.title == pedido.payload.val().items[i].title) {
-            let quantity = this.stock[j].payload.val().quantity - pedido.payload.val().items[i].quantity;
+        if (this.stock[j].payload.val().product.title == pedido.payload.val().pedido.products[i].product.title) {
+            let quantity = this.stock[j].payload.val().quantity - pedido.payload.val().pedido.products[i].quantity;
             this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
         }
       }

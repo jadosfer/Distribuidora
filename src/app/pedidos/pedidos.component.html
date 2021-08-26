@@ -10,13 +10,34 @@
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar pedido por cliente...">
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
       </td>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="buscar pedido por fecha...">
+        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="buscar por fecha...">
+      </td>
+      <td><b>FACTURACIÓN DEL LISTADO:</b></td><td><b>&nbsp;${{getTotal()}}&nbsp;&nbsp;</b></td>
+      <td>
+        <form #f="ngForm" (ngSubmit)="search(range.value)">
+          <mat-form-field appearance="fill">
+            <mat-label>Ingrese un rango de fechas</mat-label>
+            <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="fecha inicio">
+              <input matEndDate formControlName="end" placeholder="fecha finalización">
+
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+
+            <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+            <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+          </mat-form-field>
+
+          <button mat-raised-button type="submit" color="primary" >buscar por rango</button>
+          <button mat-raised-button color="accent" (click)="clearRange()">borrar rango</button>
+        </form>
       </td>
     </tr></table>
   </div>
@@ -32,23 +53,23 @@
     </tr>
 
 
-      <tr *ngFor="let pedido of filteredPedidos; let i = index" >
+      <tr *ngFor="let ped of filteredPedidos; let i = index" >
 
-        <td *ngIf="pedido.payload.val().pedidoItemCount">{{i + 1}}&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().sellerName}}&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">${{this.pedidosService.getTotalCost(pedido)}}</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">{{pedido.payload.val().state}}&nbsp;&nbsp;</td>
-        <td *ngIf="pedido.payload.val().pedidoItemCount">
-          <button mat-raised-button color="primary" [disabled]="pedido.payload.val().state != 'pendiente'" (click)="aprove(pedido)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{i + 1}}&nbsp;&nbsp;</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().pedido.sellerName}}&nbsp;&nbsp;</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">${{this.pedidosService.getTotalCost(ped)}}</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().state}}&nbsp;&nbsp;</td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">
+          <button mat-raised-button color="primary" [disabled]="ped.payload.val().state != 'pendiente'" (click)="aprove(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
         </td>
         <td>
           &nbsp;&nbsp;
         </td>
 
 
-        <mat-accordion *ngIf="pedido.payload.val().pedidoItemCount">
+        <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">
           <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -61,14 +82,14 @@
               <th mat-sort-header="unitPrice;{{i}}">Importe/unidad</th>
               <th mat-sort-header="Price;{{i}}">Importe</th>
             </tr>
-            <tr *ngFor="let item of pedido.payload.val().items; let i = index">
-              <td>{{item.quantity}}&nbsp;&nbsp;</td>
-              <td>{{item.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td>${{item.price}}</td>
-              <td>${{item.price * item.quantity}}</td>
+            <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
+              <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
+              <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              <td *ngIf="item.quantity !=0">${{item.price}}</td>
+              <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
             </tr>
           </mat-expansion-panel>
-        </mat-accordion>
+        </mat-accordion>  <!---->
     </tr>
 
     <tr>
@@ -77,6 +98,7 @@
     </tr>
 
   </table>
+
 </div>
 
 

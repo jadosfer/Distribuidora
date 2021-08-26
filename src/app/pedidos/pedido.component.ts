@@ -91,14 +91,19 @@ export class PedidoComponent implements OnInit {
         this.category = params.get('category');
 
         this.filteredPedido = [];
+
         if (this.pedido) {
-          for (let i=0;i<this.pedido.length;i++) {
-            if (this.pedido[i].payload.val().product.category == this.category)  {
-              this.filteredPedido.push(this.pedido[i]);
+          for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
+            if (this.pedido[0].payload.val().products[i].product.category == this.category)  {
+              this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
             }
           }
-          if (this.filteredPedido.length == 0) this.filteredPedido = this.pedido;
+          if (this.filteredPedido.length == 0) {
+            for (let i=0;i<this.pedido[0].payload.val().products.length;i++)
+              this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
+          }
         }
+
       });
     });
     }
@@ -121,6 +126,14 @@ export class PedidoComponent implements OnInit {
         default: return 0;
       }
     });
+  }
+
+  getClientPrice(product: any) {
+    return this.pedidosService.getClientPrice(product, this.clientFantasyName);
+  }
+
+  getCategory() {
+    return this.pedidosService.getCategory(this.clientFantasyName);
   }
 
   getTitle(item: any) {
@@ -175,24 +188,22 @@ export class PedidoComponent implements OnInit {
   }
 
   sendPedido() {
-    // let pedido = this.pedidosService.getPedido();
-    // if (!pedido) {
-    //   this.pedidoEmpty = true;
-    //   return;
-    // }
-    // this.pedidoEmpty = false;
-    // if (this.clientFantasyName == "") {
-    //   this.client = false;
-    //   setTimeout(()=> {
-    //      this.client = true;
-    //     }, 500);
-    //   return;
-    // }
-    // pedido.payload.val().sellerName = this.appUser.name;
-    // this.sended = true;
-    // this.pedidosService.sendPedido(pedido, this.clientFantasyName);
-    // this.clientFantasyName = "";
-    // this.router.navigateByUrl('/pedidos/pedidos');
+    if (this.pedido[0].payload.val().pedidoItemsCount == 0) {
+      this.pedidoEmpty = true;
+      return;
+    }
+    this.pedidoEmpty = false;
+    if (this.clientFantasyName == "") {
+      this.client = false;
+      setTimeout(()=> {
+         this.client = true;
+        }, 500);
+      return;
+    }
+    this.sended = true;
+    this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
+    this.clientFantasyName = "";
+    this.router.navigateByUrl('/pedidos/pedidos');
   }
 
   reset() {

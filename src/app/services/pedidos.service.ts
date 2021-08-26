@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import 'rxjs/add/operator/take';
 import { AuthService } from './auth.service';
+import { ClientsService } from './clients.service';
 import { ProductService } from './product.service';
 
 
@@ -14,6 +15,7 @@ import { ProductService } from './product.service';
 })
 export class PedidosService {
 
+  clients: any;
   pedido: any;
   pedidos: any;
   pedidoId: any;
@@ -25,7 +27,7 @@ export class PedidosService {
   subscription2: Subscription;
   subscription3: Subscription;
 
-  constructor(private db: AngularFireDatabase, private productService: ProductService,
+  constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
@@ -42,13 +44,6 @@ export class PedidosService {
             p.payload.val().category == this.category) :
           this.products;
         }
-        this.subscription2 = this.getAll().subscribe(pedidos => {
-          this.pedidos = pedidos;
-          if (this.pedidos.length == 0) {
-            this.create();
-          }
-        });
-
       });
     });
     this.subscription3 = this.getPedido().subscribe(pedido => {
@@ -57,30 +52,39 @@ export class PedidosService {
         this.createPedido();
       }
     });
+
+    this.clientsService.getAll().subscribe(clients => {
+      this.clients = clients;
+    });
    }
 
   private create() {
     let time = new Date().getTime()
     let result = this.db.list('/pedidos').push({
       "creationDate": time,
-      "state": "pendiente"
+      "state": "pendiente",
     });
+    this.pedidoId = result.key;
     return result;
   }
 
   public createPedido() {
+    let products = []
     for (let i=0;i<this.products.length;i++) {
-      // this.db.list('/pedido').push({
-      //   product: this.products[i].payload.val(),
-      //   "quantity": 0
-      // });
-      this.db.object('/pedido/' + this.products[i].key).update({
-          product: this.products[i].payload.val(),
-          "quantity": 0
-        });
+      products.push({
+            "price": this.products[i].payload.val().price1,
+            "product": this.products[i].payload.val(),
+            "productId":this.products[i].key,
+            "quantity": 0
+          })
     }
-    // let result = this.db.list('/stock').snapshotChanges();
-    // return result;
+    let result = this.db.list('/pedido/').push({
+      "pedidoItemsCount": 0,
+      "sellerName": this.appUser.name,
+      "products": products
+    });
+    this.pedidoId = result.key;
+
   }
 
   updatePedido(key: any, pedido:any) {
@@ -106,66 +110,102 @@ export class PedidosService {
   }
 
 
-  // updateItemQuantity(pedido:any, product:any, change: number){
-  //   let myItems = [];
-  //   for (let i = 0;i < pedido.payload.val().items.length;i++) {
-  //     if (pedido.payload.val().items[i].productId == product.key)
-  //     {
-  //       let item = pedido.payload.val().items[i];
-  //       item.quantity += change;
-  //       myItems.push(item);
-  //     }
-  //     else myItems.push(pedido.payload.val().items[i]);
-  //   }
-
-  //   let myPedido = {
-  //     "clientFantasyName": pedido.payload.val().clientFantasyName,
-  //     "creationDate": pedido.payload.val().creationDate,
-  //     "items": myItems,
-  //     "pedidoItemCount": pedido.payload.val().pedidoItemCount,
-  //     "sellerName": pedido.payload.val().sellerName,
-  //     "state": pedido.payload.val().state
-  //   }
-  //   this.updatePedido(pedido.key, myPedido)
-  // }
-
   updatePedidoItemQuantity(pedido:any, product:any, change: number){
-    //product.payload.val().quantity += change;
-    let quantity = product.payload.val().quantity + change;
-    this.db.object('/pedido/' + product.key).update({
-      "product":product.payload.val().product,
-      "quantity": quantity
-    })
+
+      let pedidoItemsCount = pedido[0].payload.val().pedidoItemsCount + change;
+      let products = []
+      for (let i=0;i<this.products.length;i++) {
+        let plus = 0;
+        if (product.productId == pedido[0].payload.val().products[i].productId) plus = change;
+        products.push({
+              "price": pedido[0].payload.val().products[i].price,
+              "product": pedido[0].payload.val().products[i].product,
+              "productId": pedido[0].payload.val().products[i].productId,
+              "quantity": pedido[0].payload.val().products[i].quantity + plus,
+            })
+        plus = 0;
+      }
+
+      this.db.object('/pedido/' + pedido[0].key).update({
+        "pedidoItemsCount": pedidoItemsCount,
+        "sellerName": this.appUser.name,
+        "products": products
+      });
+
   }
-
-
 
   sendPedido(pedido: any, clientFantasyName: string) {
-    pedido.clientFantasyName = clientFantasyName;
-    pedido.sellerName = this.appUser.name;
-    this.updatePedido(this.pedidoId, pedido);
+
+    let prods = [];
+    let category = this.getCategory(clientFantasyName);
+
+    for (let i=0;i<pedido[0].payload.val().products.length;i++) {
+      prods.push(pedido[0].payload.val().products[i])
+      prods[i].price = this.getClientPrice(pedido[0].payload.val().products[0], clientFantasyName);
+    }
+
+    let time = new Date().getTime();
+    let result = this.db.list('/pedidos/').push({
+      "pedido": {
+        pedidoItemsCount: pedido[0].payload.val().pedidoItemsCount,
+        "products":prods,
+        "sellerName": pedido[0].payload.val().sellerName
+      },
+      "creationDate": time,
+      "state": "pendiente"
+    })
+
+    this.updatePedido(result.key, {
+      "clientFantasyName": clientFantasyName,
+    })
+    this.resetPedido()
   }
 
+  getCategory(clientFantasyName: any) {
+    let category = "";
+    if (this.clients) {
+      for (let i = 0;i < this.clients.length;i++) {
+        if (this.clients[i].payload.val().fantasyName == clientFantasyName) {
+          category = this.clients[i].payload.val().category;
+          return category
+        }
+      }
+    }
+    return category
+  }
 
-  getTotalCost(pedido: any) {
+  getClientPrice(product: any, clientFantasyName: any) {
+    let category = this.getCategory(clientFantasyName);
+    switch (category) {
+      case "":
+        return product.product.price1;
+         break;
+      case "Distribuidor":
+        return product.product.price1;
+        break;
+      case "Comercio":
+        return product.product.price2;
+        break;
+      case "Gimnasio":
+        return product.product.price3;
+        break;
+      // default:
+      //   return product.product.price1;
+    }
+    return 0
+  }
+
+  getTotalCost(ped: any) {
     let totalCost = 0;
-    if (pedido.payload.val().items) {
-      for (let i = 0;i < pedido.payload.val().items.length;i++) {
-        totalCost += pedido.payload.val().items[i].price * pedido.payload.val().items[i].quantity
+    if (ped.payload.val().pedido.products) {
+      for (let i = 0;i < ped.payload.val().pedido.products.length;i++) {
+        totalCost += ped.payload.val().pedido.products[i].price * ped.payload.val().pedido.products[i].quantity
       }
     }
     return totalCost;
   }
 
   aprove(pedido:any) {
-    let myPedido = {
-      "clientFantasyName": pedido.payload.val().clientFantasyName,
-      "creationDate": pedido.payload.val().creationDate,
-      "items": pedido.payload.val().items,
-      "pedidoItemCount": pedido.payload.val().pedidoItemCount,
-      "sellerName": pedido.payload.val().sellerName,
-      "state": "aprobado"
-    }
-    this.updatePedido(pedido.key, myPedido)
+    this.updatePedido(pedido.key, {"state": "aprobado"})
   }
 }

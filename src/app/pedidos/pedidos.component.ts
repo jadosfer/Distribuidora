@@ -8,6 +8,10 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
+import { FormControl, FormGroup } from '@angular/forms';
+
+import { DateAdapter } from '@angular/material/core';
+
 
 @Component({
   selector: 'pedidos',
@@ -15,6 +19,11 @@ import { DatePipe } from '@angular/common'
   styleUrls: ['./pedidos.component.scss']
 })
 export class PedidosComponent implements OnInit {
+
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl()
+  });
 
   appUser: AppUser;
 
@@ -38,7 +47,8 @@ export class PedidosComponent implements OnInit {
   private productService: ProductService,
   private route: ActivatedRoute,
   private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService) {
+  public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
+    this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
   ngOnInit(){
@@ -65,7 +75,6 @@ export class PedidosComponent implements OnInit {
   }
 
   filterByDate(query: string) {
-    console.log("this.userPedidos: ", this.userPedidos);
     this.filteredPedidos = (query) ?
     this.userPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
     this.userPedidos;
@@ -111,8 +120,8 @@ export class PedidosComponent implements OnInit {
 
   getTotal() {
     let total = 0;
-    if (this.pedidos) {
-      this.pedidos.forEach(pedido => {
+    if (this.filteredPedidos) {
+      this.filteredPedidos.forEach(pedido => {
         total += this.pedidosService.getTotalCost(pedido);
       });
     }
@@ -127,5 +136,23 @@ export class PedidosComponent implements OnInit {
     this.stockService.aprove(pedido);
     this.pedidosService.aprove(pedido);
 
+  }
+
+  search(range: any) {
+    console.log(range.start)
+    console.log(range.end)
+    if (range.start) {
+      this.filteredPedidos = (range) ?
+      this.userPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
+      this.userPedidos;
+    }
+
+  }
+  clearRange() {
+    this.range.setValue({
+      start: null,
+      end: null
+    });
+    this.filteredPedidos = this.userPedidos;
   }
 }
