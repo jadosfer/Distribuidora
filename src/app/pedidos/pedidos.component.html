@@ -11,17 +11,17 @@
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente...">
+        <input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente...">
       </td>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha...">
+        <input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha...">
       </td>
-      <td><b>FACTURACIÓN DEL LISTADO:</b></td><td><b>&nbsp;${{getTotal()}}&nbsp;&nbsp;</b></td>
+  <!--  <td><b>FACTURACIÓN DEL LISTADO:</b></td><td><b>&nbsp;${{getTotal()}}&nbsp;&nbsp;</b></td> -->
       <td>
-        <form #f="ngForm" (ngSubmit)="search(range.value)">
+        <form #f="ngForm" (ngSubmit)="searchDateRange(range.value)">
           <mat-form-field appearance="fill">
             <mat-label>Ingrese un rango de fechas</mat-label>
             <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -37,7 +37,7 @@
           </mat-form-field>
 
           <button mat-raised-button type="submit" color="primary" >buscar por rango</button>
-          <button mat-raised-button color="accent" (click)="clearRange()">borrar rango</button>
+          <button #query mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
         </form>
       </td>
     </tr></table>

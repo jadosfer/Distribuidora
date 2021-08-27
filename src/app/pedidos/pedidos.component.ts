@@ -34,8 +34,12 @@ export class PedidosComponent implements OnInit {
   subscription: Subscription;
   filteredProduct:any[];
   filteredPedidos:any[];
+  dateRangefilteredPedidos:any[];
+  datefilteredPedidos:any[];
   products:any[];
   date: any;
+  dateValue: string;
+  clientValue: string;
 
   title: string;
   quantity: number;
@@ -65,22 +69,35 @@ export class PedidosComponent implements OnInit {
         if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) {
           this.userPedidos.push(this.pedidos[i]);
         }
-        this.filteredPedidos = this.userPedidos;
+        this.dateRangefilteredPedidos = this.datefilteredPedidos = this.filteredPedidos = this.userPedidos;
         }
       });
     });
   }
 
   filter(query: string) {
-    this.filteredPedidos = (query) ?
-    this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-    this.userPedidos;
+    // this.filteredPedidos = (query) ?
+    // this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+    // this.userPedidos;
+    if (query != "") {
+      this.filteredPedidos = (query) ?
+      this.filteredPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+      this.filteredPedidos;
+    }
+    else this.filteredPedidos = this.userPedidos;
+    console.log("else filter", this.filteredPedidos);
   }
 
   filterByDate(query: string) {
-    this.filteredPedidos = (query) ?
-    this.userPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-    this.userPedidos;
+    // this.filteredPedidos = (query) ?
+    // this.userPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+    // this.userPedidos;
+    if (query != "") {
+      this.filteredPedidos = (query) ?
+      this.filteredPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+      this.filteredPedidos;
+    }
+    else this.filteredPedidos = this.userPedidos;
   }
 
   sortData(sort: Sort) {
@@ -150,14 +167,20 @@ export class PedidosComponent implements OnInit {
     }
   }
 
-  search(range: any) {
-    console.log(range.start)
-    console.log(range.end)
+  searchDateRange(range: any) {
+    // if (range.start) {
+    //   this.filteredPedidos = (range) ?
+    //   this.userPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
+    //   this.userPedidos;
+    // }
     if (range.start) {
       this.filteredPedidos = (range) ?
-      this.userPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
-      this.userPedidos;
+      this.filteredPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
+      this.filteredPedidos;
+      console.log("range", this.filteredPedidos);
     }
+    else this.filteredPedidos = this.userPedidos;
+    console.log("else range", this.filteredPedidos);
 
   }
   clearRange() {
@@ -165,6 +188,8 @@ export class PedidosComponent implements OnInit {
       start: null,
       end: null
     });
+    this.clientValue = "";
+    this.dateValue = "";
     this.filteredPedidos = this.userPedidos;
   }
 
