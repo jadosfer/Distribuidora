@@ -56,6 +56,9 @@ export class PedidosService {
     this.clientsService.getAll().subscribe(clients => {
       this.clients = clients;
     });
+    this.getAll().subscribe(pedidos => {
+      this.pedidos = pedidos;
+    });
    }
 
   private create() {
@@ -160,6 +163,12 @@ export class PedidosService {
     this.updatePedido(result.key, {
       "clientFantasyName": clientFantasyName,
     })
+    if (!this.isClientInDebt(clientFantasyName)) {
+      this.updatePedido(result.key, {
+        "aproved": "SI"
+      });
+    }
+
     this.resetPedido()
   }
 
@@ -213,5 +222,21 @@ export class PedidosService {
 
   getPaid(pedido:any) {
     this.updatePedido(pedido.key, {"paid": "SI"})
+  }
+
+  isPedidoInDebt(pedido: any) {
+    let today = new Date();
+    if((Date.parse(today.toString()) - pedido.payload.val().creationDate > 30*24*60*60*1000) && pedido.payload.val().paid == "NO" ) { //que pasen 30 dias
+      return true;
+    }
+    return false;
+  }
+
+  isClientInDebt(clientFantasyName: string) {
+    for (let i=0;i<this.pedidos.length;i++) {
+      if (this.pedidos[i].payload.val().clientFantasyName == clientFantasyName &&
+      this.isPedidoInDebt(this.pedidos[i])) return true;
+    }
+    return false;
   }
 }

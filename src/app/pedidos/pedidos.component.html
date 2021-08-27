@@ -54,6 +54,8 @@
       <th mat-sort-header="aproved">¿Pedido aprobado?</th>
       <th mat-sort-header="paid">¿Pedido ya pagado?</th>
       <th mat-sort-header="inDebt">¿En mora?</th>
+      <th mat-sort-header=""></th>
+
     </tr>
 
 
@@ -64,31 +66,30 @@
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">${{this.pedidosService.getTotalCost(ped)}}</td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().aproved}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().aproved != 'NO'" (click)="aprove(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().paid}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().paid != 'NO'" (click)="getPaid(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">cobrar</button></td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span *ngIf="isInDebt(ped)">SI</span><span *ngIf="!isInDebt(ped)">NO</span></td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span *ngIf="isPedidoInDebt(ped)">SI</span><span *ngIf="!isPedidoInDebt(ped)">NO</span></td>
 
-
-
-        <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">
-          <mat-expansion-panel hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Detalle
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <tr>
-              <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
-              <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad</th>
-              <th mat-sort-header="Price;{{i}}">Importe</th>
-            </tr>
-            <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
-              <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
-              <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td *ngIf="item.quantity !=0">${{item.price}}</td>
-              <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
-            </tr>
-          </mat-expansion-panel>
-        </mat-accordion>  <!---->
+          <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">
+            <mat-expansion-panel hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Detalle
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <tr>
+                <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
+                <th mat-sort-header="prodTitle;{{i}}">Producto</th>
+                <th mat-sort-header="unitPrice;{{i}}">Importe/unidad</th>
+                <th mat-sort-header="Price;{{i}}">Importe</th>
+              </tr>
+              <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
+                <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
+                <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td *ngIf="item.quantity !=0">${{item.price}}</td>
+                <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
+              </tr>
+            </mat-expansion-panel>
+          </mat-accordion>  <!---->
+          <td><button (click)="exportAsPDF(ped)" style="display:inline" mat-raised-button color="primary" >PDF</button></td>
     </tr>
 
     <tr>

@@ -193,6 +193,7 @@ export class PedidoComponent implements OnInit {
         }, 500);
       return;
     }
+
     if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
       this.sended = true;
       this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
@@ -206,5 +207,4 @@ export class PedidoComponent implements OnInit {
       this.pedidosService.resetPedido();
     }
   }
-
 }

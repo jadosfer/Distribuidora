@@ -9,8 +9,10 @@ import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
-
 import { DateAdapter } from '@angular/material/core';
+import { jsPDF } from "jspdf";
+//import * as jspdf from 'jspdf';
+import html2canvas from 'html2canvas';
 
 
 @Component({
@@ -193,11 +195,36 @@ export class PedidosComponent implements OnInit {
     this.filteredPedidos = this.userPedidos;
   }
 
-  isInDebt(pedido: any) {
-    let today = new Date();
-    if((Date.parse(today.toString()) - pedido.payload.val().creationDate > 30*24*60*60*1000) && pedido.payload.val().paid == "NO" ) { //que pasen 30 dias
-      return true;
+  isPedidoInDebt(pedido: any) {
+    return this.pedidosService.isPedidoInDebt(pedido);
+  }
+
+  exportAsPDF(pedido: any)  {
+
+    var doc = new jsPDF();
+    doc.text('Cantidad', 10, 20);
+    doc.text('Producto', 40, 20);
+    doc.text('Importe/uni', 140, 20);
+    doc.text('Importe', 180, 20);
+
+    let cont = 0;
+    for (let i=0;i<pedido.payload.val().pedido.products.length;i++) {
+      if (pedido.payload.val().pedido.products[i].quantity != 0) {
+        let total = pedido.payload.val().pedido.products[i].price * pedido.payload.val().pedido.products[i].quantity
+        doc.text(pedido.payload.val().pedido.products[i].quantity.toString(), 10, 30 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].product.title, 40, 30 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].price.toString(), 140, 30 + 10*cont);
+        doc.text(total.toString(), 180, 30 + 10*cont);
+        cont +=1;
+      }
     }
-    return false;
+      let footerVertPos = 30 + 10 * cont + 10;
+      doc.text("TOTAL:    " + this.pedidosService.getTotalCost(pedido).toString(), 10, footerVertPos);
+
+
+    // Save the PDF
+    doc.save('pedido.pdf');
+
+
   }
 }
