@@ -27,17 +27,19 @@ export class SellersFormComponent implements OnInit {
    }
 
   save(seller: any) {
-    if (this.id) {
-      this.sellersService.update(this.id, seller);
+    if (confirm('Está segur@ que quiere guardar/crear este vendedor?')) {
+      if (this.id) {
+        this.sellersService.update(this.id, seller);
+      }
+      else {
+        this.sellersService.create(seller);
+      }
+      this.router.navigate(['/admin/sellers']);
     }
-    else {
-      this.sellersService.create(seller);
-    }
-    this.router.navigate(['/admin/sellers']);
   }
 
   delete() {
-    if (confirm('Are you sure you want to delete this seller?')) {
+    if (confirm('Está segur@ que quiere borrar este vendedor? No podrá recuperarlo')) {
       this.sellersService.delete(this.id);
       this.router.navigate(['/admin/sellers']);
     }

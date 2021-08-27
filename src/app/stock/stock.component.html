@@ -1,6 +1,11 @@
 <div class="SCContainer" *ngIf="appUser">
   <div>
     <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
+    <div>&nbsp;</div>
+    <tr *ngFor="let p of alertProducts">
+      <b>Comprar: {{p.payload.val().product.title}},&nbsp;</b>
+      <b>quedan {{p.payload.val().quantity}} unidades</b>
+    </tr>
   </div>
   <div>&nbsp;</div>
   <div>

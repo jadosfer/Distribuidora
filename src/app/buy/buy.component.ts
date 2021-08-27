@@ -81,11 +81,15 @@ export class BuyComponent implements OnInit {
     }
 
     sendBuy() {
-      this.stockService.sendBuy(this.buy);
+      if (confirm('Está segur@ que quiere cargar la compra? No podrá modificarla')) {
+        this.stockService.sendBuy(this.buy);
+      }
     }
 
     reset() {
+      if (confirm('Está segur@ que quiere anular la compra? aun no fue cargada')) {
       this.stockService.reset();
+      }
     }
 
     getQuantityOfP(pBuy: any) {

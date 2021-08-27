@@ -1,6 +1,7 @@
 <div class="SCContainer" *ngIf="appUser">
   <div>
     <a mat-raised-button color="accent" routerLink="/pedidos/pedido">Nuevo Pedido</a>
+    <span *ngIf="aproveFirst">&nbsp;&nbsp;&nbsp;&nbsp;-------------------------Debe aprobar el pedido antes de darlo por pagado-----------------------------</span>
   </div>
 
   <div>
@@ -10,13 +11,13 @@
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente...">
       </td>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="buscar por fecha...">
+        <input matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha...">
       </td>
       <td><b>FACTURACIÓN DEL LISTADO:</b></td><td><b>&nbsp;${{getTotal()}}&nbsp;&nbsp;</b></td>
       <td>
@@ -42,31 +43,29 @@
     </tr></table>
   </div>
 
+
+
   <table matSort (matSortChange)="sortData($event)">
     <tr>
-      <th mat-sort-header="nroPedido">Nro. Pedido</th>
       <th mat-sort-header="cliente">Cliente</th>
       <th mat-sort-header="vendedor">Vendedor</th>
       <th mat-sort-header="date">Fecha</th>
       <th mat-sort-header="import">Importe</th>
-      <th mat-sort-header="state">Estado</th>
+      <th mat-sort-header="aproved">¿Pedido aprobado?</th>
+      <th mat-sort-header="paid">¿Pedido ya pagado?</th>
+      <th mat-sort-header="inDebt">¿En mora?</th>
     </tr>
 
 
       <tr *ngFor="let ped of filteredPedidos; let i = index" >
-
-        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{i + 1}}&nbsp;&nbsp;</td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().pedido.sellerName}}&nbsp;&nbsp;</td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">${{this.pedidosService.getTotalCost(ped)}}</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().state}}&nbsp;&nbsp;</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">
-          <button mat-raised-button color="primary" [disabled]="ped.payload.val().state != 'pendiente'" (click)="aprove(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button>
-        </td>
-        <td>
-          &nbsp;&nbsp;
-        </td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().aproved}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().aproved != 'NO'" (click)="aprove(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">{{ped.payload.val().paid}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().paid != 'NO'" (click)="getPaid(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">cobrar</button></td>
+        <td *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span *ngIf="isInDebt(ped)">SI</span><span *ngIf="!isInDebt(ped)">NO</span></td>
+
 
 
         <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemCount !=0">

@@ -163,28 +163,21 @@ export class PedidoComponent implements OnInit {
     this.pedidosService.updatePedidoItemQuantity(pedido, product, change);
   }
 
-  getTotalItems() {
-    // let pedido = this.pedidosService.getPedido();
-    // if (pedido) return pedido.pedidoItemCount;
-    // return 0;
-  }
-
   getTotal() {
-    // let pedido = this.pedidosService.getPedido();
-    // if (!pedido) return 0;
-    // let total = 0;
-    // for (let i=0;i<pedido.items.length;i++) {
-    //   total += pedido.items[i].quantity * pedido.items[i].price;
-    // }
-    // return total;
+    if (!this.pedido) return 0;
+    let total = 0;
+    for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
+      let price =  this.pedidosService.getClientPrice( this.pedido[0].payload.val().products[i], this.clientFantasyName);
+      total += this.pedido[0].payload.val().products[i].quantity * price;
+    }
+    return total;
   }
 
   getTotalUnits() {
-    // let pedido = this.pedidosService.getPedido();
-    // if (pedido) {
-    //   return pedido.payload.val().pedidoItemCount;
-    // }
-    // else return 0;
+    if (this.pedido) {
+      return this.pedido[0].payload.val().pedidoItemsCount;
+    }
+    else return 0;
   }
 
   sendPedido() {
@@ -200,14 +193,18 @@ export class PedidoComponent implements OnInit {
         }, 500);
       return;
     }
-    this.sended = true;
-    this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
-    this.clientFantasyName = "";
-    this.router.navigateByUrl('/pedidos/pedidos');
+    if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
+      this.sended = true;
+      this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
+      this.clientFantasyName = "";
+      this.router.navigateByUrl('/pedidos/pedidos');
+    }
   }
 
   reset() {
-    this.pedidosService.resetPedido();
+    if (confirm('Está segur@ que quiere anular el pedido que no ha enviado?')) {
+      this.pedidosService.resetPedido();
+    }
   }
 
 }

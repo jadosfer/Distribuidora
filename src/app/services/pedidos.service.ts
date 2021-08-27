@@ -62,7 +62,8 @@ export class PedidosService {
     let time = new Date().getTime()
     let result = this.db.list('/pedidos').push({
       "creationDate": time,
-      "state": "pendiente",
+      "aproved": "NO",
+      "paid": "NO"
     });
     this.pedidoId = result.key;
     return result;
@@ -152,7 +153,8 @@ export class PedidosService {
         "sellerName": pedido[0].payload.val().sellerName
       },
       "creationDate": time,
-      "state": "pendiente"
+      "aproved": "NO",
+      "paid": "NO"
     })
 
     this.updatePedido(result.key, {
@@ -206,6 +208,10 @@ export class PedidosService {
   }
 
   aprove(pedido:any) {
-    this.updatePedido(pedido.key, {"state": "aprobado"})
+    this.updatePedido(pedido.key, {"aproved": "SI"})
+  }
+
+  getPaid(pedido:any) {
+    this.updatePedido(pedido.key, {"paid": "SI"})
   }
 }

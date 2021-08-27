@@ -40,8 +40,11 @@ export class PedidosComponent implements OnInit {
   title: string;
   quantity: number;
   sortedData: any[];
-  states: string[] = ["pendiente", "aprobado"];
-  selected: string = "pendiente";
+  aproved: string[] = ["NO", "SI"];
+  paid: string[] = ["NO", "SI"];
+  selected: string = "NO";
+
+  aproveFirst:boolean = false;
 
   constructor(public pedidosService: PedidosService,
   private productService: ProductService,
@@ -95,7 +98,7 @@ export class PedidosComponent implements OnInit {
         case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
         case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
         case 'import': return this.compare(this.pedidosService.getTotalCost(a), this.pedidosService.getTotalCost(b), isAsc);
-        case 'state': return this.compare(a.payload.val().state, b.payload.val().state, isAsc);
+        case 'aproved': return this.compare(a.payload.val().aproved, b.payload.val().aproved, isAsc);
 
 
         default: return 0;
@@ -112,12 +115,6 @@ export class PedidosComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  // getTotalItems() {
-  //   let pedido = this.pedidosService.getPedido();
-  //   if (pedido) return pedido.pedidoItemCount;
-  //   return 0;
-  // }
-
   getTotal() {
     let total = 0;
     if (this.filteredPedidos) {
@@ -133,9 +130,24 @@ export class PedidosComponent implements OnInit {
   }
 
   aprove(pedido: any) {
-    this.stockService.aprove(pedido);
-    this.pedidosService.aprove(pedido);
+    if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
+      this.stockService.aprove(pedido);
+      this.pedidosService.aprove(pedido);
+    }
+  }
 
+  getPaid(pedido: any) {
+    if (pedido.payload.val().aproved == "SI") {
+      if (confirm('Está segur@ que quiere dar por pagado el pedido?')) {
+        this.pedidosService.getPaid(pedido);
+      }
+    }
+    else {
+      this.aproveFirst = true;
+      setTimeout(()=> {
+        this.aproveFirst = false;
+       }, 2500);
+    }
   }
 
   search(range: any) {
@@ -154,5 +166,13 @@ export class PedidosComponent implements OnInit {
       end: null
     });
     this.filteredPedidos = this.userPedidos;
+  }
+
+  isInDebt(pedido: any) {
+    let today = new Date();
+    if((Date.parse(today.toString()) - pedido.payload.val().creationDate > 30*24*60*60*1000) && pedido.payload.val().paid == "NO" ) { //que pasen 30 dias
+      return true;
+    }
+    return false;
   }
 }

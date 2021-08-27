@@ -34,17 +34,19 @@ export class ClientsFormComponent implements OnInit {
    }
 
   save(client: any) {
-    if (this.id) {
-      this.clientsService.update(this.id, client);
+    if (confirm('Está segur@ que quiere guardar/crear este cliente?')) {
+      if (this.id) {
+        this.clientsService.update(this.id, client);
+      }
+      else {
+        this.clientsService.create(client);
+      }
+      this.router.navigate(['/admin/clients']);
     }
-    else {
-      this.clientsService.create(client);
-    }
-    this.router.navigate(['/admin/clients']);
   }
 
   delete() {
-    if (confirm('Are you sure you want to delete this client?')) {
+    if (confirm('Está segur@ que quiere borrar este cliente? No podrá recuperarlo')) {
       this.clientsService.delete(this.id);
       this.router.navigate(['/admin/clients']);
     }

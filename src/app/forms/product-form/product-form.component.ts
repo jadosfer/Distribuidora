@@ -29,17 +29,19 @@ export class ProductFormComponent implements OnInit {
    }
 
   save(product: any) {
-    if (this.id) {
-      this.productService.update(this.id, product);
+    if (confirm('Está segur@ que quiere guardar/crear este producto?')) {
+      if (this.id) {
+        this.productService.update(this.id, product);
+      }
+      else {
+        this.productService.create(product);
+      }
+      this.router.navigate(['/admin/products']);
     }
-    else {
-      this.productService.create(product);
-    }
-    this.router.navigate(['/admin/products']);
   }
 
   delete() {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm('Está segur@ que quiere borrar este producto? No podrá recuperarlo')) {
       this.productService.delete(this.id);
       this.router.navigate(['/admin/products']);
     }

@@ -18,6 +18,7 @@ export class StockComponent implements OnInit {
   appUser: AppUser;
   stock: any;
   sortedData: any[];
+  alertProducts: any[];
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -28,11 +29,20 @@ export class StockComponent implements OnInit {
   ngOnInit(){
     this.stockService.getAll().subscribe(stock => {
       this.stock = stock;
+      let alertProducts = []
+      for (let i=0;i<this.stock.length;i++) {
+        console.log(this.stock[i].payload.val().quantity);
+        if (this.stock[i].payload.val().quantity < 5) {
+          alertProducts.push(this.stock[i]);
+        }
+      }
+      this.alertProducts = alertProducts;
      });
 
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
     });
+
   }
 
   sortData(sort: Sort) {
