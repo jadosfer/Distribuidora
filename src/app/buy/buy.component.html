@@ -21,11 +21,11 @@
             </tr>
 
             <tr *ngFor="let p of filteredBuy">
-              <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td>{{p.payload.val().quantity}}</td>
+              <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+              <td>{{p.quantity}}</td>
               <td>{{getQuantityOfP(p)}}</td>
-              <button class="left-btn" (click)="updateBuyItemQuantity(p, -1)" mat-raised-button color="basic">-</button>
-              <button class="left-btn" (click)="updateBuyItemQuantity(p, 1)" mat-raised-button color="basic">+</button>
+              <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
+              <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>
             </tr>
           </table>
           <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>

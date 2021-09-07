@@ -21,8 +21,10 @@ export class BuyComponent implements OnInit {
   filteredBuy:any;
   products:any;
   products$:any;
-  category: string | null;
+  prodCategory: string | null;
   sortedData: any[];
+
+  buyEmpty: boolean = false;
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -38,24 +40,27 @@ export class BuyComponent implements OnInit {
       });
       this.buy = buy;
       this.route.queryParamMap.subscribe(params => {
-        this.category = params.get('category');
+        this.prodCategory = params.get('prodCategory');
 
         this.filteredBuy = [];
         if (this.buy) {
-          for (let i=0;i<this.buy.length;i++) {
-            if (this.buy[i].payload.val().product.category == this.category)  {
-              this.filteredBuy.push(this.buy[i]);
+          for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+            if (this.buy[0].payload.val().products[i].product.prodCategory == this.prodCategory)  {
+              this.filteredBuy.push(this.buy[0].payload.val().products[i]);
             }
           }
-          if (this.filteredBuy.length == 0) this.filteredBuy = this.buy;
+          if (this.filteredBuy.length == 0) {
+            for (let i=0;i<this.buy[0].payload.val().products.length;i++)
+              this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+          }
         }
       });
     });
     }
 
-    updateBuyItemQuantity(p: any, change: number){
+    updateBuyItemQuantity(buy: any, product: any, change: number){
       //this.sended = false;
-      this.stockService.updateBuyItemQuantity(p, change);
+      this.stockService.updateBuyItemQuantity(buy, product, change);
     }
 
     sortData(sort: Sort) {
@@ -81,6 +86,10 @@ export class BuyComponent implements OnInit {
     }
 
     sendBuy() {
+      if (this.buy[0].payload.val().buyItemsCount == 0) {
+        this.buyEmpty = true;
+        return;
+      }
       if (confirm('Está segur@ que quiere cargar la compra? No podrá modificarla')) {
         this.stockService.sendBuy(this.buy);
       }
@@ -95,18 +104,5 @@ export class BuyComponent implements OnInit {
     getQuantityOfP(pBuy: any) {
       return this.stockService.getQuantityOfP(pBuy);
     }
-
-
-
-
-
-  // filter(query: string) {
-  //   this.filteredPedidos = (query) ?
-  //   this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-  //   this.userPedidos;
-  // }
-  // getOrCreateStock() {
-  //   return this.stockService.getOrCreateStock()
-  // }
 
 }

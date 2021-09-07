@@ -15,7 +15,7 @@ import {Sort} from '@angular/material/sort';
 })
 export class AdminProductsComponent implements OnInit, OnDestroy {
 
-  displayedColumns: string[] = ['title', 'price1','price2','price3', 'category', 'edit'];
+  displayedColumns: string[] = ['title', 'buyPrice', 'price1','price2','price3', 'prodCategory', 'edit'];
   dataSource: any;
   products:any[];
   sortedData:any[];
@@ -54,10 +54,11 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case 'title': return compare(a.payload.val().title, b.payload.val().title, isAsc);
+        case 'buyPrice': return compare(a.payload.val().buyPrice, b.payload.val().buyPrice, isAsc);
         case 'price1': return compare(a.payload.val().price1, b.payload.val().price1, isAsc);
         case 'price2': return compare(a.payload.val().price2, b.payload.val().price2, isAsc);
         case 'price3': return compare(a.payload.val().price3, b.payload.val().price3, isAsc);
-        case 'category': return compare(a.payload.val().category, b.payload.val().category, isAsc);
+        case 'prodCategory': return compare(a.payload.val().prodCategory, b.payload.val().prodCategory, isAsc);
         default: return 0;
       }
     });

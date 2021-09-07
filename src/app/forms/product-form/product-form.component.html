@@ -15,26 +15,34 @@
       <p>
         <mat-form-field appearance="legacy">
           <mat-label>$</mat-label>
+          <input #buyPrice="ngModel" matInput [(ngModel)]="product.buyPrice" name="buyPrice" placeholder="" required [min]="0">
+          <div class="alert alert-danger" *ngIf="buyPrice.touched && buyPrice.invalid">
+            <div *ngIf="buyPrice.errors?.required">Price is required</div>
+            <div *ngIf="buyPrice.errors?.min">Price should be 0 or higher</div>
+          </div>
+          <mat-hint>Precio de Compra</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>$</mat-label>
           <input #price1="ngModel" matInput [(ngModel)]="product.price1" name="price1" placeholder="" required [min]="0">
           <div class="alert alert-danger" *ngIf="price1.touched && price1.invalid">
             <div *ngIf="price1.errors?.required">Price is required</div>
             <div *ngIf="price1.errors?.min">Price should be 0 or higher</div>
-
-
           </div>
           <mat-hint>Precio Distribuidor</mat-hint>
         </mat-form-field>
+
         <mat-form-field appearance="legacy">
           <mat-label>$</mat-label>
           <input #price2="ngModel" matInput [(ngModel)]="product.price2" name="price2" placeholder="" required [min]="0">
           <div class="alert alert-danger" *ngIf="price2.touched && price2.invalid">
             <div *ngIf="price2.errors?.required">Price is required</div>
             <div *ngIf="price2.errors?.min">Price should be 0 or higher</div>
-
-
           </div>
           <mat-hint>Precio Comercio</mat-hint>
         </mat-form-field>
+
         <mat-form-field appearance="legacy">
           <mat-label>$</mat-label>
           <input #price3="ngModel" matInput [(ngModel)]="product.price3" name="price3" placeholder="" required [min]="0">
@@ -51,12 +59,12 @@
 
         <mat-form-field appearance="fill">
           <mat-label>Categories</mat-label>
-          <mat-select #category="ngModel" [(ngModel)]="product.category" name="category" required>
-            <mat-option *ngFor="let c of categories$ | async" [value]="c.name">
+          <mat-select #prodCategory="ngModel" [(ngModel)]="product.prodCategory" name="prodCategory" required>
+            <mat-option *ngFor="let c of prodCategories$ | async" [value]="c.name">
               {{c.name}}
             </mat-option>
           </mat-select>
-          <div class="alert alert-danger" *ngIf="category.touched && category.invalid">Category is required</div>
+          <div class="alert alert-danger" *ngIf="prodCategory.touched && prodCategory.invalid">Category is required</div>
         </mat-form-field>
 
       <p>
@@ -80,7 +88,7 @@
       <mat-card-title>{{product.title}}</mat-card-title>
       <mat-card-subtitle><b>{{product.price | currency:'$AR ':true}}</b></mat-card-subtitle>
       <mat-card-content>
-        <p><b>{{product.category}}</b></p>
+        <p><b>{{product.prodCategory}}</b></p>
       </mat-card-content>
     </mat-card-footer>
 

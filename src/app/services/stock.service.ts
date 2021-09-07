@@ -15,9 +15,10 @@ export class StockService {
   appUser: AppUser;
   stock: any;
   buy: any;
+  buyId:any;
   filteredProducts:any;
   products:any;
-  category: string | null;
+  prodCategory: string | null;
   subscription: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
@@ -33,14 +34,14 @@ export class StockService {
       this.subscription = this.productService.getAll().subscribe(products => {
         this.filteredProducts = this.products = products;
         this.route.queryParamMap.subscribe(params => {
-          this.category = params.get('category');
+          this.prodCategory = params.get('prodCategory');
           if (this.products) {
-            this.filteredProducts = (this.category) ?
-            this.products.filter((p: { payload: { val: () => { (): any; new(): any; category: string | null; }; }; }) =>
-              p.payload.val().category == this.category) :
+            this.filteredProducts = (this.prodCategory) ?
+            this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodCategory: string | null; }; }; }) =>
+              p.payload.val().prodCategory == this.prodCategory) :
             this.products;
           }
-          this.subscription2 = this.getAll().subscribe(stock => {
+          this.subscription2 = this.getStock().subscribe(stock => {
             this.stock = stock;
             if (this.stock.length == 0) {
               this.create();
@@ -70,17 +71,23 @@ export class StockService {
   }
 
   public createBuy() {
+    let products = []
     for (let i=0;i<this.products.length;i++) {
-      this.db.list('/buy').push({
-        product: this.products[i].payload.val(),
+      products.push({
+        "price": this.products[i].payload.val().buyPrice,
+        "product": this.products[i].payload.val(),
+        "productId":this.products[i].key,
         "quantity": 0
       });
     }
-    let result = this.db.list('/stock').snapshotChanges();
-    return result;
+    let result = this.db.list('/buy/').push({
+      "buyItemsCount": 0,
+      "products": products
+    });
+    this.buyId = result.key;
   }
 
-  public getAll() {
+  public getStock() {
     let result = this.db.list('/stock').snapshotChanges();
     return result;
   }
@@ -88,6 +95,10 @@ export class StockService {
   public getBuy() {
     let result = this.db.list('/buy').snapshotChanges();
     return result;
+  }
+
+  public getBuys() {
+    return this.db.list('/buys').snapshotChanges();
   }
 
   updateItemQuantity(p:any, quantity: number, stockKey: number){
@@ -98,24 +109,59 @@ export class StockService {
     })
   }
 
-  updateBuyItemQuantity(p:any, change: number){
-    p.payload.val().quantity += change;
-    let quantity = p.payload.val().quantity + change;
-    this.db.object('/buy/' + p.key).update({
-      product: p.payload.val().product,
-      "quantity": quantity
-    })
+  updateBuyItemQuantity(buy:any, product:any, change: number){
+
+    let buyItemsCount = buy[0].payload.val().buyItemsCount + change;
+      let products = []
+      for (let i=0;i<this.products.length;i++) {
+        let plus = 0;
+        if (product.productId == buy[0].payload.val().products[i].productId) plus = change;
+        products.push({
+              "price": buy[0].payload.val().products[i].price,
+              "product": buy[0].payload.val().products[i].product,
+              "productId": buy[0].payload.val().products[i].productId,
+              "quantity": buy[0].payload.val().products[i].quantity + plus,
+            })
+        plus = 0;
+      }
+
+      this.db.object('/buy/' + buy[0].key).update({
+        "buyItemsCount": buyItemsCount,
+        "products": products
+      });
+
+
+
   }
 
   sendBuy(buy: any) {
-    for (let i=0;i<this.buy.length;i++) {
-      let quantity = this.stock[i].payload.val().quantity + this.buy[i].payload.val().quantity;
+
+    for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+      let quantity = this.stock[i].payload.val().quantity + this.buy[0].payload.val().products[i].quantity;
       this.db.object('/stock/' + this.stock[i].key).update({
         product: this.stock[i].payload.val().product,
         "quantity": quantity
       });
     }
+
+    let prods = [];
+
+    for (let i=0;i<buy[0].payload.val().products.length;i++) {
+      prods.push(buy[0].payload.val().products[i])
+      //prods[i].price = this.gentechProductPrice(prods[i]);
+    }
+
+    let time = new Date().getTime();
+    let result = this.db.list('/buys/').push({
+      "buyItemsCount": buy[0].payload.val().buyItemsCount,
+      "buy": prods,
+      "creationDate": time
+    });
     this.db.object('/buy/').remove();
+  }
+
+  gentechProductPrice(prod:any) {
+
   }
 
   sendPedido(pedido: any) {
@@ -134,9 +180,11 @@ export class StockService {
   }
 
   getQuantityOfP(pBuy: any) {
-    for (let i=0;i<this.stock.length;i++) {
-      if (pBuy.payload.val().product.title == this.stock[i].payload.val().product.title) {
-        return this.stock[i].payload.val().quantity;
+    if (this.stock) {
+      for (let i=0;i<this.stock.length;i++) {
+        if (pBuy.product.title == this.stock[i].payload.val().product.title) {
+          return this.stock[i].payload.val().quantity;
+        }
       }
     }
     return 0;
@@ -155,4 +203,11 @@ export class StockService {
 
   }
 
+  getTotalCost(buy: any) {
+    let totalCost = 0
+    for (let i=0;i<buy.payload.val().buy.length;i++) {
+      totalCost += buy.payload.val().buy[i].quantity * buy.payload.val().buy[i].price;
+    }
+   return totalCost;
+  }
 }

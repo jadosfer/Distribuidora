@@ -18,7 +18,7 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { FormsModule } from '@angular/forms';
 import { CustomFormsModule } from 'ng2-validation';
 import { FlexLayoutModule  } from '@angular/flex-layout';
-import { CategoryService } from './services/category.service';
+
 import { AuthService } from './services/auth.service';
 import { AuthGuard } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
@@ -38,6 +38,8 @@ import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
+import { BuysComponent } from './buys/buys.component';
+import { ProdCategoryService } from './services/prod-category.service';
 
 
 
@@ -60,7 +62,8 @@ import { DatePipe } from '@angular/common';
     SellersFormComponent,
     StockComponent,
     BuyComponent,
-    DashboardComponent
+    DashboardComponent,
+    BuysComponent
 
   ],
   imports: [
@@ -76,7 +79,7 @@ import { DatePipe } from '@angular/common';
     FlexLayoutModule,
     ReactiveFormsModule
   ],
-  providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService,
+  providers: [AuthGuard, UserService, AdminAuthGuard, ProdCategoryService,
     ProductService, AuthService, PedidosService, DatePipe],
   bootstrap: [AppComponent]
 })

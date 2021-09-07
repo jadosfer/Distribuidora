@@ -4,17 +4,17 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
+export class ProdCategoryService {
 
   constructor(private db: AngularFireDatabase) { }
 
 
   getAll() {
     //return this.db.list('categories').snapshotChanges();
-    return this.db.list('categories').valueChanges();
+    return this.db.list('prodCategories').valueChanges();
   }
 
-  getAllCategories() {
-    return this.db.list('categories').snapshotChanges();
+  getAllProdCategories() {
+    return this.db.list('prodCategories').snapshotChanges();
   }
 }

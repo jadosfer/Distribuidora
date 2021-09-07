@@ -27,7 +27,7 @@ export class StockComponent implements OnInit {
     }
 
   ngOnInit(){
-    this.stockService.getAll().subscribe(stock => {
+    this.stockService.getStock().subscribe(stock => {
       this.stock = stock;
       let alertProducts = []
       for (let i=0;i<this.stock.length;i++) {

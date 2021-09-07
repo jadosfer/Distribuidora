@@ -4,7 +4,7 @@
     <mat-card-title>{{product.payload.val().title}}</mat-card-title>
     <mat-card-subtitle><b>{{product.payload.val().price1 | currency:"ARS":"symbol"}}</b></mat-card-subtitle>
     <mat-card-content>
-      <p><b>{{product.payload.val().category}}</b></p>
+      <p><b>{{product.payload.val().prodCategory}}</b></p>
 
     </mat-card-content>
     <button *ngIf="getQuantity() === 0; else updateQuantity" class="card-btn" (click)="updateItemQuantity(this.product, 1)" mat-raised-button color="basic">Sumar al Pedido</button>

@@ -16,6 +16,7 @@ import { StockComponent } from './stock/stock.component';
 import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { BuysComponent } from './buys/buys.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: "check-out", component: CheckOutComponent, canActivate: [AuthGuard] },
   { path: "stock/stock", component: StockComponent, canActivate: [AuthGuard] },
   { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard] },
+  { path: "buys", component: BuysComponent, canActivate: [AuthGuard] },
 
   { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },

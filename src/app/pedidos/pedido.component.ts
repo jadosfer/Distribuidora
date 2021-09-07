@@ -30,13 +30,14 @@ export class PedidoComponent implements OnInit {
 
   clients:any[];
   products$:any;
-  category: string | null;
+  prodCategory: string | null;
   products:any[];
   filteredProducts:any[];
   filteredPedido: any;
   subscription: Subscription;
   subscription2: Subscription;
   pedido: any;
+  discount: number = 0;
 
   filteredProduct:any[];
 
@@ -60,11 +61,11 @@ export class PedidoComponent implements OnInit {
     this.subscription = this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.route.queryParamMap.subscribe(params => {
-        this.category = params.get('category');
+        this.prodCategory = params.get('prodCategory');
         if (this.products) {
-          this.filteredProducts = (this.category) ?
+          this.filteredProducts = (this.prodCategory) ?
           this.products.filter(p =>
-            p.payload.val().category == this.category) :
+            p.payload.val().prodCategory == this.prodCategory) :
           this.products;
         }
       });
@@ -88,13 +89,12 @@ export class PedidoComponent implements OnInit {
       });
       this.pedido = pedido;
       this.route.queryParamMap.subscribe(params => {
-        this.category = params.get('category');
+        this.prodCategory = params.get('prodCategory');
 
         this.filteredPedido = [];
-
-        if (this.pedido) {
+        if (this.pedido.length != 0) {
           for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-            if (this.pedido[0].payload.val().products[i].product.category == this.category)  {
+            if (this.pedido[0].payload.val().products[i].product.prodCategory == this.prodCategory)  {
               this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
             }
           }
@@ -128,12 +128,12 @@ export class PedidoComponent implements OnInit {
     });
   }
 
-  getClientPrice(product: any) {
-    return this.pedidosService.getClientPrice(product, this.clientFantasyName);
-  }
+  // getClientPrice(product: any) {
+  //   return this.pedidosService.getClientPrice(product, this.clientFantasyName, this.pedido);
+  // }
 
-  getCategory() {
-    return this.pedidosService.getCategory(this.clientFantasyName);
+  getClientCategory() {
+    return this.pedidosService.getClientCategory(this.clientFantasyName);
   }
 
   getTitle(item: any) {
@@ -167,8 +167,8 @@ export class PedidoComponent implements OnInit {
     if (!this.pedido) return 0;
     let total = 0;
     for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-      let price =  this.pedidosService.getClientPrice( this.pedido[0].payload.val().products[i], this.clientFantasyName);
-      total += this.pedido[0].payload.val().products[i].quantity * price;
+      //let price =  this.pedidosService.getClientPrice(this.pedido[0].payload.val().products[i], this.clientFantasyName, this.pedido);
+      total += this.pedido[0].payload.val().products[i].quantity * this.pedido[0].payload.val().products[i].discountPrice;
     }
     return total;
   }
@@ -206,5 +206,14 @@ export class PedidoComponent implements OnInit {
     if (confirm('Está segur@ que quiere anular el pedido que no ha enviado?')) {
       this.pedidosService.resetPedido();
     }
+  }
+
+  onDiscount(e: any, p: any, discount: number) {
+    this.pedidosService.discount(this.pedido, p, discount);
+    //p.inputValue=discount; //<-----this will add new property to your existing object with input value.
+  }
+
+  updatePrices() {
+    this.pedidosService.updatePrices(this.pedido, this.clientFantasyName);
   }
 }

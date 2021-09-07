@@ -67,33 +67,26 @@ export class PedidosComponent implements OnInit {
         this.appUser = appUser;
         this.pedidos =  pedidos;
         this.userPedidos = [];
-      for (let i=0;i<this.pedidos.length;i++) {
-        if (this.appUser.isAdmin || this.pedidos[i].payload.val().sellerName == this.appUser.name) {
-          this.userPedidos.push(this.pedidos[i]);
+        for (let i=0;i<this.pedidos.length;i++) {
+          if (this.appUser.isAdmin || this.pedidos[i].payload.val().pedido.sellerName == this.appUser.name) {
+            this.userPedidos.push(this.pedidos[i]);
+          }
         }
         this.dateRangefilteredPedidos = this.datefilteredPedidos = this.filteredPedidos = this.userPedidos;
-        }
       });
     });
   }
 
   filter(query: string) {
-    // this.filteredPedidos = (query) ?
-    // this.userPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-    // this.userPedidos;
     if (query != "") {
       this.filteredPedidos = (query) ?
       this.filteredPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
       this.filteredPedidos;
     }
     else this.filteredPedidos = this.userPedidos;
-    console.log("else filter", this.filteredPedidos);
   }
 
   filterByDate(query: string) {
-    // this.filteredPedidos = (query) ?
-    // this.userPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-    // this.userPedidos;
     if (query != "") {
       this.filteredPedidos = (query) ?
       this.filteredPedidos.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
@@ -161,30 +154,18 @@ export class PedidosComponent implements OnInit {
         this.pedidosService.getPaid(pedido);
       }
     }
-    else {
-      this.aproveFirst = true;
-      setTimeout(()=> {
-        this.aproveFirst = false;
-       }, 2500);
-    }
+    else alert("Debe aprobar el pedido antes de darlo por cobrado");
   }
 
   searchDateRange(range: any) {
-    // if (range.start) {
-    //   this.filteredPedidos = (range) ?
-    //   this.userPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
-    //   this.userPedidos;
-    // }
     if (range.start) {
       this.filteredPedidos = (range) ?
       this.filteredPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
       this.filteredPedidos;
-      console.log("range", this.filteredPedidos);
     }
     else this.filteredPedidos = this.userPedidos;
-    console.log("else range", this.filteredPedidos);
-
   }
+
   clearRange() {
     this.range.setValue({
       start: null,

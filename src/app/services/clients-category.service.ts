@@ -13,7 +13,7 @@ export class ClientsCategoryService {
     return this.db.list('clientsCategories').valueChanges();
   }
 
-  getAllCategories() {
+  getAllClientCategories() {
     return this.db.list('clientsCategories').snapshotChanges();
   }
 }

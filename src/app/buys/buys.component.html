@@ -1,24 +1,17 @@
 <div class="SCContainer" *ngIf="appUser">
   <div>
-    <a mat-raised-button color="accent" routerLink="/pedidos/pedido">Nuevo Pedido</a>
+    <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva Compra</a>
   </div>
 
   <div>
     <table><tr>
-      <h2 style="display: inline;">Mis pedidos&nbsp;&nbsp;</h2>
-      <td>
-        <mat-icon matSuffix>search</mat-icon>
-      </td>
-      <td>
-        <input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente...">
-      </td>
+      <h2 style="display: inline;">Mis compras&nbsp;&nbsp;</h2>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
         <input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha...">
       </td>
-  <!--  <td><b>FACTURACIÓN DEL LISTADO:</b></td><td><b>&nbsp;${{getTotal()}}&nbsp;&nbsp;</b></td> -->
       <td>
         <form #f="ngForm" (ngSubmit)="searchDateRange(range.value)">
           <mat-form-field appearance="fill">
@@ -46,29 +39,19 @@
 
   <table matSort (matSortChange)="sortData($event)">
     <tr>
-      <th mat-sort-header="cliente">Cliente</th>
-      <th mat-sort-header="vendedor">Vendedor</th>
+
       <th mat-sort-header="date">Fecha</th>
       <th mat-sort-header="import">Importe</th>
-      <th mat-sort-header="aproved">¿Pedido aprobado?</th>
-      <th mat-sort-header="paid">¿Pedido ya pagado?</th>
-      <th mat-sort-header="inDebt">¿En mora?</th>
-
 
     </tr>
 
 
-      <tr *ngFor="let ped of filteredPedidos; let i = index" >
+      <tr *ngFor="let b of filteredBuys; let i = index" >
 
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().pedido.sellerName}}&nbsp;&nbsp;</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">${{this.pedidosService.getTotalCost(ped)}}</td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().aproved}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().aproved != 'NO'" (click)="aprove(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().paid}}&nbsp;&nbsp;<button mat-raised-button color="primary" [disabled]="ped.payload.val().paid != 'NO'" (click)="getPaid(ped)" *ngIf="appUser!=undefined && appUser.isAdmin">cobrar</button></td>
-        <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span *ngIf="isPedidoInDebt(ped)">SI</span><span *ngIf="!isPedidoInDebt(ped)">NO</span></td>
+        <td *ngIf="b.payload.val().buyItemsCount !=0">{{b.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td *ngIf="b.payload.val().buyItemsCount !=0">${{this.stockService.getTotalCost(b)}}</td>
 
-          <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">
+         <mat-accordion *ngIf="b.payload.val().buyItemCount !=0">
             <mat-expansion-panel hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -78,18 +61,16 @@
               <tr>
                 <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
                 <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-                <th mat-sort-header="unitPrice;{{i}}">Importe/unidad</th>
-                <th mat-sort-header="Price;{{i}}">Importe</th>
+
               </tr>
-              <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
+              <tr *ngFor="let item of b.payload.val().buy; let i = index">
                 <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
                 <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
                 <td *ngIf="item.quantity !=0">${{item.price}}</td>
                 <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
               </tr>
             </mat-expansion-panel>
-          </mat-accordion>  <!---->
-          <td><button (click)="exportAsPDF(ped)" style="display:inline" mat-raised-button color="primary" >PDF</button></td>
+          </mat-accordion>
     </tr>
 
     <tr>
@@ -100,6 +81,7 @@
   </table>
 
 </div>
+
 
 
 
