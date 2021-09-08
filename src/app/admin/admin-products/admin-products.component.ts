@@ -13,7 +13,7 @@ import {Sort} from '@angular/material/sort';
   templateUrl: './admin-products.component.html',
   styleUrls: ['./admin-products.component.scss']
 })
-export class AdminProductsComponent implements OnInit, OnDestroy {
+export class AdminProductsComponent implements OnInit {
 
   displayedColumns: string[] = ['title', 'buyPrice', 'price1','price2','price3', 'prodCategory', 'edit'];
   dataSource: any;
@@ -67,8 +67,8 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
   }
 
 
-  ngOnDestroy() {
-  //   this.subscription.unsubscribe();
+  reCharge() {
+
   }
 
 }

@@ -10,11 +10,10 @@ export class ProdCategoryService {
 
 
   getAll() {
-    //return this.db.list('categories').snapshotChanges();
-    return this.db.list('prodCategories').valueChanges();
+    return this.db.list('categories').valueChanges();
   }
 
   getAllProdCategories() {
-    return this.db.list('prodCategories').snapshotChanges();
+    return this.db.list('categories').snapshotChanges();
   }
 }

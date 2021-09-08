@@ -23,37 +23,7 @@
           <mat-hint>Precio de Compra</mat-hint>
         </mat-form-field>
 
-        <mat-form-field appearance="legacy">
-          <mat-label>$</mat-label>
-          <input #price1="ngModel" matInput [(ngModel)]="product.price1" name="price1" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="price1.touched && price1.invalid">
-            <div *ngIf="price1.errors?.required">Price is required</div>
-            <div *ngIf="price1.errors?.min">Price should be 0 or higher</div>
-          </div>
-          <mat-hint>Precio Distribuidor</mat-hint>
-        </mat-form-field>
 
-        <mat-form-field appearance="legacy">
-          <mat-label>$</mat-label>
-          <input #price2="ngModel" matInput [(ngModel)]="product.price2" name="price2" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="price2.touched && price2.invalid">
-            <div *ngIf="price2.errors?.required">Price is required</div>
-            <div *ngIf="price2.errors?.min">Price should be 0 or higher</div>
-          </div>
-          <mat-hint>Precio Comercio</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>$</mat-label>
-          <input #price3="ngModel" matInput [(ngModel)]="product.price3" name="price3" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="price3.touched && price3.invalid">
-            <div *ngIf="price3.errors?.required">Price is required</div>
-            <div *ngIf="price3.errors?.min">Price should be 0 or higher</div>
-
-
-          </div>
-          <mat-hint>Precio Gimnasio</mat-hint>
-        </mat-form-field>
       </p>
 
 
@@ -86,7 +56,7 @@
     <img mat-card-image [src]="product.imageUrl">
     <mat-card-footer>
       <mat-card-title>{{product.title}}</mat-card-title>
-      <mat-card-subtitle><b>{{product.price | currency:'$AR ':true}}</b></mat-card-subtitle>
+      <mat-card-subtitle><b>{{product.buyPrice | currency:'$AR ':true}}</b></mat-card-subtitle>
       <mat-card-content>
         <p><b>{{product.prodCategory}}</b></p>
       </mat-card-content>

@@ -2,6 +2,9 @@
   <p>
     <a mat-raised-button color="accent" routerLink="/admin/products/new">Nuevo Producto</a>
   </p>
+
+
+
   <div>
     <table><tr>
       <td>
@@ -10,7 +13,15 @@
       <td>
         <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar por nombre...">
       </td>
-    </tr></table>
+      <td>
+        <form role="form" (submit)="reCharge()">
+          <input type="number" #name value={{this.name}}>
+          <button *ngIf="" type="submit">Aplicar</button>
+          <span *ngIf="">&nbsp;&nbsp;Descuento:%</span>
+        </form>
+      </td>
+    </tr>
+  </table>
   </div>
 
     <table mat-table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
