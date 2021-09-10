@@ -28,6 +28,7 @@ export class PedidosService {
 
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
+
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       this.getPedido().subscribe(pedido => {
@@ -95,7 +96,6 @@ export class PedidosService {
       "products": products
     });
 
-    this.updatePrices(this.pedido, "");
     this.pedidoId = result.key;
 
   }
@@ -240,6 +240,7 @@ export class PedidosService {
     let clientCategory = this.getClientCategory(clientFantasyName);
     let price;
     let products = []
+      if (!pedido[0]) return
       for (let i=0;i<pedido[0].payload.val().products.length;i++) {
         switch (clientCategory) {
           case "":
@@ -261,7 +262,6 @@ export class PedidosService {
         if (pedido[0].payload.val().products[i].discount) {
           discountPrice =  price * (1 - pedido[0].payload.val().products[i].discount/100)
         };
-        console.log("discountPrice", discountPrice);
         products.push({
           "price": price,
           "discountPrice": discountPrice,
@@ -279,15 +279,14 @@ export class PedidosService {
           "discount": pedido[0].payload.val().products[i].discount
         })
       }
-      console.log(products);
 
       this.db.object('/pedido/' + pedido[0].key).update({
         "pedidoItemsCount": pedido[0].payload.val().pedidoItemsCount,
         "sellerName": this.appUser.name,
         "products": products
       });
-
   }
+
 
   getTotalCost(ped: any) {
     let totalCost = 0;

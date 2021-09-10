@@ -3,8 +3,6 @@
     <a mat-raised-button color="accent" routerLink="/admin/products/new">Nuevo Producto</a>
   </p>
 
-
-
   <div>
     <table><tr>
       <td>
@@ -14,9 +12,12 @@
         <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar por nombre...">
       </td>
       <td>
-        <form role="form" (submit)="reCharge()">
-          <input type="number" #name value={{this.name}}>
-          <button *ngIf="" type="submit">Aplicar</button>
+        <form *ngIf="this.recharges" role="form" (submit)="recharge(+dist.value, +com.value, +gym.value)">
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <input type="number" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" #dist value={{this.dist}}>
+          <input type="number" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" #com value={{this.com}}>
+          <input type="number" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" #gym value={{this.gym}}>
+          <button type="submit">Aplicar Remarcación</button>
           <span *ngIf="">&nbsp;&nbsp;Descuento:%</span>
         </form>
       </td>

@@ -14,10 +14,15 @@ import {Sort} from '@angular/material/sort';
   styleUrls: ['./admin-products.component.scss']
 })
 export class AdminProductsComponent implements OnInit {
+  dist:number;
+  com:number;
+  gym:number;
+  recharges: any;
+  rechargeId:any;
+  products: any;
 
   displayedColumns: string[] = ['title', 'buyPrice', 'price1','price2','price3', 'prodCategory', 'edit'];
   dataSource: any;
-  products:any[];
   sortedData:any[];
   filteredProducts:any[];
   subscription: Subscription;
@@ -28,16 +33,24 @@ export class AdminProductsComponent implements OnInit {
   }
 
   ngOnInit() {
-     this.subscription = this.productService.getAll().subscribe(products => {
-       this.filteredProducts = this.products = products;
-       this.dataSource = new MatTableDataSource<any>(this.filteredProducts);
-       this.dataSource.paginator = this.paginator;
-     });
+    //if (!this.productService.recharges) this.productService.createRecharge();
+    this.subscription = this.productService.getAll().subscribe(products => {
+      this.filteredProducts = this.products = products;
+      this.dataSource = new MatTableDataSource<any>(this.filteredProducts);
+      this.dataSource.paginator = this.paginator;
+    });
+    //this.productService.updateRechargePrices();
+    this.productService.getAllRecharges().subscribe(recharges => {
+      this.recharges = recharges;
+      if (!recharges) {
+        this.productService.createRecharge();
+      }
+    });
   }
 
   filter(query: string) {
     this.filteredProducts = (query) ?
-      this.products.filter(p => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
+      this.products.filter((p: { payload: { val: () => { (): any; new(): any; title: string; }; }; }) => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
       this.products;
     this.dataSource = new MatTableDataSource<any>(this.filteredProducts);
     this.dataSource.paginator = this.paginator;
@@ -66,11 +79,13 @@ export class AdminProductsComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
-
-  reCharge() {
-
+  recharge(distRecharge: number, comRecharge: number, gymRecharge: number) {
+    if (this.recharges) {
+      this.productService.recharge(this.products, distRecharge, comRecharge, gymRecharge);
+      return
+    }
+    this.productService.createRecharge();
   }
-
 }
 
 function compare(a: number | string, b: number | string, isAsc: boolean) {

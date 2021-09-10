@@ -56,6 +56,7 @@ export class PedidoComponent implements OnInit {
     private auth: AuthService,
     private router: Router
   ) {
+    this.pedidosService.resetPedido();
     this.pedido = this.pedidosService.getPedido();
 
     this.subscription = this.productService.getAll().subscribe(products => {
@@ -166,15 +167,15 @@ export class PedidoComponent implements OnInit {
   getTotal() {
     if (!this.pedido) return 0;
     let total = 0;
+    if (!this.pedido[0]) return 0;
     for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-      //let price =  this.pedidosService.getClientPrice(this.pedido[0].payload.val().products[i], this.clientFantasyName, this.pedido);
       total += this.pedido[0].payload.val().products[i].quantity * this.pedido[0].payload.val().products[i].discountPrice;
     }
     return total;
   }
 
   getTotalUnits() {
-    if (this.pedido) {
+    if (this.pedido[0]) {
       return this.pedido[0].payload.val().pedidoItemsCount;
     }
     else return 0;
