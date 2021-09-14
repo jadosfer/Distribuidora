@@ -18,6 +18,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import {MatBadgeModule} from '@angular/material/badge';
 
 
 
@@ -42,7 +43,8 @@ const MaterialsComponents = [
   MatAutocompleteModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatMomentDateModule
+  MatMomentDateModule,
+  MatBadgeModule
 
 ]
 @NgModule({

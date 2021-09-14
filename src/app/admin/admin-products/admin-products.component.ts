@@ -21,15 +21,17 @@ export class AdminProductsComponent implements OnInit {
   rechargeId:any;
   products: any;
 
-  displayedColumns: string[] = ['title', 'buyPrice', 'price1','price2','price3', 'prodCategory', 'edit'];
+  displayedColumns: string[] = ['title', 'buyPrice', 'discPrice1','disc1','discPrice2','disc2','discPrice3','disc3', 'prodCategory', 'edit'];
   dataSource: any;
   sortedData:any[];
   filteredProducts:any[];
   subscription: Subscription;
 
+  recharged: boolean;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private productService: ProductService) {
+  constructor(private productService: ProductService, private db: AngularFireDatabase) {
   }
 
   ngOnInit() {
@@ -45,7 +47,9 @@ export class AdminProductsComponent implements OnInit {
       if (!recharges) {
         this.productService.createRecharge();
       }
+      this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().gymRecharge);
     });
+    if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().gymRecharge);
   }
 
   filter(query: string) {
@@ -81,10 +85,18 @@ export class AdminProductsComponent implements OnInit {
 
   recharge(distRecharge: number, comRecharge: number, gymRecharge: number) {
     if (this.recharges) {
+      this.recharged=true;
+      setTimeout(()=> {
+        this.recharged = false;
+       }, 800);
       this.productService.recharge(this.products, distRecharge, comRecharge, gymRecharge);
       return
     }
     this.productService.createRecharge();
+  }
+
+  applyDiscount(p: any, priceNumber: any, disc: number){
+    this.productService.applyDiscount(p, priceNumber, disc);
   }
 }
 

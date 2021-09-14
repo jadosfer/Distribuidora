@@ -30,9 +30,6 @@ export class ProductFormComponent implements OnInit {
 
   save(product: any) {
     if (confirm('Está segur@ que quiere guardar/crear este producto?')) {
-      // product.distRecharge = this.distRecharge;
-      // product.comRecharge = this.comRecharge;
-      // product.gymRecharge = this.gymRecharge;
       if (this.id) {
         this.productService.update(this.id, product);
       }

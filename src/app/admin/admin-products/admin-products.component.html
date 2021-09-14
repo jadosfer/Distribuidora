@@ -12,13 +12,13 @@
         <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar por nombre...">
       </td>
       <td>
-        <form *ngIf="this.recharges" role="form" (submit)="recharge(+dist.value, +com.value, +gym.value)">
-          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-          <input type="number" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" #dist value={{this.dist}}>
-          <input type="number" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" #com value={{this.com}}>
-          <input type="number" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" #gym value={{this.gym}}>
+        <form id="rechargeForm" *ngIf="this.recharges" role="form" (submit)="recharge(+dist.value, +com.value, +gym.value)">
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <input id="recharge" type="number" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" #dist value={{this.dist}}>
+          <input id="recharge" type="number" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" #com value={{this.com}}>
+          <input id="recharge" type="number" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" #gym value={{this.gym}}>
           <button type="submit">Aplicar Remarcación</button>
-          <span *ngIf="">&nbsp;&nbsp;Descuento:%</span>
+          <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicada</span>
         </form>
       </td>
     </tr>
@@ -35,21 +35,36 @@
 
       <!-- Prices Columns -->
       <ng-container matColumnDef="buyPrice">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="buyPrice"><h2> Precio de Compra </h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="buyPrice"><h2> P. de Compra </h2></th>
         <td mat-cell *matCellDef="let p"> {{p.payload.val().buyPrice | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
       </ng-container>
-      <ng-container matColumnDef="price1">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="price1"><h2> Precio Distribuidor </h2></th>
-        <td mat-cell *matCellDef="let p"> {{p.payload.val().price1 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      <ng-container matColumnDef="discPrice1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="discPrice1"><h2> P. Distrib </h2></th>
+        <td mat-cell *matCellDef="let p"> {{p.payload.val().discPrice1 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td> <!--matBadge="{{p.payload.val().disc1}}"-->
       </ng-container>
-      <ng-container matColumnDef="price2">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="price2"><h2> Precio Comercio </h2></th>
-        <td mat-cell *matCellDef="let p"> {{p.payload.val().price2 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+        <!-- disc1 Column -->
+        <ng-container matColumnDef="disc1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="disc1"><h2>Desc.</h2></th>
+          <td mat-cell *matCellDef="let p"><input id="disc" type="number" placeholder="{{p.payload.val().disc1}}%" #disc1 value={{this.disc1}}><button id="discButton" (click)="applyDiscount(p, 'price1', disc1.valueAsNumber)">Aplicar dto.</button></td>
+        </ng-container>
+      <ng-container matColumnDef="discPrice2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="discPrice2"><h2> P. Com </h2></th>
+        <td mat-cell *matCellDef="let p"> {{p.payload.val().discPrice2 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
       </ng-container>
-      <ng-container matColumnDef="price3">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="price3"><h2> Precio Gimnasio </h2></th>
-        <td mat-cell *matCellDef="let p"> {{p.payload.val().price3 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      <!-- disc2 Column -->
+      <ng-container matColumnDef="disc2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="disc2"><h2>Desc.</h2></th>
+        <td mat-cell *matCellDef="let p"><input id="disc" type="number" placeholder="{{p.payload.val().disc2}}%" #disc2 value={{this.disc2}}><button id="discButton" (click)="applyDiscount(p, 'price2', disc2.valueAsNumber)">Aplicar dto.</button></td>
       </ng-container>
+      <ng-container matColumnDef="discPrice3">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="discPrice3"><h2> P. Gym </h2></th>
+        <td mat-cell *matCellDef="let p" > {{p.payload.val().discPrice3 | currency:"ARS":"symbol"}} &nbsp;&nbsp;</td>
+      </ng-container>
+        <!-- disc3 Column -->
+        <ng-container matColumnDef="disc3">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="disc3"><h2>Desc.</h2></th>
+          <td mat-cell *matCellDef="let p"><input id="disc" type="number" placeholder="{{p.payload.val().disc3}}%" #disc3 value={{this.disc3}}><button id="discButton" (click)="applyDiscount(p, 'price3', disc3.valueAsNumber)">Aplicar dto.</button></td>
+        </ng-container>
       <!-- Categoria -->
       <ng-container matColumnDef="prodCategory">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="prodCategory"><h2> Categoria</h2></th>

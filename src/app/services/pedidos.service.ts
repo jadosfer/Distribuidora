@@ -29,6 +29,7 @@ export class PedidosService {
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
 
+
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       this.getPedido().subscribe(pedido => {
