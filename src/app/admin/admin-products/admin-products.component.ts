@@ -22,7 +22,7 @@ export class AdminProductsComponent implements OnInit {
   rechargeId:any;
   products: any;
 
-  displayedColumns: string[] = ['title', 'buyPrice', 'discPrice1','disc1','discPrice2','disc2','discPrice3','disc3', 'prodCategory', 'edit'];
+  displayedColumns: string[] = ['title', 'buyPrice', 'discPrice1','disc1','discPrice2','disc2','discPrice3','disc3','edit'];
   dataSource: any;
   sortedData:any[];
   filteredProducts:any[];
@@ -73,10 +73,10 @@ export class AdminProductsComponent implements OnInit {
       switch (sort.active) {
         case 'title': return compare(a.payload.val().title, b.payload.val().title, isAsc);
         case 'buyPrice': return compare(a.payload.val().buyPrice, b.payload.val().buyPrice, isAsc);
-        case 'price1': return compare(a.payload.val().price1, b.payload.val().price1, isAsc);
-        case 'price2': return compare(a.payload.val().price2, b.payload.val().price2, isAsc);
-        case 'price3': return compare(a.payload.val().price3, b.payload.val().price3, isAsc);
-        case 'prodCategory': return compare(a.payload.val().prodCategory, b.payload.val().prodCategory, isAsc);
+        case 'discPrice1': return compare(a.payload.val().discPrice1, b.payload.val().discPrice1, isAsc);
+        case 'discPrice2': return compare(a.payload.val().discPrice2, b.payload.val().discPrice2, isAsc);
+        case 'discPrice3': return compare(a.payload.val().discPrice3, b.payload.val().discPrice3, isAsc);
+        //case 'prodCategory': return compare(a.payload.val().prodCategory, b.payload.val().prodCategory, isAsc);
         default: return 0;
       }
     });

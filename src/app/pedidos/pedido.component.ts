@@ -37,7 +37,7 @@ export class PedidoComponent implements OnInit {
   subscription: Subscription;
   subscription2: Subscription;
   pedido: any;
-  discount: number = 0;
+  disc: number = 0;
 
   filteredProduct:any[];
 
@@ -121,8 +121,8 @@ export class PedidoComponent implements OnInit {
       switch (sort.active) {
         case 'title': return this.compare(a.payload.val().title, b.payload.val().title, isAsc);
         case 'quantity': return this.compare(this.getQuantity(a), this.getQuantity(b), isAsc);
-        case 'unitPrice': return this.compare(a.payload.val().price1, b.payload.val().price1, isAsc);
-        case 'totalPriceProduct': return this.compare(a.payload.val().price1*this.getQuantity(a), b.payload.val().price1*this.getQuantity(b), isAsc);
+        case 'unitPrice': return this.compare(a.payload.val().discPrice1, b.payload.val().discPrice1, isAsc);
+        case 'totalPriceProduct': return this.compare(a.payload.val().discPrice1*this.getQuantity(a), b.payload.val().discPrice1*this.getQuantity(b), isAsc);
 
         default: return 0;
       }
@@ -209,8 +209,8 @@ export class PedidoComponent implements OnInit {
     }
   }
 
-  onDiscount(e: any, p: any, discount: number) {
-    this.pedidosService.discount(this.pedido, p, discount);
+  discount(e: any, p: any, disc: number) {
+    this.pedidosService.discount(this.pedido, p, disc);
     //p.inputValue=discount; //<-----this will add new property to your existing object with input value.
   }
 

@@ -83,8 +83,8 @@ export class PedidosService {
     let products = []
     for (let i=0;i<this.products.length;i++) {
       products.push({
-        "price": this.products[i].payload.val().price1,
-        "discountPrice": this.products[i].payload.val().price1,
+        "price": this.products[i].payload.val().discPrice1,
+        "discountPrice": this.products[i].payload.val().discPrice1,
         "product": this.products[i].payload.val(),
         "productId":this.products[i].key,
         "quantity": 0,
@@ -164,6 +164,9 @@ export class PedidosService {
               "price1": pedido[0].payload.val().products[i].product.price1,
               "price2": pedido[0].payload.val().products[i].product.price2,
               "price3": pedido[0].payload.val().products[i].product.price3,
+              "discPrice1": pedido[0].payload.val().products[i].product.discPrice1,
+              "discPrice2": pedido[0].payload.val().products[i].product.discPrice2,
+              "discPrice3": pedido[0].payload.val().products[i].product.discPrice3,
               "title": pedido[0].payload.val().products[i].product.title,
             },
             "productId": pedido[0].payload.val().products[i].productId,
@@ -245,16 +248,16 @@ export class PedidosService {
       for (let i=0;i<pedido[0].payload.val().products.length;i++) {
         switch (clientCategory) {
           case "":
-            price = pedido[0].payload.val().products[i].product.price1;
+            price = pedido[0].payload.val().products[i].product.discPrice1;
              break;
           case "Distribuidor":
-            price = pedido[0].payload.val().products[i].product.price1;
+            price = pedido[0].payload.val().products[i].product.discPrice1;
             break;
           case "Comercio":
-            price = pedido[0].payload.val().products[i].product.price2;
+            price = pedido[0].payload.val().products[i].product.discPrice2;
             break;
           case "Gimnasio":
-            price = pedido[0].payload.val().products[i].product.price3;
+            price = pedido[0].payload.val().products[i].product.discPrice3;
             break;
           default:
             return pedido[0].payload.val().products[i].price;
@@ -273,6 +276,9 @@ export class PedidosService {
             "price1": pedido[0].payload.val().products[i].product.price1,
             "price2": pedido[0].payload.val().products[i].product.price2,
             "price3": pedido[0].payload.val().products[i].product.price3,
+            "discPrice1": pedido[0].payload.val().products[i].product.discPrice1,
+            "discPrice2": pedido[0].payload.val().products[i].product.discPrice2,
+            "discPrice3": pedido[0].payload.val().products[i].product.discPrice3,
             "title": pedido[0].payload.val().products[i].product.title
           },
           "productId": pedido[0].payload.val().products[i].productId,
