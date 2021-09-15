@@ -17,6 +17,7 @@ export class AdminProductsComponent implements OnInit {
   dist:number;
   com:number;
   gym:number;
+  rechargeDelForm: any = {};
   recharges: any;
   rechargeId:any;
   products: any;
@@ -81,6 +82,10 @@ export class AdminProductsComponent implements OnInit {
     });
     this.dataSource = new MatTableDataSource<any>(this.sortedData);
     this.dataSource.paginator = this.paginator;
+  }
+
+  save(recharge:any) {
+    this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.gym))
   }
 
   recharge(distRecharge: number, comRecharge: number, gymRecharge: number) {

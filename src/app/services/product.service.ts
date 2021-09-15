@@ -75,6 +75,7 @@ export class ProductService implements OnInit{
 
   recharge(products:any, distRecharge: number, comRecharge: number, gymRecharge: number) {
     for (let i=0;i<products.length;i++) {
+      console.log("distRecharge", distRecharge);
       let prod = {
         "disc1": products[i].payload.val().disc1,
         "disc2": products[i].payload.val().disc2,
@@ -90,13 +91,11 @@ export class ProductService implements OnInit{
         "prodCategory": products[i].payload.val().prodCategory,
         "title": products[i].payload.val().title
       }
-      console.log("prod", prod);
       this.db.object('/products/' + products[i].key).update(prod);
-      let product = products[i].payload.val();
+      let product = prod;
       product.discPrice1 = prod.price1*(1-product.disc1/100);
       product.discPrice2 = prod.price2*(1-product.disc2/100);
       product.discPrice3 = prod.price3*(1-product.disc3/100);
-      console.log("product", product)
       this.db.object('/products/' + products[i].key).update(product);
     }
 

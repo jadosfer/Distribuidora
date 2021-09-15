@@ -12,18 +12,43 @@
         <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar por nombre...">
       </td>
       <td>
+        <span><b><u>Remarcación de precios:</u></b></span>
+            <form #f="ngForm"  (ngSubmit)="save(f.value)">
+              <p *ngIf="this.recharges">
+                <mat-form-field appearance="legacy">
+                  <input #dist="ngModel" matInput [(ngModel)]="rechargeDelForm.dist" name="dist" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" required>
+                  <div class="alert alert-danger" *ngIf="this.recharges && dist.touched && dist.invalid">campo obligatorio</div>
+                </mat-form-field>
+
+                <mat-form-field appearance="legacy">
+                  <input #com="ngModel" matInput [(ngModel)]="rechargeDelForm.com" name="com" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" required>
+                  <div class="alert alert-danger" *ngIf="com.touched && com.invalid">campo obligatorio</div>
+                </mat-form-field>
+
+                <mat-form-field appearance="legacy">
+                  <input #gym="ngModel" matInput [(ngModel)]="rechargeDelForm.gym" name="gym" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" required>
+                  <div class="alert alert-danger" *ngIf="gym.touched && gym.invalid">campo obligatorio</div>
+                </mat-form-field>
+              <button mat-raised-button type="submit" color="primary" >Aplicar</button>
+              <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicando</span>
+
+            </p>
+            </form>
+
+        <!--
         <form id="rechargeForm" *ngIf="this.recharges" role="form" (submit)="recharge(+dist.value, +com.value, +gym.value)">
           <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-          <input id="recharge" type="number" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" #dist value={{this.dist}}>
-          <input id="recharge" type="number" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" #com value={{this.com}}>
-          <input id="recharge" type="number" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" #gym value={{this.gym}}>
+          <input #dist id="recharge" type="number" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" value={{this.dist}} required>
+          <input #com id="recharge" type="number" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" value={{this.com}} required>
+          <input #gym id="recharge" type="number" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" value={{this.gym}} required>
           <button type="submit">Aplicar Remarcación</button>
           <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicada</span>
-        </form>
+        </form>-->
       </td>
     </tr>
   </table>
-  </div>
+
+
 
     <table mat-table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
 
