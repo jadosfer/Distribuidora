@@ -43,8 +43,9 @@ export class BuyComponent implements OnInit {
         this.prodCategory = params.get('prodCategory');
 
         this.filteredBuy = [];
-        if (this.buy) {
+        if (this.buy[0]) {
           for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+            console.log("probando ",this.buy[0].payload.val().products[i])
             if (this.buy[0].payload.val().products[i].product.prodCategory == this.prodCategory)  {
               this.filteredBuy.push(this.buy[0].payload.val().products[i]);
             }

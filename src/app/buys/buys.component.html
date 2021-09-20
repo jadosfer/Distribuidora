@@ -28,7 +28,7 @@
             <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
           </mat-form-field>
 
-          <button mat-raised-button type="submit" color="primary" >buscar por rango</button>
+          <button mat-raised-button style="margin:5px;" type="submit" color="primary" >buscar por rango</button>
           <button #query mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
         </form>
       </td>
@@ -61,6 +61,8 @@
               <tr>
                 <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
                 <th mat-sort-header="prodTitle;{{i}}">Producto</th>
+                <th mat-sort-header="itemPrice;{{i}}">Precio unitario</th>
+                <th mat-sort-header="subTotalPrice;{{i}}">Subtotal</th>
 
               </tr>
               <tr *ngFor="let item of b.payload.val().buy; let i = index">

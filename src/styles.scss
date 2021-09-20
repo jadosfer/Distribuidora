@@ -7,18 +7,19 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin-top: 90px !important;
 }
 
-.container-grid-pedido {
-  margin-top: 90px !important;
-  margin-left: -150px !important;
-}
+
 
 div .container-pedidos {
   margin-top: 90px !important;
 }
 
 div .container-edit {
-  margin-top:100px;
-  margin-left: 20px;
+  margin-top:95px;
+  margin-left: 10px;
+}
+
+.admin-prod-recharge {
+  margin-top:30px;
 }
 
 div .container-form {
@@ -34,10 +35,42 @@ div .container-form {
   margin-top:-2em;
 }
 
-.mat-list {
-  position: fixed;
-  top: 6em;
-  left: 1em;
+@media only screen and (max-width: 800px) {
+  .container-grid-pedido {
+    margin-top: 20px !important;
+    margin-left: -20px !important;
+  }
+
+  #prodTable {
+    margin-left: -28px !important;
+  }
+
+  .pedidoContainer {
+    margin-top: 90px !important;
+    margin-left: 30px !important;
+  }
+
+  #disc {
+    width: 30px;
+  }
+
+}
+
+@media only screen and (min-width: 800px) {
+  .mat-list {
+    position: fixed;
+    top: 6em;
+    left: 1em;
+  }
+
+  .container-grid-pedido {
+    margin-top: 90px !important;
+    margin-left: 200px !important;
+  }
+
+  #disc {
+    width: 40px;
+  }
 }
 
 .card-btn {
@@ -65,10 +98,6 @@ div .container-form {
   margin-left: 140px;
 }
 
-#disc {
-  width: 42px;
-}
-
 #recharge {
   width: 110px;
 }
@@ -76,6 +105,16 @@ div .container-form {
 #discButton {
   margin-right: 10px;
   width: 30px;
+}
+
+.mat-header-cell {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mat-cell {
+  text-align: center;
+  justify-content:center;
 }
 
 

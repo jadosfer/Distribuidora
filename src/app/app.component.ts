@@ -1,20 +1,23 @@
 import { Router } from '@angular/router';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { UserService } from './services/user.service';
+import { MediaChange, MediaObserver } from '@angular/flex-layout';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy{
+  mediaSub: Subscription;
   itemValue = '';
   items: Observable<any>;
 
-  constructor(private auth: AuthService, private userService: UserService, public db: AngularFireDatabase, private router: Router) {
+  constructor(private auth: AuthService, private userService: UserService, public db: AngularFireDatabase,
+     private router: Router, private mediaObserver: MediaObserver) {
 
     auth.user$.subscribe(user => {
       if (!user) return;
@@ -27,5 +30,18 @@ export class AppComponent {
       localStorage.removeItem('returnUrl');
       router.navigateByUrl(returnUrl);
     });
+  }
+
+  ngOnInit() {
+    // this.mediaSub = this.mediaObserver.media$.subscribe((change: MediaChange) => {
+    //   console.log(change.mqAlias);
+    //   console.log(change);
+    // })
+  }
+
+  ngOnDestroy() {
+      // if (this.mediaSub) {
+      //   this.mediaSub.unsubscribe;
+      // }
   }
 }

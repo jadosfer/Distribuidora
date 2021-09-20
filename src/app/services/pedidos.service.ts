@@ -199,8 +199,10 @@ export class PedidosService {
     let clientCategory = this.getClientCategory(clientFantasyName);
 
     for (let i=0;i<pedido[0].payload.val().products.length;i++) {
-      prods.push(pedido[0].payload.val().products[i])
+      if (pedido[0].payload.val().products[i].quantity != 0) { //solo guardo los prod con quant>0
+        prods.push(pedido[0].payload.val().products[i])
       prods[i].price = pedido[0].payload.val().products[i].discountPrice;
+      }
     }
 
     let time = new Date().getTime();

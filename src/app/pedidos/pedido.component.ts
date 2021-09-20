@@ -40,6 +40,7 @@ export class PedidoComponent implements OnInit {
   disc: number = 0;
 
   filteredProduct:any[];
+  breakpoint:any;
 
   title: string;
   quantity: number;
@@ -47,6 +48,7 @@ export class PedidoComponent implements OnInit {
   sended: boolean = false;
   client: boolean = true;
   pedidoEmpty: boolean = false;
+  mobile:boolean;
 
   constructor(
     public productService: ProductService,
@@ -84,6 +86,9 @@ export class PedidoComponent implements OnInit {
   }
 
   ngOnInit(){
+    if (window.screen.width <= 800) { // 768px portrait
+      this.mobile = true;
+    }
     this.pedidosService.getPedido().subscribe(pedido => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
@@ -107,7 +112,7 @@ export class PedidoComponent implements OnInit {
 
       });
     });
-    }
+  }
 
   sortData(sort: Sort) {
     const data = this.filteredProducts;

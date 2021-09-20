@@ -23,12 +23,14 @@ export class AdminProductsComponent implements OnInit {
   products: any;
 
   displayedColumns: string[] = ['title', 'buyPrice', 'discPrice1','disc1','discPrice2','disc2','discPrice3','disc3','edit'];
+  displayedMobileColumns: string[] = ['title', 'discPrice1','disc1','discPrice2','disc2','discPrice3','disc3','edit'];
   dataSource: any;
   sortedData:any[];
   filteredProducts:any[];
   subscription: Subscription;
 
   recharged: boolean;
+  mobile:boolean = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -36,6 +38,10 @@ export class AdminProductsComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (window.screen.width <= 800) { // 768px portrait
+      this.mobile = true;
+      this.displayedColumns = this.displayedMobileColumns;
+    }
     //if (!this.productService.recharges) this.productService.createRecharge();
     this.subscription = this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;

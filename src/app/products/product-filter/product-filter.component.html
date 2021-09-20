@@ -1,7 +1,15 @@
-<mat-list>
-  <!--  <div mat-subheader><b>Categories</b></div> -->
+<div fxShow.md fxShow.lg fxHide.sm>
+  <mat-list >
+    <a mat-raised-button routerLink="./" routerLinkActive="mat-primary">Todas las categorias</a>
+    <mat-list-item *ngFor="let c of prodCategories$ | async">
+      <a mat-raised-button routerLink="./" [queryParams]="{prodCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
+    </mat-list-item>
+  </mat-list>
+</div>
+
+<div style="margin:5px; margin-top:-20px; margin-left:-20px;" fxShow.sm fxHide.gt-sm>
   <a mat-raised-button routerLink="./" routerLinkActive="mat-primary">Todas las categorias</a>
-  <mat-list-item *ngFor="let c of prodCategories$ | async">
-    <a mat-raised-button routerLink="./" [queryParams]="{prodCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
-  </mat-list-item>
-</mat-list>
+</div>
+<div fxShow.sm fxHide.gt-sm fxLayout.sm="row" style="margin:5px; margin-left:-20px;">
+  <a *ngFor="let c of prodCategories$ | async" mat-raised-button routerLink="./" [queryParams]="{prodCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
+</div>

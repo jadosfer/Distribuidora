@@ -138,6 +138,7 @@ export class ProductService implements OnInit{
         product.disc3 = disc;
       }
     this.db.object('/products/' + p.key).update(product);
+    console.log("actualiza")
   }
 
   applyDiscountToAll() {

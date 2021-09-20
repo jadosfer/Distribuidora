@@ -113,7 +113,7 @@ export class StockService {
 
     let buyItemsCount = buy[0].payload.val().buyItemsCount + change;
       let products = []
-      for (let i=0;i<this.products.length;i++) {
+      for (let i=0;i<buy[0].payload.val().products.length;i++) {
         let plus = 0;
         if (product.productId == buy[0].payload.val().products[i].productId) plus = change;
         products.push({
@@ -137,18 +137,21 @@ export class StockService {
   sendBuy(buy: any) {
 
     for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-      let quantity = this.stock[i].payload.val().quantity + this.buy[0].payload.val().products[i].quantity;
-      this.db.object('/stock/' + this.stock[i].key).update({
-        product: this.stock[i].payload.val().product,
-        "quantity": quantity
-      });
+      if  (this.buy[0].payload.val().products[i].quantity != 0) {
+        let quantity = this.stock[i].payload.val().quantity + this.buy[0].payload.val().products[i].quantity;
+        this.db.object('/stock/' + this.stock[i].key).update({
+          product: this.stock[i].payload.val().product,
+          "quantity": quantity
+        });
+      }
     }
 
     let prods = [];
 
     for (let i=0;i<buy[0].payload.val().products.length;i++) {
-      prods.push(buy[0].payload.val().products[i])
-      //prods[i].price = this.gentechProductPrice(prods[i]);
+      if  (this.buy[0].payload.val().products[i].quantity != 0) {
+        prods.push(buy[0].payload.val().products[i])
+      }
     }
 
     let time = new Date().getTime();
