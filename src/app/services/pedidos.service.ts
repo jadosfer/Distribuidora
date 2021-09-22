@@ -200,8 +200,9 @@ export class PedidosService {
 
     for (let i=0;i<pedido[0].payload.val().products.length;i++) {
       if (pedido[0].payload.val().products[i].quantity != 0) { //solo guardo los prod con quant>0
-        prods.push(pedido[0].payload.val().products[i])
-      prods[i].price = pedido[0].payload.val().products[i].discountPrice;
+        let pedidoAux = pedido[0].payload.val().products[i];
+        pedidoAux.price = pedido[0].payload.val().products[i].discountPrice;
+        prods.push(pedido[0].payload.val().products[i]);
       }
     }
 
@@ -330,4 +331,6 @@ export class PedidosService {
     }
     return false;
   }
+
+
 }

@@ -40,6 +40,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
 import { BuysComponent } from './buys/buys.component';
 import { ProdCategoryService } from './services/prod-category.service';
+import { PieChartComponent } from './pieChart/pieChart.component';
+import { ChartsModule } from 'ng2-charts';
 
 
 
@@ -63,7 +65,8 @@ import { ProdCategoryService } from './services/prod-category.service';
     StockComponent,
     BuyComponent,
     DashboardComponent,
-    BuysComponent
+    BuysComponent,
+    PieChartComponent
 
   ],
   imports: [
@@ -77,10 +80,11 @@ import { ProdCategoryService } from './services/prod-category.service';
     AngularFireAuthModule,
     AngularFireDatabaseModule,
     FlexLayoutModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ChartsModule
   ],
   providers: [AuthGuard, UserService, AdminAuthGuard, ProdCategoryService,
-    ProductService, AuthService, PedidosService, DatePipe],
+    ProductService, AuthService, PedidosService, DatePipe, PieChartComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

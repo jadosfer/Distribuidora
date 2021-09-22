@@ -42,13 +42,11 @@ export class AdminProductsComponent implements OnInit {
       this.mobile = true;
       this.displayedColumns = this.displayedMobileColumns;
     }
-    //if (!this.productService.recharges) this.productService.createRecharge();
     this.subscription = this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.dataSource = new MatTableDataSource<any>(this.filteredProducts);
       this.dataSource.paginator = this.paginator;
     });
-    //this.productService.updateRechargePrices();
     this.productService.getAllRecharges().subscribe(recharges => {
       this.recharges = recharges;
       if (!recharges) {

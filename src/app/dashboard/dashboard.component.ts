@@ -11,8 +11,11 @@ import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
-//import * as jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
+import { DashboardService } from '../services/dashboard.service';
+import { PieChartComponent } from '../pieChart/pieChart.component';
+import { ChartOptions, ChartType } from 'chart.js';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -50,10 +53,29 @@ export class DashboardComponent implements OnInit {
   paid: string[] = ["NO", "SI"];
   selected: string = "NO";
 
+  showGraph: boolean = false;
+
+  public data: any;
+
+  public pieChartLabels: Array<string> =[]
+  public pieChartData: Array<any> = []
+  public pieChartType: ChartType = 'pie';
+  public pieChartLegend = true;
+  public pieChartColors = [
+    {
+      backgroundColor: ['rgba(164,38,98)'],
+    }
+  ];
+
   aproveFirst:boolean = false;
+
+  color: string[] = ['rgba(255,64,129)', 'rgba(63,81,181)', 'rgba(101,115,193)', 'rgba(244,146,199)', 'rgba(196,202,233)'];
+
 
   constructor(public pedidosService: PedidosService,
   private productService: ProductService,
+  private dashboardService: DashboardService,
+  private pieChartComponent: PieChartComponent,
   private route: ActivatedRoute,
   private auth: AuthService, public datepipe: DatePipe,
   public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
@@ -215,7 +237,84 @@ export class DashboardComponent implements OnInit {
 
     // Save the PDF
     doc.save('pedido.pdf');
+  }
 
+  // Pie
+  public pieChartOptions: ChartOptions = {
+    responsive: true,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      datalabels: {
+        formatter: (_value: any, ctx: { chart: { data: { labels: { [x: string]: any; }; }; }; dataIndex: string | number; }) => {
+          const label = ctx.chart.data.labels[ctx.dataIndex];
+          return label;
+        },
+      },
+    }
+  };
 
+  // events
+  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
+    console.log(event, active);
+  }
+
+  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
+    console.log(event, active);
+  }
+
+  graphic() {
+    this.pieChartLabels = [];
+    this.pieChartData = [];
+    console.log("filteredPedidos", this.filteredPedidos)
+    let categories = this.getCategories(this.filteredPedidos);
+    this.pieChartLabels = categories;
+    let amounts = this.getAmounts(this.filteredPedidos, categories);
+    this.pieChartData = amounts;
+    console.log("labels and data", this.pieChartLabels, this.pieChartData );
+    this.showGraph = true;
+  }
+
+  getCategories(pedidos: any) {
+    let categories: string[] = []
+    console.log("pedidos", pedidos)
+    let colors = []
+    for (let i=0;i<pedidos.length;i++) {
+      for (let j=0;j<pedidos[i].payload.val().pedido.products.length; j++) {
+        if (!this.isCategoryIncluded(categories, pedidos[i].payload.val().pedido.products[j].product.prodCategory)) {
+          categories.push(pedidos[i].payload.val().pedido.products[j].product.prodCategory)
+          let col = this.color.pop()
+          if (col) {
+            this.pieChartColors[0].backgroundColor.push(col);
+          }
+        }
+      }
+    }
+    console.log("categories", categories)
+    return categories;
+  }
+
+  isCategoryIncluded(categories: string[], category: string) {
+    for (let i=0;i<categories.length; i++) {
+      if (categories[i]==category) return true;
+    }
+    return false;
+  }
+
+  getAmounts(pedidos: any, categories: string[]) {
+    let amounts = [];
+    for (let i=0;i<categories.length;i++) {
+      let amount = 0;
+      for (let j=0;j<pedidos.length;j++) {
+        for (let k=0;k<pedidos[j].payload.val().pedido.products.length; k++) {
+          if (pedidos[j].payload.val().pedido.products[k].product.prodCategory == categories[i]) {
+            amount += parseInt(pedidos[j].payload.val().pedido.products[k].discountPrice)
+          }
+        }
+      }
+      amounts.push(amount)
+    }
+    return amounts;
   }
 }
