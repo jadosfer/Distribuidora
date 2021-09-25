@@ -49,7 +49,7 @@
   <!----> <th mat-sort-header="total">UNIDADES TOTALES</th>
           <th mat-sort-header="showTotalQuantity">{{getTotalUnits()}}&nbsp; Unidades</th>
           <th mat-sort-header="totalPrice">IMPORTE TOTAL</th>
-          <th mat-sort-header="showTotal">${{getTotal()}}</th>
+          <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
         </tr>
       </table>
       <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>

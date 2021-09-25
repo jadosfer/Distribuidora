@@ -5,7 +5,7 @@
 <div class="SCContainer" *ngIf="appUser">
   <div>
     <div>
-      <div class="chart" *ngIf="showGraph" style="float:left">
+      <div class="chart" *ngIf="showGraph" style="float:left; margin:5px">
         <canvas baseChart height="400"
           [data]="pieChartData"
           [labels]="pieChartLabels"
@@ -81,7 +81,7 @@
     </div>
     <div  fxShow.sm fxHide.gt-sm>
       <button style="margin:5px" mat-raised-button type="submit" color="primary" >buscar por rango</button>
-      <button #query mat-raised-button color="basic" (click)="clearRange()">borrar búsqueda</button>
+      <button style="margin-left:5px" #query mat-raised-button color="basic" (click)="clearRange()">borrar búsqueda</button>
     </div>
   </div>
 

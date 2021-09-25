@@ -1,3 +1,4 @@
+import { SellersService } from './../services/sellers.service';
 import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
@@ -10,8 +11,10 @@ import { PedidosService } from '../services/pedidos.service';
 export class MatNavbarComponent implements OnInit{
 
   appUser: AppUser;
+  sellers: any;
 
-  constructor(private auth: AuthService, private pedidosService: PedidosService) {
+  constructor(private auth: AuthService, private pedidosService: PedidosService,
+    private sellersService: SellersService) {
   }
 
   logout() {
@@ -26,7 +29,26 @@ export class MatNavbarComponent implements OnInit{
   ngOnInit() {
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      if (appUser) this.pedidosService.appUser = this.appUser;
+      if (appUser) {
+        this.pedidosService.appUser = this.appUser;
+        this.sellersService.getAll().subscribe(sellers => {
+          this.sellers = sellers;
+          let create = true;
+          for (let i=0;i<this.sellers.length;i++) {
+            if (this.sellers[i].payload.val().name == this.appUser.name) create = false;
+          }
+          if (create) {
+            this.sellersService.create({
+              "address": "",
+              "cuil": "",
+              "name": appUser.name,
+              "phone": ""
+            });
+          }
+
+        });
+      }
     });
+
   }
 }

@@ -116,7 +116,7 @@
 
     <tr>
       <th mat-sort-header="total">TOTAL</th>
-      <th mat-sort-header="showTotal">${{getTotal()}}</th>
+      <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
     </tr>
 
   </table>

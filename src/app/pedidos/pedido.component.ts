@@ -28,7 +28,8 @@ export class PedidoComponent implements OnInit {
 
   clientFantasyName:string="";
 
-  clients:any[];
+  clients:any[] = [];
+  filteredClients:any[];
   products$:any;
   prodCategory: string | null;
   products:any[];
@@ -73,16 +74,6 @@ export class PedidoComponent implements OnInit {
         }
       });
     });
-
-    this.subscription2 = this.clientsService.getAll().subscribe(clients => {
-      this.clients = clients;
-
-      this.filteredOptions = this.myControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value =>  value? this._filter(value) : this._filter(""))
-        )
-    });
   }
 
   ngOnInit(){
@@ -92,6 +83,23 @@ export class PedidoComponent implements OnInit {
     this.pedidosService.getPedido().subscribe(pedido => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
+
+        this.subscription2 = this.clientsService.getAll().subscribe(clients => {
+          this.filteredClients = clients;
+          this.clients = [];
+          for (let i=0;i<this.filteredClients.length;i++) {
+            if (this.filteredClients[i].payload.val().designatedSeller == this.appUser.name || this.appUser.isAdmin == true)  {
+              this.clients.push(this.filteredClients[i]);
+            }
+          }
+
+          this.filteredOptions = this.myControl.valueChanges
+          .pipe(
+            startWith(''),
+            map(value =>  value? this._filter(value) : this._filter(""))
+            )
+        });
+
       });
       this.pedido = pedido;
       this.route.queryParamMap.subscribe(params => {
@@ -160,6 +168,7 @@ export class PedidoComponent implements OnInit {
 
   private _filter(value: any): any {
     const filterValue = value.toLowerCase();
+    if (!this.clients) return;
     let listFiltrada = this.clients.filter(client => client.payload.val().fantasyName.toLowerCase().includes(filterValue));
     return listFiltrada
   }
