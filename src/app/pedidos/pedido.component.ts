@@ -61,7 +61,6 @@ export class PedidoComponent implements OnInit {
   ) {
     this.pedidosService.resetPedido();
     this.pedido = this.pedidosService.getPedido();
-
     this.subscription = this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.route.queryParamMap.subscribe(params => {
@@ -92,12 +91,9 @@ export class PedidoComponent implements OnInit {
               this.clients.push(this.filteredClients[i]);
             }
           }
-
-          this.filteredOptions = this.myControl.valueChanges
-          .pipe(
-            startWith(''),
-            map(value =>  value? this._filter(value) : this._filter(""))
-            )
+          this.filteredOptions = this.myControl.valueChanges.pipe(startWith(''),
+          map(value =>  value? this._filter(value) : this._filter(""))
+          )
         });
 
       });
@@ -209,24 +205,22 @@ export class PedidoComponent implements OnInit {
       return;
     }
 
-    this.filteredOptions.subscribe(options =>{
-      let send = false;
-      for (let i=0;i<options.length;i++) {
-        console.log(this.clientFantasyName, options[i].payload.val().fantasyName)
-        if (this.clientFantasyName == options[i].payload.val().fantasyName)
-        send = true;
+
+    let send = false;
+    for (let i=0;i<this.clients.length;i++) {
+      if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)
+      send = true;
+    }
+    if (send) {
+      if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
+        this.sended = true;
+        this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
+        this.clientFantasyName = "";
+        this.router.navigateByUrl('/pedidos/pedidos');
       }
-      if (send) {
-        if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
-          this.sended = true;
-          this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
-          this.clientFantasyName = "";
-          this.router.navigateByUrl('/pedidos/pedidos');
-        }
-        return;
-      }
-      confirm('El cliente es incorrecto')
-    });
+      return;
+    }
+    confirm('El cliente es incorrecto')
   }
 
   reset() {
