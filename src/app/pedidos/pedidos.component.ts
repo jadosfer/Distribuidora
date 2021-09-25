@@ -181,25 +181,30 @@ export class PedidosComponent implements OnInit {
   }
 
   exportAsPDF(pedido: any)  {
+    const line1 = 20
+    const line2 = line1 + 10
+    const line3 = line2 + 10
 
     var doc = new jsPDF();
-    doc.text('Cantidad', 10, 20);
-    doc.text('Producto', 40, 20);
-    doc.text('Importe/uni', 140, 20);
-    doc.text('Importe', 180, 20);
+    doc.setFontSize(10);
+    doc.text('GENTECH MAR DEL PLATA', 10, line1);
+    doc.text('Cantidad', 10, line2);
+    doc.text('Producto', 40, line2);
+    doc.text('Importe/uni', 140, line2);
+    doc.text('Importe', 180, line2);
 
     let cont = 0;
     for (let i=0;i<pedido.payload.val().pedido.products.length;i++) {
       if (pedido.payload.val().pedido.products[i].quantity != 0) {
         let total = pedido.payload.val().pedido.products[i].price * pedido.payload.val().pedido.products[i].quantity
-        doc.text(pedido.payload.val().pedido.products[i].quantity.toString(), 10, 30 + 10*cont);
-        doc.text(pedido.payload.val().pedido.products[i].product.title, 40, 30 + 10*cont);
-        doc.text(pedido.payload.val().pedido.products[i].price.toString(), 140, 30 + 10*cont);
-        doc.text(total.toString(), 180, 30 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].quantity.toString(), 10, line3 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].product.title, 40, line3 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].price.toString(), 140, line3 + 10*cont);
+        doc.text(total.toString(), 180, line3 + 10*cont);
         cont +=1;
       }
     }
-      let footerVertPos = 30 + 10 * cont + 10;
+      let footerVertPos = line3 + 10 * cont + 10;
       doc.text("TOTAL:    " + this.pedidosService.getTotalCost(pedido).toString(), 10, footerVertPos);
 
 
