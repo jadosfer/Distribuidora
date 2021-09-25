@@ -209,12 +209,24 @@ export class PedidoComponent implements OnInit {
       return;
     }
 
-    if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
-      this.sended = true;
-      this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
-      this.clientFantasyName = "";
-      this.router.navigateByUrl('/pedidos/pedidos');
-    }
+    this.filteredOptions.subscribe(options =>{
+      let send = false;
+      for (let i=0;i<options.length;i++) {
+        console.log(this.clientFantasyName, options[i].payload.val().fantasyName)
+        if (this.clientFantasyName == options[i].payload.val().fantasyName)
+        send = true;
+      }
+      if (send) {
+        if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
+          this.sended = true;
+          this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
+          this.clientFantasyName = "";
+          this.router.navigateByUrl('/pedidos/pedidos');
+        }
+        return;
+      }
+      confirm('El cliente es incorrecto')
+    });
   }
 
   reset() {
