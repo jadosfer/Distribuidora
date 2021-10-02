@@ -17,6 +17,7 @@ import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { BuysComponent } from './buys/buys.component';
+import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
@@ -39,6 +40,9 @@ const routes: Routes = [
   { path: "admin/products/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/products/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/products", component: AdminProductsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "admin/prods/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "admin/prods/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "admin/prods", component: AdminProdsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
 
   { path: "admin/sellers/new", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/sellers/:id", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },

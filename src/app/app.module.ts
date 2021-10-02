@@ -42,6 +42,7 @@ import { BuysComponent } from './buys/buys.component';
 import { ProdCategoryService } from './services/prod-category.service';
 import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
+import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 
 
 
@@ -66,7 +67,8 @@ import { ChartsModule } from 'ng2-charts';
     BuyComponent,
     DashboardComponent,
     BuysComponent,
-    PieChartComponent
+    PieChartComponent,
+    AdminProdsComponent
 
   ],
   imports: [

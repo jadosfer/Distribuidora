@@ -15,7 +15,7 @@
   <mat-menu #appMenu="matMenu" >
     <ng-container *ngIf="appUser!=undefined && appUser.isAdmin">
       <a mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>
-      <a mat-menu-item routerLink="/admin/products">Administrar Productos</a>
+      <a mat-menu-item routerLink="/admin/prods">Administrar Productos</a>
       <a mat-menu-item routerLink="/admin/sellers">Administrar Vendedores</a>
     </ng-container>
     <a mat-menu-item (click)="logout()">Log Out</a>
