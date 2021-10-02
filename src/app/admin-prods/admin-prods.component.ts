@@ -3,8 +3,9 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { ProductService } from 'src/app/services/product.service';
 import {MatPaginator} from '@angular/material/paginator';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ProdCategoryService } from '../services/prod-category.service';
 
 @Component({
   selector: 'app-admin-prods',
@@ -21,6 +22,7 @@ export class AdminProdsComponent implements OnInit {
   products: any;
 
   filteredProducts:any[];
+  prodCategories$: Observable<any>;
   subscription: Subscription;
 
   recharged: boolean;
@@ -28,7 +30,9 @@ export class AdminProdsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private productService: ProductService, private db: AngularFireDatabase, private router: Router) {
+  constructor(private productService: ProductService, private db: AngularFireDatabase, private router: Router,
+     private prodCategoryService: ProdCategoryService,) {
+    this.prodCategories$ = prodCategoryService.getAll()
   }
 
   ngOnInit() {
@@ -68,12 +72,18 @@ export class AdminProdsComponent implements OnInit {
         "discPrice1": formproduct.payload.val().discPrice1,
         "discPrice2": formproduct.payload.val().discPrice2,
         "discPrice3": formproduct.payload.val().discPrice3,
-        "prodCategory": formproduct.payload.val().prodCategory,
+        "prodCategory": product.prodCategory,
         "title": product.title
       }
       this.productService.update(formproduct.key, prod);
       location.reload();
       //this.router.navigate(['/admin/prods']);
+    }
+  }
+
+  delete(id: string) {
+    if (confirm('Está segur@ que quiere eliminar este producto?')) {
+      this.productService.delete(id);
     }
   }
 

@@ -1,103 +1,116 @@
-<div>
-  <div>
-    <a mat-raised-button color="accent" routerLink="/admin/products/new">Nuevo Producto</a>
+<div fxLayout="column" fxLayoutAlign="space-between" class="container-edit">
+  <div fxLayout="row" fxFlex="20" fxLayoutAlign="start center">
+    <div fxFlex="27">
+      <a mat-raised-button color="accent" routerLink="/admin/products/new">Nuevo Producto</a>
+    </div>
+
+    <div fxLayout="row">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div> <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar producto..."></div>
+    </div>
   </div>
 
-  <div>
-    <div><mat-icon matSuffix>search</mat-icon></div>
-    <div> <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar producto..."></div>
-  </div>
-</div>
+  <div fxLayout="column" class="admin-prod-recharge">
+    <div>
+      <span><b><u>Remarcación de precios:</u></b></span>
+    </div>
+    <div>
+      <form #f="ngForm"  (ngSubmit)="save(f.value)">
+        <p *ngIf="this.recharges">
+          <mat-form-field appearance="legacy">
+            <input #dist="ngModel" matInput [(ngModel)]="rechargeDelForm.dist" name="dist" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" required>
+            <div class="alert alert-danger" *ngIf="this.recharges && dist.touched && dist.invalid">campo obligatorio</div>
+          </mat-form-field>
 
-<div>
-  <div>
-    <span><b><u>Remarcación de precios:</u></b></span>
-  </div>
-  <div>
-    <form #f="ngForm"  (ngSubmit)="save(f.value)">
-      <p *ngIf="this.recharges">
-        <mat-form-field appearance="legacy">
-          <input #dist="ngModel" matInput [(ngModel)]="rechargeDelForm.dist" name="dist" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" required>
-          <div class="alert alert-danger" *ngIf="this.recharges && dist.touched && dist.invalid">campo obligatorio</div>
-        </mat-form-field>
+          <mat-form-field appearance="legacy">
+            <input #com="ngModel" matInput [(ngModel)]="rechargeDelForm.com" name="com" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" required>
+            <div class="alert alert-danger" *ngIf="com.touched && com.invalid">campo obligatorio</div>
+          </mat-form-field>
 
-        <mat-form-field appearance="legacy">
-          <input #com="ngModel" matInput [(ngModel)]="rechargeDelForm.com" name="com" placeholder="comercio: {{this.recharges[0].payload.val().comRecharge}}%" required>
-          <div class="alert alert-danger" *ngIf="com.touched && com.invalid">campo obligatorio</div>
-        </mat-form-field>
+          <mat-form-field appearance="legacy">
+            <input #gym="ngModel" matInput [(ngModel)]="rechargeDelForm.gym" name="gym" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" required>
+            <div class="alert alert-danger" *ngIf="gym.touched && gym.invalid">campo obligatorio</div>
+          </mat-form-field>
+        <button mat-raised-button type="submit" color="primary" >Aplicar</button>
+        <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicando</span>
+      </p>
+      </form>
+    </div>
 
-        <mat-form-field appearance="legacy">
-          <input #gym="ngModel" matInput [(ngModel)]="rechargeDelForm.gym" name="gym" placeholder="gimnasio: {{this.recharges[0].payload.val().gymRecharge}}%" required>
-          <div class="alert alert-danger" *ngIf="gym.touched && gym.invalid">campo obligatorio</div>
-        </mat-form-field>
-      <button mat-raised-button type="submit" color="primary" >Aplicar</button>
-      <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicando</span>
-    </p>
-    </form>
   </div>
 
-</div>
+  <div class="admin-prods-form" *ngFor="let product of this.filteredProducts; let i = index">
+    <div>
+      <form #f="ngForm" (ngSubmit)="saveProd(f.value, product)">
+          <mat-form-field appearance="legacy" style="width:25vw;min-width:320px;margin-right: 10px; ">
+            <input #title="ngModel" matInput [(ngModel)]="product.payload.val().title" name="title" placeholder="" required>
+            <mat-hint>Producto</mat-hint>
+            <div class="alert alert-danger" *ngIf="title.touched && title.invalid">Title is required</div>
+          </mat-form-field>
 
-<div fxLayout="row" fxLayout.xs="column" *ngFor="let product of this.filteredProducts; let i = index">
-  <div class="container-form" >
-    <form #f="ngForm" (ngSubmit)="saveProd(f.value, product)">
-        <mat-form-field appearance="legacy" style="width:330px;">
-          <input #title="ngModel" matInput [(ngModel)]="product.payload.val().title" name="title" placeholder="" required>
-          <mat-hint>Producto</mat-hint>
-          <div class="alert alert-danger" *ngIf="title.touched && title.invalid">Title is required</div>
-        </mat-form-field>
+          <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;">
+            <input #buyPrice="ngModel" matInput [(ngModel)]="product.payload.val().buyPrice" name="buyPrice" placeholder="" required [min]="0">
+            <div class="alert alert-danger" *ngIf="buyPrice.touched && buyPrice.invalid">
+              <div *ngIf="buyPrice.errors?.required">Price is required</div>
+              <div *ngIf="buyPrice.errors?.min">Price should be 0 or higher</div>
+            </div>
+            <mat-hint>Precio de compra</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field appearance="legacy">
-          <input #buyPrice="ngModel" matInput [(ngModel)]="product.payload.val().buyPrice" name="buyPrice" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="buyPrice.touched && buyPrice.invalid">
-            <div *ngIf="buyPrice.errors?.required">Price is required</div>
-            <div *ngIf="buyPrice.errors?.min">Price should be 0 or higher</div>
-          </div>
-          <mat-hint>Precio de compra</mat-hint>
-        </mat-form-field>
+          <mat-form-field appearance="fill" style="width:5vw;min-width:63px;">
+            <input matInput placeholder="${{product.payload.val().discPrice1}}" readonly>
+            <mat-hint>Precio distribuidor</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <input matInput placeholder="{{product.payload.val().discPrice1}}" readonly>
-          <mat-hint>Precio distribuidor</mat-hint>
-        </mat-form-field>
+          <mat-form-field appearance="legacy" style="width:2vw;min-width:25px;">
+            <input #disc1="ngModel" matInput [(ngModel)]="product.payload.val().disc1" name="disc1" placeholder="" required>
+            <div class="alert alert-danger" *ngIf="disc1.touched && disc1.invalid">
+              <div *ngIf="disc1.errors?.required">campo obligatorio</div>
+            </div>
+            <mat-hint>Desc.(%)</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field appearance="legacy">
-          <input #disc1="ngModel" matInput [(ngModel)]="product.payload.val().disc1" name="disc1" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="disc1.touched && disc1.invalid">
-            <div *ngIf="disc1.errors?.required">Price is required</div>
-            <div *ngIf="disc1.errors?.min">Price should be 0 or higher</div>
-          </div>
-          <mat-hint>Desc.</mat-hint>
-        </mat-form-field>
+          <mat-form-field appearance="fill" style="width:5vw;min-width:63px;">
+            <input matInput placeholder="${{product.payload.val().discPrice2}}" readonly>
+            <mat-hint>Precio comercio</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <input matInput placeholder="{{product.payload.val().discPrice2}}" readonly>
-          <mat-hint>Precio comercio</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <input #disc2="ngModel" matInput [(ngModel)]="product.payload.val().disc2" name="disc2" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="disc2.touched && disc2.invalid">
-          </div>
-          <mat-hint>Desc.</mat-hint>
-        </mat-form-field>
+          <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;">
+            <input #disc2="ngModel" matInput [(ngModel)]="product.payload.val().disc2" name="disc2" placeholder="" required>
+            <div class="alert alert-danger" *ngIf="disc2.touched && disc2.invalid">
+              <div *ngIf="disc2.errors?.required">campo obligatorio</div>
+            </div>
+            <mat-hint>Desc.(%)</mat-hint>
+          </mat-form-field>
 
 
-        <mat-form-field appearance="fill">
-          <input matInput placeholder="{{product.payload.val().discPrice3}}" readonly>
-          <mat-hint>Precio gimnasio</mat-hint>
-        </mat-form-field>
-        <mat-form-field appearance="legacy">
-          <input #disc3="ngModel" matInput [(ngModel)]="product.payload.val().disc3" name="disc3" placeholder="" required [min]="0">
-          <div class="alert alert-danger" *ngIf="disc3.touched && disc3.invalid">
-          </div>
-          <mat-hint>Desc.</mat-hint>
-        </mat-form-field>
+          <mat-form-field appearance="fill" style="width:5vw;min-width:63px;">
+            <input matInput placeholder="${{product.payload.val().discPrice3}}" readonly>
+            <mat-hint>Precio gimnasio</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;">
+            <input #disc3="ngModel" matInput [(ngModel)]="product.payload.val().disc3" name="disc3" placeholder="" required>
+            <div class="alert alert-danger" *ngIf="disc3.touched && disc3.invalid">
+              <div *ngIf="disc3.errors?.required">campo obligatorio</div>
+            </div>
+            <mat-hint>Desc.(%)</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" style="width:6vw;min-width:60px;">
+            <mat-label>Categorias</mat-label>
+            <mat-select #prodCategory="ngModel" [(ngModel)]="product.payload.val().prodCategory" name="prodCategory" required>
+              <mat-option *ngFor="let c of prodCategories$ | async" [value]="c.name">
+                {{c.name}}
+              </mat-option>
+            </mat-select>
+            <div class="alert alert-danger" *ngIf="prodCategory.touched && prodCategory.invalid">Category is required</div>
+          </mat-form-field>
 
 
 
-      <button mat-raised-button type="submit" color="primary" >Guardar</button>
-      <!--button (click)="delete()" mat-raised-button type="button" color="warn">Delete</button-->
-    </form>
+        <button mat-raised-button type="submit" color="primary" >Guardar</button>
+        <button (click)="delete(product.key)" mat-raised-button type="button" color="warn">Delete</button>
+      </form>
+    </div>
   </div>
 </div>

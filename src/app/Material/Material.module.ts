@@ -19,6 +19,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {MatBadgeModule} from '@angular/material/badge';
+import { MatInputAutosizeModule } from 'mat-input-autosize';
 
 
 
