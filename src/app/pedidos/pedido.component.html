@@ -36,11 +36,11 @@
           <td><button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, -1)" mat-raised-button color="basic">-</button></td>
           <td><button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, 1)" mat-raised-button color="basic">+</button></td>
           <td>
-            <form role="form" (submit)="discount($event, p, +name.value)">
-                <input type="number" #name value={{p.value}}>
+            <form role="form" (submit)="discount($event, p, +disc.value)">
+                <input type="number" #disc value={{p.value}}>
                 <button *ngIf="pedido[0].payload.val().products[i].discount==0" type="submit">Aplicar</button>
-                <button *ngIf="pedido[0].payload.val().products[i].discount>0" (click)="discount($event, p, 0)">Anular</button>
-                <span *ngIf="pedido[0].payload.val().products[i].discount>0">&nbsp;&nbsp;Descuento: {{pedido[0].payload.val().products[i].discount}}%</span>
+                <button *ngIf="pedido[0].payload.val().products[i].discount!=0" (click)="discount($event, p, 0)">Anular</button>
+                <span *ngIf="pedido[0].payload.val().products[i].discount!=0">&nbsp;&nbsp;Descuento: {{pedido[0].payload.val().products[i].discount}}%</span>
             </form>
 
           </td>
@@ -56,6 +56,7 @@
       <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
       <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
       <span *ngIf="pedidoEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+      <span *ngIf="getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios 21% IVA</span>
 
     </div>
 </div>

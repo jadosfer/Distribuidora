@@ -5,7 +5,7 @@
 <div class="SCContainer" *ngIf="appUser">
   <div>
     <div>
-      <div class="chart" *ngIf="showGraph" style="float:left; margin:5px">
+      <div class="chart" *ngIf="showGraph" style="float:left; margin-right:15px">
         <canvas baseChart height="400"
           [data]="pieChartData"
           [labels]="pieChartLabels"
@@ -14,6 +14,18 @@
           [colors]="pieChartColors"
           [legend]="pieChartLegend">
         </canvas>
+      </div>
+      <div style="margin:30px" *ngIf="showGraph">
+        <table mat-table [dataSource]="this.pieChartData" class="mat-elevation-z8">
+          <tr>
+            <th *ngFor="let label of pieChartLabels; let i = index">{{label}}</th>
+            <th>Total</th>
+          </tr>
+           <tr>
+              <td *ngFor="let data of pieChartData; let i = index">${{data | number:'1.1-1'}}&nbsp;({{getPercentage(data) | number:'1.1-1'}}%)&nbsp;</td>
+              <td>{{getTotalCategs() | number:'1.1-1'}}</td>
+          </tr>
+        </table>
       </div>
     </div>
   </div>
@@ -121,8 +133,8 @@
               <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
                 <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
                 <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td *ngIf="item.quantity !=0">${{item.price}}</td>
-                <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
+                <td *ngIf="item.quantity !=0">${{item.price | number:'1.1-1'}}</td>
+                <td *ngIf="item.quantity !=0">${{item.price * item.quantity | number:'1.1-1'}}</td>
               </tr>
             </mat-expansion-panel>
           </mat-accordion>  <!---->

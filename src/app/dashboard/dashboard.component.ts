@@ -24,6 +24,8 @@ import { ChartOptions, ChartType } from 'chart.js';
 })
 export class DashboardComponent implements OnInit {
 
+
+
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl()
@@ -267,12 +269,10 @@ export class DashboardComponent implements OnInit {
   graphic() {
     this.pieChartLabels = [];
     this.pieChartData = [];
-    console.log("filteredPedidos", this.filteredPedidos)
     let categories = this.getCategories(this.filteredPedidos);
     this.pieChartLabels = categories;
     let amounts = this.getAmounts(this.filteredPedidos, categories);
     this.pieChartData = amounts;
-    console.log("labels and data", this.pieChartLabels, this.pieChartData );
     this.showGraph = true;
   }
 
@@ -316,5 +316,20 @@ export class DashboardComponent implements OnInit {
       amounts.push(amount)
     }
     return amounts;
+  }
+
+  getPercentage(data: any){  //porcentaje de la facturacion de cada categoria sobre el total
+    let sum=0;
+    for (let i=0;i<this.pieChartData.length;i++) {
+      sum += this.pieChartData[i];
+    }
+    return 100*data/sum
+  }
+  getTotalCategs(){  //facturacion total de los pedidos filtrados
+    let sum=0;
+    for (let i=0;i<this.pieChartData.length;i++) {
+      sum += this.pieChartData[i];
+    }
+    return sum
   }
 }
