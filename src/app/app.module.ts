@@ -8,7 +8,6 @@ import { MaterialModule } from './Material/Material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { PedidoComponent } from './pedidos/pedido.component';
 import { CheckOutComponent } from './check-out/check-out.component';
-import { AdminProductsComponent } from './admin/admin-products/admin-products.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { LoginComponent } from './login/login.component';
 import { environment } from '../environments/environment';
@@ -54,7 +53,6 @@ import { AdminProdsComponent } from './admin-prods/admin-prods.component';
     MatNavbarComponent,
     PedidoComponent,
     CheckOutComponent,
-    AdminProductsComponent,
     AdminClientsComponent,
     LoginComponent,
     ProductFormComponent,

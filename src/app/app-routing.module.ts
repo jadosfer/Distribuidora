@@ -5,7 +5,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PedidoComponent } from './pedidos/pedido.component';
 import { LoginComponent } from './login/login.component';
-import { AdminProductsComponent } from './admin/admin-products/admin-products.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { ClientsComponent} from './clients/clients.component';
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
@@ -37,9 +36,6 @@ const routes: Routes = [
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients", component: AdminClientsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
 
-  { path: "admin/products/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/products/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/products", component: AdminProductsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/prods/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/prods/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/prods", component: AdminProdsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
