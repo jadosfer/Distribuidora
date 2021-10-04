@@ -17,6 +17,12 @@
           </mat-autocomplete>
         </mat-form-field>
       </form>
+      <div fxLayout="row">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div>
+          <input matInput #prodQuery (keyup)="filter(prodQuery.value)" type="text" placeholder="Buscar producto...">
+        </div>
+      </div>
       <table matSort (matSortChange)="sortData($event)">
         <tr>
           <th mat-sort-header="title">Producto</th>
@@ -28,7 +34,7 @@
           <th mat-sort-header="discount">&nbsp;Descuento(%)</th>
         </tr>
 
-        <tr *ngFor="let p of filteredPedido; let i = index">
+        <tr *ngFor="let p of pedidoProducts; let i = index">
           <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.quantity}}</td>
           <td>${{p.discountPrice | number : '1.1-1'}}</td>

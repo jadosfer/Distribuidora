@@ -42,6 +42,7 @@ export class PedidosComponent implements OnInit {
   date: any;
   dateValue: string;
   clientValue: string;
+  sellerValue: string;
 
   title: string;
   quantity: number;
@@ -81,6 +82,15 @@ export class PedidosComponent implements OnInit {
     if (query != "") {
       this.filteredPedidos = (query) ?
       this.filteredPedidos.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+      this.filteredPedidos;
+    }
+    else this.filteredPedidos = this.userPedidos;
+  }
+
+  filterBySeller(query: string) {
+    if (query != "") {
+      this.filteredPedidos = (query) ?
+      this.filteredPedidos.filter(p => p.payload.val().pedido.sellerName.toLowerCase().includes(query.toLowerCase())) :
       this.filteredPedidos;
     }
     else this.filteredPedidos = this.userPedidos;

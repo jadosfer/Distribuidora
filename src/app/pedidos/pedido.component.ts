@@ -30,11 +30,12 @@ export class PedidoComponent implements OnInit {
 
   clients:any[] = [];
   filteredClients:any[];
-  products$:any;
+  pedidoProducts:any;
   prodCategory: string | null;
   products:any[];
   filteredProducts:any[];
   filteredPedido: any;
+  prodQuery: string;
   subscription: Subscription;
   subscription2: Subscription;
   pedido: any;
@@ -113,7 +114,8 @@ export class PedidoComponent implements OnInit {
               this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
           }
         }
-
+        this.filter(this.prodQuery);
+        this.pedidoProducts = this.filteredPedido;
       });
     });
   }
@@ -167,6 +169,17 @@ export class PedidoComponent implements OnInit {
     if (!this.clients) return;
     let listFiltrada = this.clients.filter(client => client.payload.val().fantasyName.toLowerCase().includes(filterValue));
     return listFiltrada
+  }
+
+  filter(prodQuery: string) {
+    this.prodQuery = prodQuery;
+    if (prodQuery=='') {
+      this.pedidoProducts = this.filteredPedido;
+      return
+    }
+    this.pedidoProducts = (prodQuery) ?
+    this.pedidoProducts.filter((p: { product: { title: string; }; }) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
+    this.pedidoProducts;
   }
 
   updatePedidoItemQuantity(pedido: any, product: any, change: number){
