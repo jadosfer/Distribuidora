@@ -20,6 +20,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {MatBadgeModule} from '@angular/material/badge';
 import { MatInputAutosizeModule } from 'mat-input-autosize';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatRadioModule} from '@angular/material/radio';
+
 
 
 
@@ -45,7 +48,9 @@ const MaterialsComponents = [
   MatDatepickerModule,
   MatNativeDateModule,
   MatMomentDateModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatCheckboxModule,
+  MatRadioModule
 
 ]
 @NgModule({

@@ -40,6 +40,8 @@ export class PedidoComponent implements OnInit {
   subscription2: Subscription;
   pedido: any;
   disc: number = 0;
+  iva: number = 21;
+  ivas: number[] = [0, 10.5, 21];
 
   filteredProduct:any[];
   breakpoint:any;
@@ -227,7 +229,7 @@ export class PedidoComponent implements OnInit {
     if (send) {
       if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
         this.sended = true;
-        this.pedidosService.sendPedido(this.pedido, this.clientFantasyName);
+        this.pedidosService.sendPedido(this.pedido, this.clientFantasyName, this.iva);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/pedidos/pedidos');
       }

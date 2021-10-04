@@ -17,17 +17,33 @@
           </mat-autocomplete>
         </mat-form-field>
       </form>
-      <div fxLayout="row">
+      <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:10px;">
         <div><mat-icon matSuffix>search</mat-icon></div>
         <div>
           <input matInput #prodQuery (keyup)="filter(prodQuery.value)" type="text" placeholder="Buscar producto...">
         </div>
+        <div>
+          <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>
+          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+          <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
+          <span *ngIf="pedidoEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+        </div>
+        <div>
+          <label style="margin:10px" id="example-radio-group-label"><b>IVA:</b></label>
+          <mat-radio-group *ngIf="getClientCategory()!='Gimnasio'" aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="this.iva">
+            <mat-radio-button style="margin:10px" class="example-radio-button" *ngFor="let iva of ivas" [value]="iva">
+              {{iva}}%
+            </mat-radio-button>
+          </mat-radio-group>
+          <span *ngIf="getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios 21%</span>
+        </div>
+
       </div>
       <table matSort (matSortChange)="sortData($event)">
         <tr>
           <th mat-sort-header="title">Producto</th>
           <th id="quantity" mat-sort-header="quantity">Cantidad</th>
-          <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}</th>
+          <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;sin iva</th>
           <th mat-sort-header="totalPriceProduct">Subtotal</th>
           <th mat-sort-header="quit">&nbsp;&nbsp;&nbsp;Quitar</th>
           <th mat-sort-header="add">&nbsp;Agregar</th>
@@ -54,8 +70,8 @@
         <tr>
   <!----> <th mat-sort-header="total">UNIDADES TOTALES</th>
           <th mat-sort-header="showTotalQuantity">{{getTotalUnits()}}&nbsp; Unidades</th>
-          <th mat-sort-header="totalPrice">IMPORTE TOTAL</th>
-          <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
+          <th mat-sort-header="totalPrice">IMPORTE TOTAL(incluye el IVA)</th>
+          <th mat-sort-header="showTotal">${{getTotal()*(1+this.iva/100) | number:'1.1-1'}}</th>
         </tr>
       </table>
       <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>

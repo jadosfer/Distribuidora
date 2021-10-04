@@ -199,23 +199,25 @@ export class PedidosComponent implements OnInit {
     doc.setFontSize(10);
     doc.text('GENTECH MAR DEL PLATA', 10, line1);
     doc.text('Cantidad', 10, line2);
-    doc.text('Producto', 40, line2);
-    doc.text('Importe/uni', 140, line2);
-    doc.text('Importe', 180, line2);
+    doc.text('Producto', 30, line2);
+    doc.text('Importe/uni', 125, line2);
+    doc.text('Importe', 155, line2);
+    doc.text('Importe+iva', 185, line2);
 
     let cont = 0;
     for (let i=0;i<pedido.payload.val().pedido.products.length;i++) {
       if (pedido.payload.val().pedido.products[i].quantity != 0) {
         let total = pedido.payload.val().pedido.products[i].price * pedido.payload.val().pedido.products[i].quantity
         doc.text(pedido.payload.val().pedido.products[i].quantity.toString(), 10, line3 + 10*cont);
-        doc.text(pedido.payload.val().pedido.products[i].product.title, 40, line3 + 10*cont);
-        doc.text(pedido.payload.val().pedido.products[i].price.toString(), 140, line3 + 10*cont);
-        doc.text(total.toString(), 180, line3 + 10*cont);
+        doc.text(pedido.payload.val().pedido.products[i].product.title, 30, line3 + 10*cont);
+        doc.text("$"+pedido.payload.val().pedido.products[i].price.toFixed(1), 125, line3 + 10*cont);
+        doc.text("$"+total.toFixed(1), 155, line3 + 10*cont);
+        doc.text("$"+(total * (1+pedido.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
         cont +=1;
       }
     }
       let footerVertPos = line3 + 10 * cont + 10;
-      doc.text("TOTAL:    " + this.pedidosService.getTotalCost(pedido).toString(), 10, footerVertPos);
+      doc.text("TOTAL CON IVA " +pedido.payload.val().iva+"%       $"    + this.pedidosService.getTotalCost(pedido).toFixed(1), 10, footerVertPos);
 
 
     // Save the PDF

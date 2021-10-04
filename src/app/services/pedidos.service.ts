@@ -137,7 +137,7 @@ export class PedidosService {
               "product": pedido[0].payload.val().products[i].product,
               "productId": pedido[0].payload.val().products[i].productId,
               "quantity": pedido[0].payload.val().products[i].quantity + plus,
-              "discount": pedido[0].payload.val().products[i].discount
+              "discount": pedido[0].payload.val().products[i].discount,
             })
         plus = 0;
       }
@@ -145,7 +145,7 @@ export class PedidosService {
       this.db.object('/pedido/' + pedido[0].key).update({
         "pedidoItemsCount": pedidoItemsCount,
         "sellerName": this.appUser.name,
-        "products": products
+        "products": products,
       });
 
   }
@@ -189,11 +189,11 @@ export class PedidosService {
       this.db.object('/pedido/' + pedido[0].key).update({
         "pedidoItemsCount": pedido[0].payload.val().pedidoItemsCount,
         "sellerName": this.appUser.name,
-        "products": products
+        "products": products,
       });
   }
 
-  sendPedido(pedido: any, clientFantasyName: string) {
+  sendPedido(pedido: any, clientFantasyName: string, iva: number) {
 
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
@@ -201,8 +201,15 @@ export class PedidosService {
     for (let i=0;i<pedido[0].payload.val().products.length;i++) {
       if (pedido[0].payload.val().products[i].quantity != 0) { //solo guardo los prod con quant>0
         let pedidoAux = pedido[0].payload.val().products[i];
-        pedidoAux.price = pedido[0].payload.val().products[i].discountPrice;
-        prods.push(pedido[0].payload.val().products[i]);
+        pedidoAux.price = pedido[0].payload.val().products[i].discountPrice*(1+iva/100);
+        prods.push({
+          "discount": pedido[0].payload.val().products[i].discount,
+          "discountPrice": pedido[0].payload.val().products[i].price*(1+iva/100),
+          "price": pedido[0].payload.val().products[i].price,
+          "product": pedido[0].payload.val().products[i].product,
+          "productId": pedido[0].payload.val().products[i].productId,
+          "quantity": pedido[0].payload.val().products[i].quantity
+        });
       }
     }
 
@@ -211,11 +218,12 @@ export class PedidosService {
       "pedido": {
         pedidoItemsCount: pedido[0].payload.val().pedidoItemsCount,
         "products":prods,
-        "sellerName": pedido[0].payload.val().sellerName
+        "sellerName": pedido[0].payload.val().sellerName,
       },
       "creationDate": time,
       "aproved": "NO",
-      "paid": "NO"
+      "paid": "NO",
+      "iva": iva
     })
 
     this.updatePedido(result.key, {
