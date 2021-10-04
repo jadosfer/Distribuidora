@@ -59,7 +59,7 @@ export class AdminProdsComponent implements OnInit {
   }
 
   saveProd(product: any, formproduct: any) {
-    if (confirm('Está segur@ que quiere guardar/crear este producto?')) {
+    if (confirm('Está segur@ que quiere guardar estos valores?')) {
       let prod = {
         "disc1": product.disc1,
         "disc2": product.disc2,
@@ -88,7 +88,9 @@ export class AdminProdsComponent implements OnInit {
   }
 
   save(recharge:any) {
-    this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.gym))
+    if (confirm('Está segur@ que quiere cambiar la remarcación?')) {
+      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.gym))
+    }
   }
 
   recharge(distRecharge: number, comRecharge: number, gymRecharge: number) {

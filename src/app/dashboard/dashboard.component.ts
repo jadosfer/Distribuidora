@@ -195,8 +195,10 @@ export class DashboardComponent implements OnInit {
       this.filteredPedidos = (range) ?
       this.filteredPedidos.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
       this.filteredPedidos;
+      console.log("this.filteredPedidos", this.filteredPedidos)
+      return
     }
-    else this.filteredPedidos = this.userPedidos;
+    //this.filteredPedidos = this.userPedidos;
   }
 
   clearRange() {
@@ -272,6 +274,7 @@ export class DashboardComponent implements OnInit {
     let categories = this.getCategories(this.filteredPedidos);
     this.pieChartLabels = categories;
     let amounts = this.getAmounts(this.filteredPedidos, categories);
+    console.log("amounts", amounts)
     this.pieChartData = amounts;
     this.showGraph = true;
   }
@@ -309,12 +312,14 @@ export class DashboardComponent implements OnInit {
       for (let j=0;j<pedidos.length;j++) {
         for (let k=0;k<pedidos[j].payload.val().pedido.products.length; k++) {
           if (pedidos[j].payload.val().pedido.products[k].product.prodCategory == categories[i]) {
-            amount += parseInt(pedidos[j].payload.val().pedido.products[k].discountPrice)
+            console.log("precios",pedidos[j].payload.val().pedido.products[k].discountPrice)
+            amount += parseFloat(pedidos[j].payload.val().pedido.products[k].discountPrice)*parseInt(pedidos[j].payload.val().pedido.products[k].quantity)
           }
         }
       }
       amounts.push(amount)
     }
+    console.log("amounts", amounts)
     return amounts;
   }
 

@@ -302,7 +302,7 @@ export class PedidosService {
     let totalCost = 0;
     if (ped.payload.val().pedido.products) {
       for (let i = 0;i < ped.payload.val().pedido.products.length;i++) {
-        totalCost += ped.payload.val().pedido.products[i].price * ped.payload.val().pedido.products[i].quantity
+        totalCost += ped.payload.val().pedido.products[i].discountPrice * ped.payload.val().pedido.products[i].quantity
       }
     }
     return totalCost;

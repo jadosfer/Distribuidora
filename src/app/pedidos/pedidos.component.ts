@@ -210,7 +210,11 @@ export class PedidosComponent implements OnInit {
 
     // Save the PDF
     doc.save('pedido.pdf');
+  }
 
-
+  remove(id: any) {
+    if (confirm('Está segur@ que quiere eliminar este pedido?')) {
+      this.pedidosService.removePedido(id);
+    }
   }
 }
