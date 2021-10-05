@@ -75,7 +75,6 @@ export class ProductService implements OnInit{
 
   recharge(products:any, distRecharge: number, comRecharge: number, gymRecharge: number) {
     for (let i=0;i<products.length;i++) {
-      console.log("distRecharge", distRecharge);
       let prod = {
         "disc1": products[i].payload.val().disc1,
         "disc2": products[i].payload.val().disc2,
@@ -138,7 +137,6 @@ export class ProductService implements OnInit{
         product.disc3 = disc;
       }
     this.db.object('/products/' + p.key).update(product);
-    console.log("actualiza")
   }
 
   applyDiscountToAll() {

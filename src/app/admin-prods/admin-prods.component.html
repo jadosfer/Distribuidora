@@ -58,7 +58,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
-            <input matInput placeholder="${{product.payload.val().discPrice1}}" readonly>
+            <input matInput placeholder="${{product.payload.val().discPrice1 | number:'1.1-1'}}" readonly>
             <mat-hint>Precio distribuidor</mat-hint>
           </mat-form-field>
 
@@ -71,7 +71,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
-            <input matInput placeholder="${{product.payload.val().discPrice2}}" readonly>
+            <input matInput placeholder="${{product.payload.val().discPrice2 | number:'1.1-1'}}" readonly>
             <mat-hint>Precio comercio</mat-hint>
           </mat-form-field>
 
@@ -85,7 +85,7 @@
 
 
           <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
-            <input matInput placeholder="${{product.payload.val().discPrice3}}" readonly>
+            <input matInput placeholder="${{product.payload.val().discPrice3 | number:'1.1-1'}}" readonly>
             <mat-hint>Precio gimnasio</mat-hint>
           </mat-form-field>
           <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;">

@@ -50,7 +50,7 @@
           <th mat-sort-header="discount">&nbsp;Descuento(%)</th>
         </tr>
 
-        <tr *ngFor="let p of pedidoProducts; let i = index">
+        <tr *ngFor="let p of showedProducts; let i = index">
           <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.quantity}}</td>
           <td>${{p.discountPrice | number : '1.1-1'}}</td>

@@ -30,7 +30,7 @@ export class PedidoComponent implements OnInit {
 
   clients:any[] = [];
   filteredClients:any[];
-  pedidoProducts:any;
+  showedProducts:any;
   prodCategory: string | null;
   products:any[];
   filteredProducts:any[];
@@ -64,18 +64,6 @@ export class PedidoComponent implements OnInit {
   ) {
     this.pedidosService.resetPedido();
     this.pedido = this.pedidosService.getPedido();
-    this.subscription = this.productService.getAll().subscribe(products => {
-      this.filteredProducts = this.products = products;
-      this.route.queryParamMap.subscribe(params => {
-        this.prodCategory = params.get('prodCategory');
-        if (this.products) {
-          this.filteredProducts = (this.prodCategory) ?
-          this.products.filter(p =>
-            p.payload.val().prodCategory == this.prodCategory) :
-          this.products;
-        }
-      });
-    });
   }
 
   ngOnInit(){
@@ -98,12 +86,11 @@ export class PedidoComponent implements OnInit {
           map(value =>  value? this._filter(value) : this._filter(""))
           )
         });
-
       });
+
       this.pedido = pedido;
       this.route.queryParamMap.subscribe(params => {
         this.prodCategory = params.get('prodCategory');
-
         this.filteredPedido = [];
         if (this.pedido.length != 0) {
           for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
@@ -116,14 +103,14 @@ export class PedidoComponent implements OnInit {
               this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
           }
         }
+        this.showedProducts = this.filteredPedido;
         this.filter(this.prodQuery);
-        this.pedidoProducts = this.filteredPedido;
       });
     });
   }
 
   sortData(sort: Sort) {
-    const data = this.filteredProducts;
+    const data = this.showedProducts;
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
@@ -132,19 +119,15 @@ export class PedidoComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'title': return this.compare(a.payload.val().title, b.payload.val().title, isAsc);
-        case 'quantity': return this.compare(this.getQuantity(a), this.getQuantity(b), isAsc);
-        case 'unitPrice': return this.compare(a.payload.val().discPrice1, b.payload.val().discPrice1, isAsc);
-        case 'totalPriceProduct': return this.compare(a.payload.val().discPrice1*this.getQuantity(a), b.payload.val().discPrice1*this.getQuantity(b), isAsc);
+        case 'title': return this.compare(a.product.title, b.product.title, isAsc);
+        case 'quantity': return this.compare(a.quantity, b.quantity, isAsc);
+        case 'unitPrice': return this.compare(a.discountPrice, b.discountPrice, isAsc);
+        case 'totalPriceProduct': return this.compare(a.discountPrice*a.quantity, b.discountPrice*b.quantity, isAsc);
 
         default: return 0;
       }
     });
   }
-
-  // getClientPrice(product: any) {
-  //   return this.pedidosService.getClientPrice(product, this.clientFantasyName, this.pedido);
-  // }
 
   getClientCategory() {
     return this.pedidosService.getClientCategory(this.clientFantasyName);
@@ -156,8 +139,8 @@ export class PedidoComponent implements OnInit {
 
   getQuantity(item: any) {
     if (!this.pedido) return 0;
-    for (let i=0;i<this.pedido.payload.val().items.length;i++) {
-      if (this.pedido.items[i].title == item.payload.val().title) return this.pedido.items[i].quantity;
+    for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
+      if (this.pedido[0].payload.val().products[i].product.title == item.title) return this.pedido[0].payload.val().products[i].quantity;
     }
     return 0;
   }
@@ -176,12 +159,12 @@ export class PedidoComponent implements OnInit {
   filter(prodQuery: string) {
     this.prodQuery = prodQuery;
     if (prodQuery=='') {
-      this.pedidoProducts = this.filteredPedido;
+      this.showedProducts = this.filteredPedido;
       return
     }
-    this.pedidoProducts = (prodQuery) ?
-    this.pedidoProducts.filter((p: { product: { title: string; }; }) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
-    this.pedidoProducts;
+    this.showedProducts = (prodQuery) ?
+    this.showedProducts.filter((p: { product: { title: string; }; }) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
+    this.showedProducts;
   }
 
   updatePedidoItemQuantity(pedido: any, product: any, change: number){

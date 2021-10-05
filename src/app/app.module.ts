@@ -42,6 +42,7 @@ import { ProdCategoryService } from './services/prod-category.service';
 import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
+import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
 
 
 
@@ -85,7 +86,10 @@ import { AdminProdsComponent } from './admin-prods/admin-prods.component';
     ChartsModule
   ],
   providers: [AuthGuard, UserService, AdminAuthGuard, ProdCategoryService,
-    ProductService, AuthService, PedidosService, DatePipe, PieChartComponent],
+    ProductService, AuthService, PedidosService, DatePipe, PieChartComponent, {
+      provide: MAT_RADIO_DEFAULT_OPTIONS,
+      useValue: { color: 'primary' },
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

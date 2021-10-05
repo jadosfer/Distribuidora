@@ -47,7 +47,6 @@ export class PieChartComponent implements OnInit {
     this.pieChartLabels = categories;
     let amounts = this.getAmounts(this.pedidos, categories);
     this.pieChartData = amounts;
-    console.log("labels and data", this.pieChartLabels, this.pieChartData );
   }
 
   // events
@@ -62,24 +61,20 @@ export class PieChartComponent implements OnInit {
   graphic(pedidos: any) {
     this.pieChartLabels = [];
     this.pieChartData = [];
-    console.log("pedidos in chart", pedidos)
     let categories = this.getCategories(pedidos);
     this.pieChartLabels = categories;
     let amounts = this.getAmounts(pedidos, categories);
     this.pieChartData = amounts;
-    console.log("labels and data", this.pieChartLabels, this.pieChartData );
   }
 
 
 
   getCategories(pedidos: any) {
     let categories: string[] = []
-    console.log("pedidos", pedidos)
     for (let i=0;i<pedidos.length;i++) {
       for (let j=0;j<pedidos[i].payload.val().pedido.products.length; j++) {
         if (!this.isCategoryIncluded(categories, pedidos[i].payload.val().pedido.products[j].product.prodCategory)) {
           categories.push(pedidos[i].payload.val().pedido.products[j].product.prodCategory)
-          console.log("categories", categories)
         }
       }
     }
