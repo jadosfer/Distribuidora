@@ -7,10 +7,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin-top: 90px !important;
 }
 
-
+#productsList {
+  margin-left: 20px;
+  margin-top: 80px;
+}
 
 div .container-pedidos {
-  margin-top: 90px !important;
+  margin-top: 80px !important;
 }
 
 div .container-edit {
@@ -78,8 +81,8 @@ div .container-form {
 }
 
 .SCContainer, .login-btn {
-  margin-top:5.5em;
-  margin-left: 20px;
+  margin-top:80px;
+  margin-left: 0px;
 }
 
 .navbar-chip {

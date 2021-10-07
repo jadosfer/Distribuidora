@@ -1,44 +1,40 @@
-
 <div class="container-grid">
-  <mat-grid-list cols="4" rowHeight="1:14.3">
-    <mat-grid-tile [colspan]=1>
-      <product-filter></product-filter>
-    </mat-grid-tile>
+  <div style="margin-left:10px;margin-bottom:30px;margin-top:-20px;">
+    <h1>Nueva Compra</h1>
+  </div>
+  <div style="margin:20px;">
+    <product-filter></product-filter>
+  </div>
 
-    <mat-grid-tile [colspan]=3 >
-      <div class='internalMatGrid' >
+  <div style="margin-left:10px;">
+    <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>
+    <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+  </div>
+  <div style="margin:20px;">
+    <table matSort (matSortChange)="sortData($event)">
+      <tr>
+        <th mat-sort-header="title">Producto</th>
+        <th mat-sort-header="quantity">Cantidad</th>
+        <th mat-sort-header="stock">Stock actual</th>
+      </tr>
 
-      <mat-grid-list cols="3" rowHeight="1:1.2">
-        <div class="SCContainer">
-          <h1>Nueva Compra</h1>
-
-
-          <table matSort (matSortChange)="sortData($event)">
-            <tr>
-              <th mat-sort-header="title">Producto</th>
-              <th mat-sort-header="quantity">Cantidad</th>
-              <th mat-sort-header="stock">Stock actual</th>
-            </tr>
-
-            <tr *ngFor="let p of filteredBuy">
-              <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td>{{p.quantity}}</td>
-              <td>{{getQuantityOfP(p)}}</td>
-              <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
-              <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>
-            </tr>
-          </table>
-          <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>
-          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
-          <div>
-
-          </div>
-        </div>
+      <tr *ngFor="let p of filteredBuy">
+        <td style="max-width: 280px;">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>{{p.quantity}}</td>
+        <td>{{getQuantityOfP(p)}}</td>
+        <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
+        <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>
+      </tr>
+    </table>
+  </div>
 
 
-      </mat-grid-list>
-      </div>
-    </mat-grid-tile>
-  </mat-grid-list>
+  <div style="margin-left:10px;">
+    <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>
+    <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+  </div>
+
+
 </div>
+
 

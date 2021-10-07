@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 import { MaterialModule } from './Material/Material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { PedidoComponent } from './pedidos/pedido.component';
-import { CheckOutComponent } from './check-out/check-out.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { LoginComponent } from './login/login.component';
 import { environment } from '../environments/environment';
@@ -23,7 +22,6 @@ import { AuthGuard } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
 import { ProductService } from './services/product.service';
 import { ProductFilterComponent } from './products/product-filter/product-filter.component';
-import { ProductCardComponent } from './products/product-card/product-card.component';
 import { PedidosService } from './services/pedidos.service';
 import { ClientsComponent } from './clients/clients.component';
 import {PedidosComponent} from './pedidos/pedidos.component';
@@ -43,6 +41,7 @@ import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
+import { CheckOutComponent } from './check-out/check-out.component';
 
 
 
@@ -53,12 +52,10 @@ import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
     PedidosComponent,
     MatNavbarComponent,
     PedidoComponent,
-    CheckOutComponent,
     AdminClientsComponent,
     LoginComponent,
     ProductFormComponent,
     ProductFilterComponent,
-    ProductCardComponent,
     ClientsComponent,
     ClientsFormComponent,
     AdminSellersComponent,
@@ -68,7 +65,8 @@ import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
     DashboardComponent,
     BuysComponent,
     PieChartComponent,
-    AdminProdsComponent
+    AdminProdsComponent,
+    CheckOutComponent
 
   ],
   imports: [

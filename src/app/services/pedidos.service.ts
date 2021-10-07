@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { ProductService } from './product.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PedidosService {
+export class PedidosService implements OnDestroy {
 
   clients: any;
   pedido: any;
@@ -25,6 +25,8 @@ export class PedidosService {
   subscription: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
+  pedidoIndex: number;
+  pedidoCartId:any;
 
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
@@ -34,8 +36,17 @@ export class PedidosService {
       this.appUser = appUser;
       this.getPedido().subscribe(pedido => {
         this.pedido = pedido;
-        if (this.pedido.length == 0) {
-          this.createPedido();
+        if (this.appUser && this.pedido.length == 0) this.createPedido();
+        else {
+          this.pedidoIndex = -1
+          for (let i=0;i<this.pedido.length;i++) {
+            if (this.appUser && this.pedido[i].payload.val().sellerName == this.appUser.name) {
+              this.pedidoIndex = i
+              this.pedidoCartId =  this.pedido[i].key;
+              break
+            }
+          }
+          if (this.appUser && this.pedidoIndex == -1) this.createPedido();
         }
       });
     });
@@ -53,12 +64,6 @@ export class PedidosService {
         }
       });
     });
-    // this.subscription3 = this.getPedido().subscribe(pedido => {
-    //   this.pedido = pedido;
-    //   if (this.pedido.length == 0) {
-    //     this.createPedido();
-    //   }
-    // });
 
     this.clientsService.getAll().subscribe(clients => {
       this.clients = clients;
@@ -68,6 +73,10 @@ export class PedidosService {
     });
    }
 
+  ngOnDestroy() {
+    //this.resetPedido()
+  }
+
   private create() {
     let time = new Date().getTime()
     let result = this.db.list('/pedidos').push({
@@ -75,11 +84,12 @@ export class PedidosService {
       "aproved": "NO",
       "paid": "NO"
     });
-    this.pedidoId = result.key;
+    //this.pedidoId = result.key;
     return result;
   }
 
   public createPedido() {
+    if (!this.appUser) return;
     let products = []
     for (let i=0;i<this.products.length;i++) {
       products.push({
@@ -96,9 +106,6 @@ export class PedidosService {
       "sellerName": this.appUser.name,
       "products": products
     });
-
-    this.pedidoId = result.key;
-
   }
 
   updatePedido(key: any, pedido:any) {
@@ -110,7 +117,7 @@ export class PedidosService {
   }
 
   resetPedido(){
-    this.db.object('/pedido/').remove();
+    this.db.object('/pedido/'+ this.pedido[this.pedidoIndex].key).remove();
   }
 
 
@@ -124,70 +131,70 @@ export class PedidosService {
   }
 
 
-  updatePedidoItemQuantity(pedido:any, product:any, change: number){
+  updatePedidoItemQuantity(pedido:any, product:any, change: number, pedidoIndex: number){
+    console.log("pedidoIndex en pedidosServiceMethod", pedidoIndex)
+    let pedidoItemsCount = pedido[pedidoIndex].payload.val().pedidoItemsCount + change;
+    let products = []
+    for (let i=0;i<this.products.length;i++) {
+      let plus = 0;
+      if (product.productId == pedido[pedidoIndex].payload.val().products[i].productId) plus = change;
+      products.push({
+            "price": pedido[pedidoIndex].payload.val().products[i].price,
+            "discountPrice": pedido[pedidoIndex].payload.val().products[i].discountPrice,
+            "product": pedido[pedidoIndex].payload.val().products[i].product,
+            "productId": pedido[pedidoIndex].payload.val().products[i].productId,
+            "quantity": pedido[pedidoIndex].payload.val().products[i].quantity + plus,
+            "discount": pedido[pedidoIndex].payload.val().products[i].discount,
+          })
+      plus = 0;
+    }
 
-      let pedidoItemsCount = pedido[0].payload.val().pedidoItemsCount + change;
-      let products = []
-      for (let i=0;i<this.products.length;i++) {
-        let plus = 0;
-        if (product.productId == pedido[0].payload.val().products[i].productId) plus = change;
-        products.push({
-              "price": pedido[0].payload.val().products[i].price,
-              "discountPrice": pedido[0].payload.val().products[i].discountPrice,
-              "product": pedido[0].payload.val().products[i].product,
-              "productId": pedido[0].payload.val().products[i].productId,
-              "quantity": pedido[0].payload.val().products[i].quantity + plus,
-              "discount": pedido[0].payload.val().products[i].discount,
-            })
-        plus = 0;
-      }
-
-      this.db.object('/pedido/' + pedido[0].key).update({
-        "pedidoItemsCount": pedidoItemsCount,
-        "sellerName": this.appUser.name,
-        "products": products,
-      });
+    this.db.object('/pedido/' + pedido[pedidoIndex].key).update({
+      "pedidoItemsCount": pedidoItemsCount,
+      "sellerName": this.appUser.name,
+      "products": products,
+    });
 
   }
 
   discount(pedido:any, product:any, discount: number) {
     let products = []
-      for (let i=0;i<pedido[0].payload.val().products.length;i++) {
-        if (product.productId == pedido[0].payload.val().products[i].productId) {
+      for (let i=0;i<pedido[this.pedidoIndex].payload.val().products.length;i++) {
+        if (product.productId == pedido[this.pedidoIndex].payload.val().products[i].productId) {
           products.push({
-            "price": pedido[0].payload.val().products[i].price,
-            "discountPrice": pedido[0].payload.val().products[i].price * (1 - discount/100),
+            "price": pedido[this.pedidoIndex].payload.val().products[i].price,
+            "discountPrice": pedido[this.pedidoIndex].payload.val().products[i].price * (1 - discount/100),
             "product": {
-              "buyPrice": pedido[0].payload.val().products[i].product.buyPrice,
-              "prodCategory": pedido[0].payload.val().products[i].product.prodCategory,
-              "imageUrl": pedido[0].payload.val().products[i].product.imageUrl,
-              "price1": pedido[0].payload.val().products[i].product.price1,
-              "price2": pedido[0].payload.val().products[i].product.price2,
-              "price3": pedido[0].payload.val().products[i].product.price3,
-              "discPrice1": pedido[0].payload.val().products[i].product.discPrice1,
-              "discPrice2": pedido[0].payload.val().products[i].product.discPrice2,
-              "discPrice3": pedido[0].payload.val().products[i].product.discPrice3,
-              "title": pedido[0].payload.val().products[i].product.title,
+              "buyPrice": pedido[this.pedidoIndex].payload.val().products[i].product.buyPrice,
+              "prodCategory": pedido[this.pedidoIndex].payload.val().products[i].product.prodCategory,
+              "imageUrl": pedido[this.pedidoIndex].payload.val().products[i].product.imageUrl,
+              "price1": pedido[this.pedidoIndex].payload.val().products[i].product.price1,
+              "price2": pedido[this.pedidoIndex].payload.val().products[i].product.price2,
+              "price3": pedido[this.pedidoIndex].payload.val().products[i].product.price3,
+              "discPrice1": pedido[this.pedidoIndex].payload.val().products[i].product.discPrice1,
+              "discPrice2": pedido[this.pedidoIndex].payload.val().products[i].product.discPrice2,
+              "discPrice3": pedido[this.pedidoIndex].payload.val().products[i].product.discPrice3,
+              "title": pedido[this.pedidoIndex].payload.val().products[i].product.title,
             },
-            "productId": pedido[0].payload.val().products[i].productId,
-            "quantity": pedido[0].payload.val().products[i].quantity,
+            "productId": pedido[this.pedidoIndex].payload.val().products[i].productId,
+            "quantity": pedido[this.pedidoIndex].payload.val().products[i].quantity,
             "discount": discount
           })
         }
         else {
           products.push({
-            "price": pedido[0].payload.val().products[i].price,
-            "discountPrice": pedido[0].payload.val().products[i].discountPrice,
-            "product": pedido[0].payload.val().products[i].product,
-            "productId": pedido[0].payload.val().products[i].productId,
-            "quantity": pedido[0].payload.val().products[i].quantity,
-            "discount": pedido[0].payload.val().products[i].discount
+            "price": pedido[this.pedidoIndex].payload.val().products[i].price,
+            "discountPrice": pedido[this.pedidoIndex].payload.val().products[i].discountPrice,
+            "product": pedido[this.pedidoIndex].payload.val().products[i].product,
+            "productId": pedido[this.pedidoIndex].payload.val().products[i].productId,
+            "quantity": pedido[this.pedidoIndex].payload.val().products[i].quantity,
+            "discount": pedido[this.pedidoIndex].payload.val().products[i].discount
           })
         }
       }
 
-      this.db.object('/pedido/' + pedido[0].key).update({
-        "pedidoItemsCount": pedido[0].payload.val().pedidoItemsCount,
+      this.db.object('/pedido/' + pedido[this.pedidoIndex].key).update({
+        "pedidoItemsCount": pedido[this.pedidoIndex].payload.val().pedidoItemsCount,
         "sellerName": this.appUser.name,
         "products": products,
       });
@@ -198,17 +205,15 @@ export class PedidosService {
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
 
-    for (let i=0;i<pedido[0].payload.val().products.length;i++) {
-      if (pedido[0].payload.val().products[i].quantity != 0) { //solo guardo los prod con quant>0
-        let pedidoAux = pedido[0].payload.val().products[i];
-        pedidoAux.price = pedido[0].payload.val().products[i].discountPrice*(1+iva/100);
+    for (let i=0;i<pedido[this.pedidoIndex].payload.val().products.length;i++) {
+      if (pedido[this.pedidoIndex].payload.val().products[i].quantity != 0) { //solo guardo los prod con quant>0
         prods.push({
-          "discount": pedido[0].payload.val().products[i].discount,
-          "discountPrice": pedido[0].payload.val().products[i].price*(1+iva/100),
-          "price": pedido[0].payload.val().products[i].price,
-          "product": pedido[0].payload.val().products[i].product,
-          "productId": pedido[0].payload.val().products[i].productId,
-          "quantity": pedido[0].payload.val().products[i].quantity
+          "discount": pedido[this.pedidoIndex].payload.val().products[i].discount,
+          "discountPrice": pedido[this.pedidoIndex].payload.val().products[i].discountPrice*(1+iva/100),
+          "price": pedido[this.pedidoIndex].payload.val().products[i].price,
+          "product": pedido[this.pedidoIndex].payload.val().products[i].product,
+          "productId": pedido[this.pedidoIndex].payload.val().products[i].productId,
+          "quantity": pedido[this.pedidoIndex].payload.val().products[i].quantity
         });
       }
     }
@@ -216,9 +221,9 @@ export class PedidosService {
     let time = new Date().getTime();
     let result = this.db.list('/pedidos/').push({
       "pedido": {
-        pedidoItemsCount: pedido[0].payload.val().pedidoItemsCount,
+        pedidoItemsCount: pedido[this.pedidoIndex].payload.val().pedidoItemsCount,
         "products":prods,
-        "sellerName": pedido[0].payload.val().sellerName,
+        "sellerName": pedido[this.pedidoIndex].payload.val().sellerName,
       },
       "creationDate": time,
       "aproved": "NO",
@@ -235,7 +240,7 @@ export class PedidosService {
       });
     }
 
-    this.resetPedido()
+    //this.resetPedido()
   }
 
   getClientCategory(clientFantasyName: any) {
@@ -255,51 +260,51 @@ export class PedidosService {
     let clientCategory = this.getClientCategory(clientFantasyName);
     let price;
     let products = []
-      if (!pedido[0]) return
-      for (let i=0;i<pedido[0].payload.val().products.length;i++) {
+      if (!pedido) return
+      for (let i=0;i<pedido.payload.val().products.length;i++) {
         switch (clientCategory) {
           case "":
-            price = pedido[0].payload.val().products[i].product.discPrice1;
+            price = pedido.payload.val().products[i].product.discPrice1;
              break;
           case "Distribuidor":
-            price = pedido[0].payload.val().products[i].product.discPrice1;
+            price = pedido.payload.val().products[i].product.discPrice1;
             break;
           case "Comercio":
-            price = pedido[0].payload.val().products[i].product.discPrice2;
+            price = pedido.payload.val().products[i].product.discPrice2;
             break;
           case "Gimnasio":
-            price = pedido[0].payload.val().products[i].product.discPrice3;
+            price = pedido.payload.val().products[i].product.discPrice3;
             break;
           default:
-            return pedido[0].payload.val().products[i].price;
+            return pedido.payload.val().products[i].price;
         }
         let discountPrice = price;
-        if (pedido[0].payload.val().products[i].discount) {
-          discountPrice =  price * (1 - pedido[0].payload.val().products[i].discount/100)
+        if (pedido.payload.val().products[i].discount) {
+          discountPrice =  price * (1 - pedido.payload.val().products[i].discount/100) //ojo aca
         };
         products.push({
           "price": price,
           "discountPrice": discountPrice,
           "product": {
-            "buyPrice": pedido[0].payload.val().products[i].product.buyPrice,
-            "prodCategory": pedido[0].payload.val().products[i].product.prodCategory,
-            "imageUrl": pedido[0].payload.val().products[i].product.imageUrl,
-            "price1": pedido[0].payload.val().products[i].product.price1,
-            "price2": pedido[0].payload.val().products[i].product.price2,
-            "price3": pedido[0].payload.val().products[i].product.price3,
-            "discPrice1": pedido[0].payload.val().products[i].product.discPrice1,
-            "discPrice2": pedido[0].payload.val().products[i].product.discPrice2,
-            "discPrice3": pedido[0].payload.val().products[i].product.discPrice3,
-            "title": pedido[0].payload.val().products[i].product.title
+            "buyPrice": pedido.payload.val().products[i].product.buyPrice,
+            "prodCategory": pedido.payload.val().products[i].product.prodCategory,
+            "imageUrl": pedido.payload.val().products[i].product.imageUrl,
+            "price1": pedido.payload.val().products[i].product.price1,
+            "price2": pedido.payload.val().products[i].product.price2,
+            "price3": pedido.payload.val().products[i].product.price3,
+            "discPrice1": pedido.payload.val().products[i].product.discPrice1,
+            "discPrice2": pedido.payload.val().products[i].product.discPrice2,
+            "discPrice3": pedido.payload.val().products[i].product.discPrice3,
+            "title": pedido.payload.val().products[i].product.title
           },
-          "productId": pedido[0].payload.val().products[i].productId,
-          "quantity": pedido[0].payload.val().products[i].quantity,
-          "discount": pedido[0].payload.val().products[i].discount
+          "productId": pedido.payload.val().products[i].productId,
+          "quantity": pedido.payload.val().products[i].quantity,
+          "discount": pedido.payload.val().products[i].discount
         })
       }
 
-      this.db.object('/pedido/' + pedido[0].key).update({
-        "pedidoItemsCount": pedido[0].payload.val().pedidoItemsCount,
+      this.db.object('/pedido/' + pedido.key).update({
+        "pedidoItemsCount": pedido.payload.val().pedidoItemsCount,
         "sellerName": this.appUser.name,
         "products": products
       });

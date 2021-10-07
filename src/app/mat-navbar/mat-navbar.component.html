@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-  <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-button routerLink="/">Global</a>
+  <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-button routerLink="/dashboard">Gráficos</a>
   <div class="spacer"></div>
   <ng-template #anonymousUser>
     <a mat-button routerLink="/login">Login</a>

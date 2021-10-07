@@ -39,6 +39,7 @@ export class PedidoComponent implements OnInit {
   subscription: Subscription;
   subscription2: Subscription;
   pedido: any;
+  pedidoIndex: number;
   disc: number = 0;
   iva: number = 21;
   ivas: number[] = [0, 10.5, 21];
@@ -62,19 +63,28 @@ export class PedidoComponent implements OnInit {
     private auth: AuthService,
     private router: Router
   ) {
-    this.pedidosService.resetPedido();
-    this.pedido = this.pedidosService.getPedido();
+
+    //this.pedido = this.pedidosService.getPedido();
   }
 
   ngOnInit(){
+    this.pedidoIndex = 0;
     if (window.screen.width <= 800) { // 768px portrait
       this.mobile = true;
     }
     this.pedidosService.getPedido().subscribe(pedido => {
+      this.pedido = pedido;
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
 
-        this.subscription2 = this.clientsService.getAll().subscribe(clients => {
+        for (let i=0;i<this.pedido.length;i++) {
+          if (this.pedido[i].payload.val().sellerName == this.appUser.name) {
+            this.pedidoIndex = i
+            break
+          }
+        }
+
+        this.clientsService.getAll().subscribe(clients => {
           this.filteredClients = clients;
           this.clients = [];
           for (let i=0;i<this.filteredClients.length;i++) {
@@ -86,26 +96,31 @@ export class PedidoComponent implements OnInit {
           map(value =>  value? this._filter(value) : this._filter(""))
           )
         });
-      });
 
-      this.pedido = pedido;
-      this.route.queryParamMap.subscribe(params => {
-        this.prodCategory = params.get('prodCategory');
-        this.filteredPedido = [];
-        if (this.pedido.length != 0) {
-          for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-            if (this.pedido[0].payload.val().products[i].product.prodCategory == this.prodCategory)  {
-              this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
+        this.route.queryParamMap.subscribe(params => {
+          this.prodCategory = params.get('prodCategory');
+          this.filteredPedido = [];
+          if (this.pedidoIndex>=0 && this.pedido) { //saque el length aca
+            //console.log("pedido antes del for", this.pedido[this.pedidoIndex].payload.val())
+            for (let i=0;i<this.pedido[this.pedidoIndex].payload.val().products.length;i++) {
+              if (this.pedido[this.pedidoIndex].payload.val().products[i].product.prodCategory == this.prodCategory)  {
+                this.filteredPedido.push(this.pedido[this.pedidoIndex].payload.val().products[i]);
+              }
+            }
+            if (this.filteredPedido.length == 0) {
+              for (let i=0;i<this.pedido[this.pedidoIndex].payload.val().products.length;i++)
+                this.filteredPedido.push(this.pedido[this.pedidoIndex].payload.val().products[i]);
             }
           }
-          if (this.filteredPedido.length == 0) {
-            for (let i=0;i<this.pedido[0].payload.val().products.length;i++)
-              this.filteredPedido.push(this.pedido[0].payload.val().products[i]);
-          }
-        }
-        this.showedProducts = this.filteredPedido;
-        this.filter(this.prodQuery);
+          this.showedProducts = this.filteredPedido;
+          console.log("showed", this.showedProducts, this.filteredPedido)
+          this.filter(this.prodQuery);
+        });
+
       });
+
+
+
     });
   }
 
@@ -139,8 +154,8 @@ export class PedidoComponent implements OnInit {
 
   getQuantity(item: any) {
     if (!this.pedido) return 0;
-    for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-      if (this.pedido[0].payload.val().products[i].product.title == item.title) return this.pedido[0].payload.val().products[i].quantity;
+    for (let i=0;i<this.pedido[this.pedidoIndex].payload.val().products.length;i++) {
+      if (this.pedido[this.pedidoIndex].payload.val().products[i].product.title == item.title) return this.pedido[this.pedidoIndex].payload.val().products[i].quantity;
     }
     return 0;
   }
@@ -169,28 +184,29 @@ export class PedidoComponent implements OnInit {
 
   updatePedidoItemQuantity(pedido: any, product: any, change: number){
     this.sended = false;
-    this.pedidosService.updatePedidoItemQuantity(pedido, product, change);
+    console.log("index", this.pedidoIndex)
+    this.pedidosService.updatePedidoItemQuantity(pedido, product, change, this.pedidoIndex);
   }
 
   getTotal() {
     if (!this.pedido) return 0;
     let total = 0;
-    if (!this.pedido[0]) return 0;
-    for (let i=0;i<this.pedido[0].payload.val().products.length;i++) {
-      total += this.pedido[0].payload.val().products[i].quantity * this.pedido[0].payload.val().products[i].discountPrice;
+    if (!this.pedido[this.pedidoIndex]) return 0;
+    for (let i=0;i<this.pedido[this.pedidoIndex].payload.val().products.length;i++) {
+      total += this.pedido[this.pedidoIndex].payload.val().products[i].quantity * this.pedido[this.pedidoIndex].payload.val().products[i].discountPrice;
     }
     return total;
   }
 
   getTotalUnits() {
-    if (this.pedido[0]) {
-      return this.pedido[0].payload.val().pedidoItemsCount;
+    if (this.pedidoIndex && this.pedido && this.pedido.length > this.pedidoIndex) {
+      return this.pedido[this.pedidoIndex].payload.val().pedidoItemsCount;
     }
     else return 0;
   }
 
   sendPedido() {
-    if (this.pedido[0].payload.val().pedidoItemsCount == 0) {
+    if (this.pedido[this.pedidoIndex].payload.val().pedidoItemsCount == 0) {
       this.pedidoEmpty = true;
       return;
     }
@@ -203,7 +219,6 @@ export class PedidoComponent implements OnInit {
       return;
     }
 
-
     let send = false;
     for (let i=0;i<this.clients.length;i++) {
       if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)
@@ -215,6 +230,7 @@ export class PedidoComponent implements OnInit {
         this.pedidosService.sendPedido(this.pedido, this.clientFantasyName, this.iva);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/pedidos/pedidos');
+        this.pedidosService.resetPedido();
       }
       return;
     }
@@ -233,6 +249,9 @@ export class PedidoComponent implements OnInit {
   }
 
   updatePrices() {
-    this.pedidosService.updatePrices(this.pedido, this.clientFantasyName);
+    console.log("index en updatePrices", this.pedidoIndex)
+    if (this.pedidoIndex) {
+      this.pedidosService.updatePrices(this.pedido[this.pedidoIndex], this.clientFantasyName); //this.pedidoIndex en vez del 0
+    }
   }
 }

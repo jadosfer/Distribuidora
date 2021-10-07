@@ -69,7 +69,7 @@ export class PedidosComponent implements OnInit {
         this.pedidos =  pedidos;
         this.userPedidos = [];
         for (let i=0;i<this.pedidos.length;i++) {
-          if (this.appUser.isAdmin || this.pedidos[i].payload.val().pedido.sellerName == this.appUser.name) {
+          if (this.appUser && (this.appUser.isAdmin || this.pedidos[i].payload.val().pedido.sellerName == this.appUser.name)) {
             this.userPedidos.push(this.pedidos[i]);
           }
         }

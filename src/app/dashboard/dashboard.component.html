@@ -24,14 +24,14 @@
 
 
   <div fxLayout="row" style="margin:10px">
-    <div><h2 style="display: inline; margin:10px;">Estadísticas&nbsp;&nbsp;</h2></div>
+    <div><h2 style="display: inline; margin:10px;">Gráficos&nbsp;&nbsp;</h2></div>
     <div><button style="display: inline; margin-right:10px;" mat-raised-button color="accent" (click)="graphic()">Graficar</button></div>
     <div><button mat-raised-button color="basic" (click)="showGraph = false">Ocultar</button></div>
   </div>
 
-  <div fxLayout.xs-sm="column" fxLayout.md-xxl="row" fxLayoutAlign="start center">
-    <div fxLayout.-xxl="row" fxLayoutAlign="space-evenly center" style="margin-top: 10px; margin-bottom: 10px;">
-      <div fxLayout="row" style="min-width:100px">
+  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div fxLayout="row" style="margin:20px;">
         <div><mat-icon matSuffix>search</mat-icon></div>
         <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
       </div>
@@ -39,13 +39,14 @@
         <div><mat-icon matSuffix>search</mat-icon></div>
         <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
       </div>
-      <div fxLayout="row" style="min-width:100px;">
+      <div fxLayout="row">
         <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="dateValue" matInput #datequery (keyup)="filterByDate(datequery.value)" type="text" placeholder="por fecha..."></div>
+        <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
       </div>
     </div>
+
     <div fxLayout="row" fxLayoutAlign="space-evenly center">
-      <form #f="ngForm" style="margin:20px" (ngSubmit)="searchDateRange(range.value)">
+      <form #f="ngForm" style="margin-right:20px;margin-left:-20px;" (ngSubmit)="searchDateRange(range.value)">
         <mat-form-field appearance="fill">
           <mat-label>Ingrese un rango de fechas</mat-label>
           <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -61,18 +62,19 @@
         </mat-form-field>
 
         <button mat-raised-button style="margin:10px" type="submit" color="primary" >buscar por rango</button>
-        <button #query style="margin:10px" mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
+        <button #query style="margin:0px" mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
       </form>
 
     </div>
   </div>
 
-  <table matSort (matSortChange)="sortData($event)">
+  <table style="margin-left:20px;" matSort (matSortChange)="sortData($event)">
     <tr>
       <th mat-sort-header="cliente">Cliente</th>
       <th mat-sort-header="vendedor">Vendedor</th>
       <th mat-sort-header="date">Fecha</th>
       <th mat-sort-header="import">Importe</th>
+      <th mat-sort-header="iva">IVA</th>
     </tr>
 
 
@@ -82,6 +84,7 @@
       <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().pedido.sellerName}}&nbsp;&nbsp;</td>
       <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
       <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">${{this.pedidosService.getTotalCost(ped) | number:'1.1-1'}}</td>
+      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().iva}}%</td>
 
         <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">
           <mat-expansion-panel hideToggle>
@@ -93,7 +96,7 @@
             <tr>
               <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
               <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad</th>
+              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad c/iva</th>
               <th mat-sort-header="Price;{{i}}">Importe</th>
             </tr>
             <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">

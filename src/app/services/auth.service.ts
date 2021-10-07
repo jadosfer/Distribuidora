@@ -1,3 +1,4 @@
+import { PedidosService } from './pedidos.service';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,7 +23,7 @@ export class AuthService {
 
 
   login() {
-    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/checkout';
     localStorage.setItem('returnUrl', returnUrl);
     return this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=> {
       let returnUrl = localStorage.getItem('returnUrl');
@@ -33,9 +34,8 @@ export class AuthService {
   }
 
   logout() {
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/checkout');
     this.afAuth.signOut()
-    localStorage.clear();
     location.reload();
   }
 

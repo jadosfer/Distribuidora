@@ -1,5 +1,5 @@
-import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { CheckOutComponent } from './check-out/check-out.component';
+import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { PedidosComponent } from './pedidos/pedidos.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -21,16 +21,17 @@ import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
-  { path: "", component: DashboardComponent },
+  { path: "", component: CheckOutComponent },
+  { path: "dashboard", component: DashboardComponent },
   { path: "pedidos/pedido", component: PedidoComponent },
   { path: "client/client", component: ClientsComponent },
   { path: "pedidos/pedidos", component: PedidosComponent },
   { path: "login", component: LoginComponent },
+  { path: "checkout", component: CheckOutComponent },
 
-  { path: "check-out", component: CheckOutComponent, canActivate: [AuthGuard] },
-  { path: "stock/stock", component: StockComponent, canActivate: [AuthGuard] },
-  { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard] },
-  { path: "buys", component: BuysComponent, canActivate: [AuthGuard] },
+  { path: "stock/stock", component: StockComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "buys", component: BuysComponent, canActivate: [AuthGuard, AdminAuthGuard] },
 
   { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
