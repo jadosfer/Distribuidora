@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
+import { ConditionalExpr } from '@angular/compiler';
 
 
 
@@ -38,8 +39,9 @@ export class PedidoComponent implements OnInit {
   prodQuery: string;
   subscription: Subscription;
   subscription2: Subscription;
-  pedido: any;
+  pedido: any[] ;
   pedidoIndex: number;
+  pedidoCartId: any;
   disc: number = 0;
   iva: number = 21;
   ivas: number[] = [0, 10.5, 21];
@@ -49,6 +51,7 @@ export class PedidoComponent implements OnInit {
 
   title: string;
   quantity: number;
+  cartQuantities: number[];
   sortedData: any[];
   sended: boolean = false;
   client: boolean = true;
@@ -69,21 +72,26 @@ export class PedidoComponent implements OnInit {
 
   ngOnInit(){
     this.pedidoIndex = 0;
-    if (window.screen.width <= 800) { // 768px portrait
-      this.mobile = true;
-    }
     this.pedidosService.getPedido().subscribe(pedido => {
       this.pedido = pedido;
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
 
-        for (let i=0;i<this.pedido.length;i++) {
-          if (this.pedido[i].payload.val().sellerName == this.appUser.name) {
-            this.pedidoIndex = i
-            break
+        if (this.appUser && this.pedido.length == 0) {
+            this.pedidosService.createPedido();
           }
+        else {
+          this.pedidoIndex = -1
+          for (let i=0;i<this.pedido.length;i++) {
+            if (this.appUser && this.pedido[i].payload.val().sellerName == this.appUser.name) {
+              this.pedidoIndex = i
+              break
+            }
+          }
+          if (this.appUser && this.pedidoIndex == -1) {
+            this.pedidosService.createPedido();
+            }
         }
-
         this.clientsService.getAll().subscribe(clients => {
           this.filteredClients = clients;
           this.clients = [];
@@ -100,8 +108,7 @@ export class PedidoComponent implements OnInit {
         this.route.queryParamMap.subscribe(params => {
           this.prodCategory = params.get('prodCategory');
           this.filteredPedido = [];
-          if (this.pedidoIndex>=0 && this.pedido) { //saque el length aca
-            //console.log("pedido antes del for", this.pedido[this.pedidoIndex].payload.val())
+          if (this.pedidoIndex>=0 && this.pedido) {
             for (let i=0;i<this.pedido[this.pedidoIndex].payload.val().products.length;i++) {
               if (this.pedido[this.pedidoIndex].payload.val().products[i].product.prodCategory == this.prodCategory)  {
                 this.filteredPedido.push(this.pedido[this.pedidoIndex].payload.val().products[i]);
@@ -113,8 +120,10 @@ export class PedidoComponent implements OnInit {
             }
           }
           this.showedProducts = this.filteredPedido;
-          console.log("showed", this.showedProducts, this.filteredPedido)
           this.filter(this.prodQuery);
+          console.log("len", this.pedido.length)
+          this.cartQuantities = new Array(this.pedido.length).fill(0);
+          console.log("this.cartQuantities", this.cartQuantities)
         });
 
       });
@@ -184,7 +193,6 @@ export class PedidoComponent implements OnInit {
 
   updatePedidoItemQuantity(pedido: any, product: any, change: number){
     this.sended = false;
-    console.log("index", this.pedidoIndex)
     this.pedidosService.updatePedidoItemQuantity(pedido, product, change, this.pedidoIndex);
   }
 
@@ -230,7 +238,7 @@ export class PedidoComponent implements OnInit {
         this.pedidosService.sendPedido(this.pedido, this.clientFantasyName, this.iva);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/pedidos/pedidos');
-        this.pedidosService.resetPedido();
+        this.pedidosService.resetPedido(this.pedidoIndex);
       }
       return;
     }
@@ -239,7 +247,7 @@ export class PedidoComponent implements OnInit {
 
   reset() {
     if (confirm('Está segur@ que quiere anular el pedido que no ha enviado?')) {
-      this.pedidosService.resetPedido();
+      this.pedidosService.resetPedido(this.pedidoIndex);
     }
   }
 
@@ -249,7 +257,6 @@ export class PedidoComponent implements OnInit {
   }
 
   updatePrices() {
-    console.log("index en updatePrices", this.pedidoIndex)
     if (this.pedidoIndex) {
       this.pedidosService.updatePrices(this.pedido[this.pedidoIndex], this.clientFantasyName); //this.pedidoIndex en vez del 0
     }

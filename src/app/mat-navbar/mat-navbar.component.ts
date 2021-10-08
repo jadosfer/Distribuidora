@@ -18,6 +18,7 @@ export class MatNavbarComponent implements OnInit{
   }
 
   logout() {
+    this.pedidosService.clearPedido();
     this.auth.logout()
   }
 

@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { ignoreElements } from 'rxjs-compat/operator/ignoreElements';
 import 'rxjs/add/operator/take';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
@@ -22,9 +23,6 @@ export class PedidosService implements OnDestroy {
   products:any;
   prodCategory: string | null;
   filteredProducts:any;
-  subscription: Subscription;
-  subscription2: Subscription;
-  subscription3: Subscription;
   pedidoIndex: number;
   pedidoCartId:any;
 
@@ -36,23 +34,23 @@ export class PedidosService implements OnDestroy {
       this.appUser = appUser;
       this.getPedido().subscribe(pedido => {
         this.pedido = pedido;
-        if (this.appUser && this.pedido.length == 0) this.createPedido();
-        else {
+        //if (this.appUser && this.pedido.length == 0) this.createPedido();
+        //else {
           this.pedidoIndex = -1
           for (let i=0;i<this.pedido.length;i++) {
-            if (this.appUser && this.pedido[i].payload.val().sellerName == this.appUser.name) {
+            if (this.pedido && this.appUser && this.pedido[i].payload.val().sellerName == this.appUser.name) {
               this.pedidoIndex = i
               this.pedidoCartId =  this.pedido[i].key;
               break
             }
           }
-          if (this.appUser && this.pedidoIndex == -1) this.createPedido();
-        }
+          //if (this.appUser && this.pedidoIndex == -1) this.createPedido();
+        //}
       });
     });
 
     this.filteredProducts = [];
-    this.subscription = this.productService.getAll().subscribe(products => {
+    this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.route.queryParamMap.subscribe(params => {
         this.prodCategory = params.get('prodCategory');
@@ -90,6 +88,7 @@ export class PedidosService implements OnDestroy {
 
   public createPedido() {
     if (!this.appUser) return;
+    if (!this.products) return;
     let products = []
     for (let i=0;i<this.products.length;i++) {
       products.push({
@@ -116,8 +115,15 @@ export class PedidosService implements OnDestroy {
     this.db.object('/pedidos/' + pedidoId).remove();
   }
 
-  resetPedido(){
-    this.db.object('/pedido/'+ this.pedido[this.pedidoIndex].key).remove();
+  resetPedido(pedidoIndex: any){
+    this.db.object('/pedido/'+ this.pedido[pedidoIndex].key).remove();
+  }
+
+  clearPedido() {
+    if (!this.pedido) return;
+    for (let i=0;i<this.pedido.length;i++) {
+      if (this.pedido[i].payload.val().sellerName == this.appUser.name) this.db.object('/pedido/'+ this.pedido[i].key).remove();
+    }
   }
 
 
@@ -132,7 +138,6 @@ export class PedidosService implements OnDestroy {
 
 
   updatePedidoItemQuantity(pedido:any, product:any, change: number, pedidoIndex: number){
-    console.log("pedidoIndex en pedidosServiceMethod", pedidoIndex)
     let pedidoItemsCount = pedido[pedidoIndex].payload.val().pedidoItemsCount + change;
     let products = []
     for (let i=0;i<this.products.length;i++) {

@@ -1,8 +1,8 @@
 <div class="SCContainer" *ngIf="appUser">
   <div fxLayout="row" style="margin:10px">
-    <div><h2 style="display: inline; margin:10px;">Mis pedidos&nbsp;&nbsp;</h2></div>
+    <div><h1 style="display: inline; margin:10px;">Mis pedidos&nbsp;&nbsp;</h1></div>
     <div>
-      <a style="margin-left:50px;" (click)="this.pedidosService.resetPedido()" mat-raised-button color="accent" routerLink="/pedidos/pedido">Nuevo Pedido</a>
+      <a style="margin-left:50px;" mat-raised-button color="accent" routerLink="/pedidos/pedido">Armar Pedido</a>
       <!--a style="margin-left:50px;" mat-raised-button color="primary" routerLink="/pedidos/pedido">Ir al Pedido</a-->
     </div>
   </div>
@@ -99,7 +99,7 @@
             </mat-expansion-panel>
           </mat-accordion>  <!---->
           <td><button (click)="exportAsPDF(ped)" style="display:inline" mat-raised-button color="primary" >PDF</button></td>
-          <td><button (click)="remove(ped.key)" style="display:inline" mat-raised-button color="warn" >Eliminar</button></td>
+          <td *ngIf ="appUser.isAdmin"><button (click)="remove(ped.key)" style="display:inline" mat-raised-button color="warn" >Eliminar</button></td>
     </tr>
 
     <tr>

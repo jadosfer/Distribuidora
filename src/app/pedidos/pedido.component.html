@@ -54,6 +54,7 @@
         <tr *ngFor="let p of showedProducts; let i = index">
           <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.quantity}}</td>
+          <!--td>{{this.cartQuantities[i]}}</td-->
           <td>${{p.discountPrice | number : '1.1-1'}}</td>
           <td>${{p.discountPrice*p.quantity | number:'1.1-1'}}</td>
           <td><button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, -1)" mat-raised-button color="basic">-</button></td>
