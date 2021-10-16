@@ -24,10 +24,8 @@
           </div>
         </div>
         <div>
-          <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>
+          <button class="left-btn" (click)="sendOrder()" mat-raised-button color="basic">Enviar Pedido</button>
           <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
-          <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
-          <span *ngIf="pedidoEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
         </div>
         <div>
           <label style="margin:5px" id="example-radio-group-label"><b>IVA:</b></label>
@@ -37,6 +35,9 @@
             </mat-radio-button>
           </mat-radio-group>
           <span *ngIf="getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios 21%</span>
+          <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
+          <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+          <span *ngIf="giveRecive">&nbsp;&nbsp;&nbsp;&nbsp;*No pueden haber cantidades negativas y positivas en el mismo pedido</span>
         </div>
 
       </div>
@@ -44,7 +45,7 @@
         <tr>
           <th mat-sort-header="title">Producto</th>
           <th id="quantity" mat-sort-header="quantity">Cantidad</th>
-          <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;sin iva</th>
+          <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;s/iva</th>
           <th mat-sort-header="totalPriceProduct">Subtotal</th>
           <th mat-sort-header="quit">&nbsp;&nbsp;&nbsp;Quitar</th>
           <th mat-sort-header="add">&nbsp;Agregar</th>
@@ -54,33 +55,32 @@
         <tr *ngFor="let p of showedProducts; let i = index">
           <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.quantity}}</td>
-          <!--td>{{this.cartQuantities[i]}}</td-->
           <td>${{p.discountPrice | number : '1.1-1'}}</td>
           <td>${{p.discountPrice*p.quantity | number:'1.1-1'}}</td>
-          <td><button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, -1)" mat-raised-button color="basic">-</button></td>
-          <td><button class="left-btn" (click)="updatePedidoItemQuantity(this.pedido, p, 1)" mat-raised-button color="basic">+</button></td>
+          <td><button class="left-btn" (click)="updateOrderItemQuantity(p, -1, i)" mat-raised-button color="basic">-</button></td>
+          <td><button class="left-btn" (click)="updateOrderItemQuantity(p, 1, i)" mat-raised-button color="basic">+</button></td>
           <td>
-            <form role="form" (submit)="discount($event, p, +disc.value)">
+            <form id="form" (submit)="discount($event, p, +disc.value)">
                 <input type="number" #disc value={{p.value}}>
-                <button *ngIf="this.pedido.length > this.pedidoIndex && pedido[this.pedidoIndex].payload.val().products[i].discount==0" type="submit">Aplicar</button>
-                <button *ngIf="this.pedido.length > this.pedidoIndex && pedido[this.pedidoIndex].payload.val().products[i].discount!=0" (click)="discount($event, p, 0)">Anular</button>
-                <span *ngIf="this.pedido.length > this.pedidoIndex && pedido[this.pedidoIndex].payload.val().products[i].discount!=0">&nbsp;&nbsp;Descuento: {{pedido[this.pedidoIndex].payload.val().products[i].discount}}%</span>
+                <button *ngIf="this.order.length > this.orderIndex && p.discount==0" type="submit">Aplicar</button>
+                <button *ngIf="this.order.length > this.orderIndex && p.discount!=0" (click)="discount($event, p, 0)">Anular</button>
+                <span *ngIf="this.order.length > this.orderIndex && p.discount!=0">&nbsp;&nbsp;Descuento: {{p.discount}}%</span>
             </form>
 
           </td>
         </tr>
         <tr>
-  <!----> <th mat-sort-header="total">UNIDADES TOTALES</th>
-          <th mat-sort-header="showTotalQuantity">{{getTotalUnits()}}&nbsp; Unidades</th>
+          <th mat-sort-header="total">UNIDADES TOTALES</th>
+          <th mat-sort-header="showTotalQuantity">{{this.quantity}}&nbsp; Unidades</th>
           <th mat-sort-header="totalPrice">IMPORTE TOTAL(incluye el IVA)</th>
-          <th mat-sort-header="showTotal">${{getTotal()*(1+this.iva/100) | number:'1.1-1'}}</th>
+          <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.products)*(1+this.iva/100) | number:'1.1-1'}}</th>
         </tr>
       </table>
       <div style="margin-bottom:20px;margin-top:20px;">
-        <button class="left-btn" (click)="sendPedido()" mat-raised-button color="basic">Enviar Pedido</button>
+        <button class="left-btn" (click)="sendOrder()" mat-raised-button color="basic">Enviar Pedido</button>
         <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
-        <span *ngIf="pedidoEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+        <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
         <span *ngIf="getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios 21% IVA</span>
       </div>
 

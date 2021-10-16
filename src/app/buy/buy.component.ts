@@ -21,7 +21,7 @@ export class BuyComponent implements OnInit {
   filteredBuy:any;
   products:any;
   products$:any;
-  prodCategory: string | null;
+  prodsCategory: string | null;
   sortedData: any[];
 
   buyEmpty: boolean = false;
@@ -40,12 +40,12 @@ export class BuyComponent implements OnInit {
       });
       this.buy = buy;
       this.route.queryParamMap.subscribe(params => {
-        this.prodCategory = params.get('prodCategory');
+        this.prodsCategory = params.get('prodsCategory');
 
         this.filteredBuy = [];
         if (this.buy[0]) {
           for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-            if (this.buy[0].payload.val().products[i].product.prodCategory == this.prodCategory)  {
+            if (this.buy[0].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
               this.filteredBuy.push(this.buy[0].payload.val().products[i]);
             }
           }

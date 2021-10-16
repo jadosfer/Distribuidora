@@ -4,16 +4,20 @@ import { AngularFireDatabase } from '@angular/fire/database';
 @Injectable({
   providedIn: 'root'
 })
-export class ClientsCategoryService {
+export class CategoryService {
 
   constructor(private db: AngularFireDatabase) { }
 
 
-  getAll() {
+  getAllClientsCategories() {
     return this.db.list('clientsCategories').valueChanges();
   }
 
-  getAllClientCategories() {
-    return this.db.list('clientsCategories').snapshotChanges();
+  getAllProdsCategories() {
+    return this.db.list('categories').valueChanges();
+  }
+
+  getAllPaysCategories() {
+    return this.db.list('payWay').valueChanges();
   }
 }

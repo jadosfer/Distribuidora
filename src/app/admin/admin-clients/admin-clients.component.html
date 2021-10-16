@@ -2,6 +2,7 @@
   <p>
     <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
   </p>
+  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
   <div>
     <table><tr>
       <td>
@@ -25,6 +26,12 @@
       <ng-container matColumnDef="fantasyName">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h2> Nombre de Fantasía </h2></th>
         <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
+      </ng-container>
+
+      <!-- debt Column -->
+      <ng-container matColumnDef="debt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda* </h2></th>
+        <td mat-cell *matCellDef="let c">{{c.payload.val().debt | number:'1.1-1'}}</td>
       </ng-container>
 
         <!-- Edit Column -->

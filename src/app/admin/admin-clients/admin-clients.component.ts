@@ -12,7 +12,7 @@ import { ClientsService } from 'src/app/services/clients.service';
 })
 export class AdminClientsComponent implements OnInit {
 
-  displayedColumns: string[] = ['businessName', 'fantasyName', 'edit'];
+  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt', 'edit'];
   dataSource: any;
   clients:any[];
   sortedData:any[];

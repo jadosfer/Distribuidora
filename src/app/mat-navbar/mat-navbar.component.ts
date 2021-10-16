@@ -2,7 +2,7 @@ import { SellersService } from './../services/sellers.service';
 import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { PedidosService } from '../services/pedidos.service';
+import { OrdersService } from '../services/orders.service';
 
 @Component({
   selector: 'mat-navbar',
@@ -13,17 +13,17 @@ export class MatNavbarComponent implements OnInit{
   appUser: AppUser;
   sellers: any;
 
-  constructor(private auth: AuthService, private pedidosService: PedidosService,
+  constructor(private auth: AuthService, private ordersService: OrdersService,
     private sellersService: SellersService) {
   }
 
   logout() {
-    this.pedidosService.clearPedido();
+    this.ordersService.clearOrder();
     this.auth.logout()
   }
 
   getTotalItems() {
-    // let pedido = this.pedidosService.getPedido();
+    // let order = this.ordersService.getOrder();
     // return 0;
   }
 
@@ -31,7 +31,7 @@ export class MatNavbarComponent implements OnInit{
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       if (appUser) {
-        this.pedidosService.appUser = this.appUser;
+        this.ordersService.appUser = this.appUser;
         this.sellersService.getAll().subscribe(sellers => {
           this.sellers = sellers;
           let create = true;

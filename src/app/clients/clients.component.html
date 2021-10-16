@@ -1,6 +1,7 @@
 <div class="SCContainer" *ngIf="appUser">
   <div style="margin-bottom:20px;margin-top:20px;margin-left:20px;">
     <h1>Mis Clientes</h1>
+    <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
     <div>
       <table><tr>
         <td>
@@ -15,12 +16,16 @@
     <table matSort (matSortChange)="sortData($event)">
       <tr>
         <th mat-sort-header="nroCliente">Nro.</th>
-        <th mat-sort-header="cliente">Nombre Cliente</th>
+        <th mat-sort-header="businessName">Razón social</th>
+        <th mat-sort-header="fantasyName">Nombre de Fantasía</th>
+        <th mat-sort-header="debt">Deuda*</th>
       </tr>
 
       <tr *ngFor="let client of filteredClients; let i = index">
         <td>{{i + 1}}&nbsp;&nbsp;</td>
+        <td>{{client.payload.val().businessName}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;</td>
+        <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
       </tr>
     </table>
   </div>

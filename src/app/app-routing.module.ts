@@ -1,9 +1,9 @@
 import { CheckOutComponent } from './check-out/check-out.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
-import { PedidosComponent } from './pedidos/pedidos.component';
+import { OrdersComponent } from './orders/orders.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PedidoComponent } from './pedidos/pedido.component';
+import { OrderComponent } from './orders/order.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { ClientsComponent} from './clients/clients.component';
@@ -17,15 +17,19 @@ import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { BuysComponent } from './buys/buys.component';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
+import { PaymentsComponent } from './payments/payments.component';
+import { PaymentComponent } from './payment/payment.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
   { path: "", component: CheckOutComponent },
   { path: "dashboard", component: DashboardComponent },
-  { path: "pedidos/pedido", component: PedidoComponent },
+  { path: "orders/order", component: OrderComponent },
+  { path: "payments/payment", component: PaymentComponent },
+  { path: "payments/payments", component: PaymentsComponent },
   { path: "client/client", component: ClientsComponent },
-  { path: "pedidos/pedidos", component: PedidosComponent },
+  { path: "orders/orders", component: OrdersComponent },
   { path: "login", component: LoginComponent },
   { path: "checkout", component: CheckOutComponent },
 

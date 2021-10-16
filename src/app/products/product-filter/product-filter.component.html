@@ -4,8 +4,8 @@
       <a mat-raised-button routerLink="./" routerLinkActive="mat-primary">Todas las categorias</a>
     </div>
     <div>
-      <mat-list-item *ngFor="let c of prodCategories$ | async">
-        <a mat-raised-button routerLink="./" [queryParams]="{prodCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
+      <mat-list-item *ngFor="let c of prodsCategories | async">
+        <a mat-raised-button routerLink="./" [queryParams]="{prodsCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
       </mat-list-item>
     </div>
   </mat-list>
@@ -14,7 +14,7 @@
 <div style="margin:5px; margin-top:-20px; margin-left:-20px;">
   <div fxLayout="row" style="margin:5px; margin-left:10px;">
     <a mat-raised-button routerLink="./" style="max-width:170px" routerLinkActive="mat-primary">Todas las categorias</a>
-    <a *ngFor="let c of prodCategories$ | async" style="max-width:120px" mat-raised-button routerLink="./" [queryParams]="{prodCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
+    <a *ngFor="let c of prodsCategories | async" style="max-width:120px" mat-raised-button routerLink="./" [queryParams]="{prodsCategory: c.name}" color="basic" routerLinkActive="mat-accent">{{c.name}}</a>
   </div>
 </div>
 

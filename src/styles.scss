@@ -12,7 +12,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin-top: 80px;
 }
 
-div .container-pedidos {
+div .container-orders {
   margin-top: 80px !important;
 }
 
@@ -38,8 +38,12 @@ div .container-form {
   margin-top:-2em;
 }
 
+mat-card{
+  width: fit-content;
+}
+
 @media only screen and (max-width: 800px) {
-  .container-grid-pedido {
+  .container-grid-order {
     margin-top: 20px !important;
     margin-left: -20px !important;
   }
@@ -48,7 +52,7 @@ div .container-form {
     margin-left: -28px !important;
   }
 
-  .pedidoContainer {
+  .orderContainer {
     margin-top: 90px !important;
     margin-left: 30px !important;
   }
@@ -66,7 +70,7 @@ div .container-form {
     left: 1em;
   }
 
-  .container-grid-pedido {
+  .container-grid-order {
     margin-top: 90px !important;
     margin-left: 200px !important;
   }
@@ -82,7 +86,7 @@ div .container-form {
 
 .SCContainer, .login-btn {
   margin-top:80px;
-  margin-left: 0px;
+  margin-left: -10px;
 }
 
 .navbar-chip {

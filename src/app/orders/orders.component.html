@@ -1,0 +1,109 @@
+<div class="SCContainer" *ngIf="appUser">
+  <div fxLayout="row" style="margin:10px">
+    <div><h1 style="display: inline; margin:10px;">Mis pedidos&nbsp;&nbsp;</h1></div>
+    <div>
+      <a style="margin-left:50px;" mat-icon-button routerLink="/orders/order"><mat-icon>control_point</mat-icon></a><span>Crear Pedido</span>
+    </div>
+  </div>
+
+  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div fxLayout="row" style="margin:20px;">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
+      </div>
+      <div fxLayout="row" *ngIf="appUser.isAdmin" style="min-width:130px;">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
+      </div>
+      <div fxLayout="row">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
+      </div>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="space-evenly center">
+      <form #f="ngForm" style="margin-left:20px" (ngSubmit)="searchDateRange(range.value)">
+        <mat-form-field appearance="fill">
+          <mat-label>Ingrese un rango de fechas</mat-label>
+          <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+            <input matStartDate formControlName="start" placeholder="fecha inicio">
+            <input matEndDate formControlName="end" placeholder="fecha finalización">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+          <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
+          <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+        </mat-form-field>
+        <button mat-raised-button style="margin:20px" type="submit" color="primary" >buscar por rango</button>
+        <button #query style="margin:0px" mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
+      </form>
+    </div>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <table style="margin-left:20px" matSort (matSortChange)="sortData($event)">
+        <tr>
+          <th mat-sort-header="client">Cliente</th>
+          <th mat-sort-header="seller">Vendedor</th>
+          <th mat-sort-header="date" *ngIf="!isExpanded">Fecha</th>
+          <th mat-sort-header="import">Importe c/iva</th>
+          <th mat-sort-header="iva">IVA</th>
+          <th mat-sort-header="aproved" *ngIf="!isExpanded">¿Pedido aprobado?</th>
+          <th mat-sort-header="debt" *ngIf="!isExpanded">Debe</th>
+          <th mat-sort-header="detail">Detalle</th>
+          <th mat-sort-header="pdf">PDF</th>
+          <th mat-sort-header="delete">Eliminar</th>
+        </tr>
+        <tr *ngFor="let order of filteredOrders; let i = index" >
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td>
+          <td>
+            <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
+              <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Detalle
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <tr>
+                  <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
+                  <th mat-sort-header="prodTitle;{{i}}">Producto</th>
+                  <th mat-sort-header="unitPrice;{{i}}">Importe/unid s/iva</th>
+                  <th mat-sort-header="Price;{{i}}">Importe</th>
+                </tr>
+                <tr *ngFor="let item of order.payload.val().order.products; let i = index">
+                  <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
+                  <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td *ngIf="item.quantity !=0">${{item.discountPrice | number:'1.1-1'}}</td>
+                  <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
+                </tr>
+                <tr>
+                  <th mat-sort-header="total">Total s/iva:</th>
+                  <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
+                </tr>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+          <td><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+          <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order.key)" color="accent" ><mat-icon>delete</mat-icon></button></td>
+         </tr>
+         <tr>
+          <th mat-sort-header="total2">TOTAL</th>
+          <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
+        </tr>
+      </table>
+
+    </mat-card-content>
+  </mat-card>
+</div>
+
+
+
+

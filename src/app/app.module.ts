@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { MaterialModule } from './Material/Material.module';
 import { AppRoutingModule } from './app-routing.module';
-import { PedidoComponent } from './pedidos/pedido.component';
+import { OrderComponent } from './orders/order.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { LoginComponent } from './login/login.component';
 import { environment } from '../environments/environment';
@@ -22,9 +22,9 @@ import { AuthGuard } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
 import { ProductService } from './services/product.service';
 import { ProductFilterComponent } from './products/product-filter/product-filter.component';
-import { PedidosService } from './services/pedidos.service';
+import { OrdersService } from './services/orders.service';
 import { ClientsComponent } from './clients/clients.component';
-import {PedidosComponent} from './pedidos/pedidos.component';
+
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
 import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.component';
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
@@ -36,12 +36,15 @@ import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
 import { BuysComponent } from './buys/buys.component';
-import { ProdCategoryService } from './services/prod-category.service';
+import { CategoryService } from './services/category.service';
 import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
 import { CheckOutComponent } from './check-out/check-out.component';
+import { OrdersComponent } from './orders/orders.component';
+import { PaymentsComponent } from './payments/payments.component';
+import { PaymentComponent } from './payment/payment.component';
 
 
 
@@ -49,9 +52,9 @@ import { CheckOutComponent } from './check-out/check-out.component';
 @NgModule({
   declarations: [
     AppComponent,
-    PedidosComponent,
+    OrdersComponent,
     MatNavbarComponent,
-    PedidoComponent,
+    OrderComponent,
     AdminClientsComponent,
     LoginComponent,
     ProductFormComponent,
@@ -66,7 +69,9 @@ import { CheckOutComponent } from './check-out/check-out.component';
     BuysComponent,
     PieChartComponent,
     AdminProdsComponent,
-    CheckOutComponent
+    CheckOutComponent,
+    PaymentsComponent,
+    PaymentComponent
 
   ],
   imports: [
@@ -83,8 +88,8 @@ import { CheckOutComponent } from './check-out/check-out.component';
     ReactiveFormsModule,
     ChartsModule
   ],
-  providers: [AuthGuard, UserService, AdminAuthGuard, ProdCategoryService,
-    ProductService, AuthService, PedidosService, DatePipe, PieChartComponent, {
+  providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService,
+    ProductService, AuthService, OrdersService, DatePipe, PieChartComponent, {
       provide: MAT_RADIO_DEFAULT_OPTIONS,
       useValue: { color: 'primary' },
   }],

@@ -1,4 +1,4 @@
-import { PedidosService } from './pedidos.service';
+import { OrdersService } from './orders.service';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { ActivatedRoute, Router } from '@angular/router';

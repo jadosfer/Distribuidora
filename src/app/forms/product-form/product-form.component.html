@@ -3,62 +3,46 @@
     <form #f="ngForm" (ngSubmit)="save(f.value)">
       <p>
         <mat-form-field appearance="legacy">
-          <mat-label>Title</mat-label>
-          <input #title="ngModel" matInput [(ngModel)]="product.title" name="title" placeholder="" required>
+          <mat-label>Producto</mat-label>
+          <input #title="ngModel" matInput [(ngModel)]="product.title" name="title" placeholder="" maxlength="40" required>
 
-          <mat-hint>Required Field</mat-hint>
-          <div class="alert alert-danger" *ngIf="title.touched && title.invalid">Title is required</div>
+          <mat-hint>Nombre del producto</mat-hint>
+          <div class="alert alert-danger" *ngIf="title.touched && title.invalid">El nombre es obligatorio. Máximo 30 caracteres</div>
         </mat-form-field>
-
       </p>
-
       <p>
         <mat-form-field appearance="legacy">
           <mat-label>$</mat-label>
           <input #buyPrice="ngModel" matInput [(ngModel)]="product.buyPrice" name="buyPrice" placeholder="" required [min]="0">
           <div class="alert alert-danger" *ngIf="buyPrice.touched && buyPrice.invalid">
-            <div *ngIf="buyPrice.errors?.required">Price is required</div>
-            <div *ngIf="buyPrice.errors?.min">Price should be 0 or higher</div>
+            <div *ngIf="buyPrice.errors?.required">Campo obligatorio</div>
+            <div *ngIf="buyPrice.errors?.min">Precio inválido. Dede usar punto en vez de coma.</div>
           </div>
           <mat-hint>Precio de Compra</mat-hint>
         </mat-form-field>
-
-
       </p>
 
 
         <mat-form-field appearance="fill">
           <mat-label>Categories</mat-label>
-          <mat-select #prodCategory="ngModel" [(ngModel)]="product.prodCategory" name="prodCategory" required>
-            <mat-option *ngFor="let c of prodCategories$ | async" [value]="c.name">
+          <mat-select #prodsCategory="ngModel" [(ngModel)]="product.prodsCategory" name="prodsCategory" required>
+            <mat-option *ngFor="let c of prodsCategories | async" [value]="c.name">
               {{c.name}}
             </mat-option>
           </mat-select>
-          <div class="alert alert-danger" *ngIf="prodCategory.touched && prodCategory.invalid">Category is required</div>
+          <div class="alert alert-danger" *ngIf="prodsCategory.touched && prodsCategory.invalid">Category is required</div>
         </mat-form-field>
 
-      <p>
-        <mat-form-field appearance="legacy">
-          <mat-label>Image URL</mat-label>
-          <input #imageUrl="ngModel" matInput [(ngModel)]="product.imageUrl" name="imageUrl">
-          <mat-hint>Image URL</mat-hint>
-          <div class="alert alert-danger" *ngIf="imageUrl.touched && imageUrl.invalid">
-            <div *ngIf="imageUrl.errors?.url">Please enter a valid URL</div>
-          </div>
-        </mat-form-field>
-      </p>
-
-      <button mat-raised-button type="submit" color="primary" >Guardar</button>
+      <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
       <button (click)="delete()" mat-raised-button type="button" color="warn">Eliminar</button>
     </form>
   </div>
   <mat-card class="example-card" fxFlex="40%;" fxFlex.xs="80%">
-    <img mat-card-image [src]="product.imageUrl">
     <mat-card-footer>
       <mat-card-title>{{product.title}}</mat-card-title>
       <mat-card-subtitle><b>{{product.buyPrice | currency:'$AR ':true}}</b></mat-card-subtitle>
       <mat-card-content>
-        <p><b>{{product.prodCategory}}</b></p>
+        <p><b>{{product.prodsCategory}}</b></p>
       </mat-card-content>
     </mat-card-footer>
 

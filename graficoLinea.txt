@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
-import { PedidosService } from '../services/pedidos.service';
+import { OrdersService } from '../services/orders.service';
 
 
 @Component({
@@ -87,7 +87,7 @@ export class LineChartComponent {
   public lineChartType: ChartType = 'line';
 //  public lineChartPlugins = [pluginAnnotations];
 
-  constructor(public pedidosService: PedidosService) {}
+  constructor(public ordersService: OrdersService) {}
 
   public randomize(): void {
     let newChartData: Array<any> = new Array(this.lineChartData.length);

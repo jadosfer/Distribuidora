@@ -72,7 +72,7 @@ export class BuysComponent implements OnInit {
       this.sortedData = data.sort((a: any, b: any) => {
         const isAsc = sort.direction === 'asc';
         switch (sort.active) {
-          //case 'nroPedido': return this.compare(a.i, b.i, isAsc);
+          //case 'nroOrder': return this.compare(a.i, b.i, isAsc);
           case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
           case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
           case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);

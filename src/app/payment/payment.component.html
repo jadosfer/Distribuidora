@@ -1,0 +1,41 @@
+<div fxLayout="row" fxLayout.xs="column">
+  <div class="container-form" fxFlex="40%;" fxFlex.xs="80%">
+    <h2>Nuevo Cobro</h2>
+    <form #f="ngForm" (ngSubmit)="save(f.value)">
+      <p>
+        <mat-form-field appearance="legacy">
+          <mat-label>Monto</mat-label>
+          <input #amount="ngModel" matInput [(ngModel)]="payment.amount" name="amount" placeholder="" [min]="0" required>
+
+          <mat-hint>Monto</mat-hint>
+          <div class="alert alert-danger" *ngIf="amount.touched && amount.invalid">El monto es obligatorio</div>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-label>Cliente</mat-label>
+          <mat-select #client="ngModel" [(ngModel)]="payment.client" name="client" required>
+            <mat-option *ngFor="let c of clients" [value]="c.payload.val().fantasyName">
+              {{c.payload.val().fantasyName}}
+            </mat-option>
+          </mat-select>
+          <div class="alert alert-danger" *ngIf="client.touched && client.invalid">El cliente es obligatorio</div>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-label>Modo de Pago</mat-label>
+          <mat-select #payWay="ngModel" [(ngModel)]="payment.payWay" name="payWay" required>
+            <mat-option *ngFor="let p of payWays" [value]="p.name">
+              {{p.name}}
+            </mat-option>
+          </mat-select>
+          <div class="alert alert-danger" *ngIf="client.touched && client.invalid">El Modo de pago es obligatorio</div>
+        </mat-form-field>
+      </p>
+
+      <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
+      <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
+    </form>
+  </div>
+</div>

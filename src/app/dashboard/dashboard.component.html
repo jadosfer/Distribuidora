@@ -73,20 +73,20 @@
       <th mat-sort-header="cliente">Cliente</th>
       <th mat-sort-header="vendedor">Vendedor</th>
       <th mat-sort-header="date">Fecha</th>
-      <th mat-sort-header="import">Importe</th>
+      <th mat-sort-header="import">Importe c/iva</th>
       <th mat-sort-header="iva">IVA</th>
     </tr>
 
 
-    <tr *ngFor="let ped of filteredPedidos; let i = index" >
+    <tr *ngFor="let order of filteredOrders; let i = index" >
 
-      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().pedido.sellerName}}&nbsp;&nbsp;</td>
-      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">${{this.pedidosService.getTotalCost(ped) | number:'1.1-1'}}</td>
-      <td *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">{{ped.payload.val().iva}}%</td>
+      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
+      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
+      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+      <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount| number:'1.1-1'}}</td>
+      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
 
-        <mat-accordion *ngIf="ped.payload.val().pedido.pedidoItemsCount !=0">
+        <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
           <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -96,14 +96,18 @@
             <tr>
               <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
               <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad c/iva</th>
+              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad s/iva</th>
               <th mat-sort-header="Price;{{i}}">Importe</th>
             </tr>
-            <tr *ngFor="let item of ped.payload.val().pedido.products; let i = index">
+            <tr *ngFor="let item of order.payload.val().order.products; let i = index">
               <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
               <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
               <td *ngIf="item.quantity !=0">${{item.discountPrice | number:'1.1-1'}}</td>
               <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
+            </tr>
+            <tr>
+              <th mat-sort-header="total">Total s/iva:</th>
+              <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
             </tr>
           </mat-expansion-panel>
         </mat-accordion>

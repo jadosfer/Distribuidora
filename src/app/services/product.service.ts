@@ -1,6 +1,6 @@
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Injectable, OnInit } from '@angular/core';
-import { PedidosService } from './pedidos.service';
+import { OrdersService } from './orders.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,16 +23,18 @@ export class ProductService implements OnInit{
   }
 
   create(product: any) {
-    if (!product.imageUrl) product.imageUrl = "";
     product.disc1=0;
     product.disc2=0;
     product.disc3=0;
+    product.disc4=0;
     product.price1=product.buyPrice*1.1;  //harcoded recharges
     product.price2=product.buyPrice*1.2;  //harcoded recharges
     product.price3=product.buyPrice*1.3;  //harcoded recharges
+    product.price4=product.buyPrice*1.3;  //harcoded recharges
     product.discPrice1=product.price1;
     product.discPrice2=product.price2;
     product.discPrice3=product.price3;
+    product.discPrice4=product.price4;
     return this.db.list('/products').push(product);
   }
 
@@ -65,7 +67,6 @@ export class ProductService implements OnInit{
   }
 
   update(productId: any, product:any) {
-    if (!product.imageUrl) product.imageUrl = "";
     return this.db.object('/products/' + productId).update(product);
   }
 
@@ -73,21 +74,23 @@ export class ProductService implements OnInit{
     return this.db.object('/products/' + productId).remove();
   }
 
-  recharge(products:any, distRecharge: number, comRecharge: number, gymRecharge: number) {
+  recharge(products:any, distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
     for (let i=0;i<products.length;i++) {
       let prod = {
         "disc1": products[i].payload.val().disc1,
         "disc2": products[i].payload.val().disc2,
         "disc3": products[i].payload.val().disc3,
+        "disc4": products[i].payload.val().disc4,
         "buyPrice": products[i].payload.val().buyPrice,
-        "imageUrl": products[i].payload.val().imageUrl,
         "price1": products[i].payload.val().buyPrice * (1 + distRecharge/100),
         "price2": products[i].payload.val().buyPrice * (1 + comRecharge/100),
-        "price3": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
+        "price3": products[i].payload.val().buyPrice * (1 + kiosRecharge/100),
+        "price4": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
         "discPrice1": products[i].payload.val().discPrice1,
         "discPrice2": products[i].payload.val().discPrice2,
         "discPrice3": products[i].payload.val().discPrice3,
-        "prodCategory": products[i].payload.val().prodCategory,
+        "discPrice4": products[i].payload.val().discPrice4,
+        "prodsCategory": products[i].payload.val().prodsCategory,
         "title": products[i].payload.val().title
       }
       this.db.object('/products/' + products[i].key).update(prod);
@@ -95,12 +98,14 @@ export class ProductService implements OnInit{
       product.discPrice1 = prod.price1*(1-product.disc1/100);
       product.discPrice2 = prod.price2*(1-product.disc2/100);
       product.discPrice3 = prod.price3*(1-product.disc3/100);
+      product.discPrice4 = prod.price4*(1-product.disc4/100);
       this.db.object('/products/' + products[i].key).update(product);
     }
 
     this.recharges = {
       "distRecharge": distRecharge,
       "comRecharge": comRecharge,
+      "kiosRecharge": kiosRecharge,
       "gymRecharge": gymRecharge
     }
     let result = this.getAllRecharges().subscribe(result => {
@@ -113,16 +118,18 @@ export class ProductService implements OnInit{
       "disc1": p.payload.val().disc1,
       "disc2": p.payload.val().disc2,
       "disc3": p.payload.val().disc3,
+      "disc4": p.payload.val().disc4,
       "buyPrice": p.payload.val().buyPrice,
-      "imageUrl": p.payload.val().imageUrl,
-      "prodCategory": p.payload.val().prodCategory,
+      "prodsCategory": p.payload.val().prodsCategory,
       "title": p.payload.val().title,
       "price1": p.payload.val().price1,
       "price2": p.payload.val().price2,
       "price3": p.payload.val().price3,
+      "price4": p.payload.val().price4,
       "discPrice1": p.payload.val().discPrice1,
       "discPrice2": p.payload.val().discPrice2,
-      "discPrice3": p.payload.val().discPrice3
+      "discPrice3": p.payload.val().discPrice3,
+      "discPrice4": p.payload.val().discPrice4
       }
       if (priceNumber == "price1") {
         product.discPrice1 = p.payload.val().price1 * (1 - disc/100);
@@ -136,6 +143,10 @@ export class ProductService implements OnInit{
         product.discPrice3 = p.payload.val().price3 * (1 - disc/100);
         product.disc3 = disc;
       }
+      else if (priceNumber == "price4") {
+        product.discPrice4 = p.payload.val().price4 * (1 - disc/100);
+        product.disc4 = disc;
+      }
     this.db.object('/products/' + p.key).update(product);
   }
 
@@ -147,9 +158,11 @@ export class ProductService implements OnInit{
           product.discPrice1 = product.price1*(1-product.disc1/100);
           product.discPrice2 = product.price1*(1-product.disc2/100);
           product.discPrice3 = product.price1*(1-product.disc3/100);
+          product.discPrice4 = product.price1*(1-product.disc4/100);
           this.db.object('/products/' + this.products[i].key).update(product);
         }
     });
   }
 
 }
+

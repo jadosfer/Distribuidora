@@ -1,4 +1,4 @@
-import { StockService } from './../services/stock.service';
+import { StockService } from '../services/stock.service';
 import { OrdersService } from '../services/orders.service';
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
@@ -11,20 +11,17 @@ import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
+//import * as jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
-import { DashboardService } from '../services/dashboard.service';
-import { PieChartComponent } from '../pieChart/pieChart.component';
-import { ChartOptions, ChartType } from 'chart.js';
+import { ClientsService } from '../services/clients.service';
 
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  selector: 'orders',
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.scss']
 })
-export class DashboardComponent implements OnInit {
-
-
+export class OrdersComponent implements OnInit {
 
   range = new FormGroup({
     start: new FormControl(),
@@ -35,6 +32,7 @@ export class DashboardComponent implements OnInit {
 
   order: any;
   orders: any[];
+  clients: any;
   userOrders: any[] = [];
   titles: string[]=[];
   subscription: Subscription;
@@ -52,33 +50,16 @@ export class DashboardComponent implements OnInit {
   quantity: number;
   sortedData: any[];
   aproved: string[] = ["NO", "SI"];
-  debt: string[] = ["NO", "SI"];
+  // paid: string[] = ["NO", "SI"];
   selected: string = "NO";
 
-  showGraph: boolean = false;
-
-  public data: any;
-
-  public pieChartLabels: Array<string> =[]
-  public pieChartData: Array<any> = []
-  public pieChartType: ChartType = 'pie';
-  public pieChartLegend = true;
-  public pieChartColors = [
-    {
-      backgroundColor: ['rgba(164,38,98)'],
-    }
-  ];
-
-  aproveFirst:boolean = false;
-
-  color: string[] = ['rgba(255,64,129)', 'rgba(63,81,181)', 'rgba(101,115,193)', 'rgba(244,146,199)', 'rgba(196,202,233)'];
-
+  aproveFirst: boolean = false;
+  isExpanded: boolean = false;
 
   constructor(public ordersService: OrdersService,
   private productService: ProductService,
-  private dashboardService: DashboardService,
-  private pieChartComponent: PieChartComponent,
   private route: ActivatedRoute,
+  private clientsService: ClientsService,
   private auth: AuthService, public datepipe: DatePipe,
   public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
@@ -92,12 +73,15 @@ export class DashboardComponent implements OnInit {
         this.orders =  orders;
         this.userOrders = [];
         for (let i=0;i<this.orders.length;i++) {
-          if (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name) {
+          if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name)) {
             this.userOrders.push(this.orders[i]);
           }
         }
         this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
       });
+    });
+    this.clientsService.getAll().subscribe(clients => {
+      this.clients = clients;
     });
   }
 
@@ -108,7 +92,6 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders;
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
   }
 
   filterBySeller(query: string) {
@@ -118,7 +101,6 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders;
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
   }
 
   filterByDate(query: string) {
@@ -128,7 +110,6 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders;
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
   }
 
   sortData(sort: Sort) {
@@ -141,14 +122,12 @@ export class DashboardComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        //case 'nroOrder': return this.compare(a.i, b.i, isAsc);
-        case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
-        case 'vendedor': return this.compare(a.payload.val().order.sellerName, b.payload.val().order.sellerName, isAsc);
+        case 'client': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
+        case 'seller': return this.compare(a.payload.val().order.sellerName, b.payload.val().order.sellerName, isAsc);
         case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
         case 'import': return this.compare(this.ordersService.getTotalAmount(a.payload.val().order.products), this.ordersService.getTotalAmount(b.payload.val().order.products), isAsc);
         case 'iva': return this.compare(a.payload.val().iva, b.payload.val().iva, isAsc);
-
-
+        case 'debt': return this.compare(a.payload.val().debt, b.payload.val().debt, isAsc);
         default: return 0;
       }
     });
@@ -167,7 +146,7 @@ export class DashboardComponent implements OnInit {
     let total = 0;
     if (this.filteredOrders) {
       this.filteredOrders.forEach(order => {
-        total += order.payload.val().amount;
+        total += this.ordersService.getTotalAmount(order.payload.val().order.products);
       });
     }
     return total;
@@ -199,6 +178,7 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
       this.filteredOrders;
     }
+    else this.filteredOrders = this.userOrders;
   }
 
   clearRange() {
@@ -208,7 +188,6 @@ export class DashboardComponent implements OnInit {
     });
     this.clientValue = "";
     this.dateValue = "";
-    this.sellerValue = "";
     this.filteredOrders = this.userOrders;
   }
 
@@ -216,93 +195,57 @@ export class DashboardComponent implements OnInit {
     return this.ordersService.isOrderInDebt(order);
   }
 
-  // Pie
-  public pieChartOptions: ChartOptions = {
-    responsive: true,
-    legend: {
-      position: 'top',
-    },
-    plugins: {
-      datalabels: {
-        formatter: (_value: any, ctx: { chart: { data: { labels: { [x: string]: any; }; }; }; dataIndex: string | number; }) => {
-          const label = ctx.chart.data.labels[ctx.dataIndex];
-          return label;
-        },
-      },
-    }
-  };
+  exportAsPDF(order: any)  {
+    if (confirm('Descargar PDF')) {
+      let myDate = new Date(order.payload.val().creationDate);
+      var dd = String(myDate.getDate()).padStart(2, '0');
+      var mm = String(myDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+      var yyyy = myDate.getFullYear();
+      let date = dd + '/' + mm + '/' + yyyy;
 
-  // events
-  public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
-  }
+      const line1 = 30
+      const line2 = line1 + 10
+      const line3 = line2 + 10
 
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
-  }
+      var doc = new jsPDF();
+      doc.setFontSize(10);
+      doc.text('GENTECH MAR DEL PLATA', 10, 20);
+      doc.text('FECHA DEL PEDIDO: ' + date, 80, 20);
+      doc.text('CLIENTE: ' + order.payload.val().clientFantasyName, 10, line1);
+      doc.text('VENDEDOR: ' + order.payload.val().order.sellerName, 80, line1);
+      doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, line1+5);
+      doc.text('Cantidad', 10, line2);
+      doc.text('Producto', 30, line2);
+      doc.text('Importe/uni', 125, line2);
+      doc.text('Importe', 155, line2);
+      doc.text('Importe+iva', 185, line2);
 
-  graphic() {
-    this.pieChartLabels = [];
-    this.pieChartData = [];
-    let categories = this.getCategories(this.filteredOrders);
-    this.pieChartLabels = categories;
-    let amounts = this.getAmounts(this.filteredOrders, categories);
-    this.pieChartData = amounts;
-    this.showGraph = true;
-  }
-
-  getCategories(orders: any) {
-    let categories: string[] = []
-    let colors = []
-    for (let i=0;i<orders.length;i++) {
-      for (let j=0;j<orders[i].payload.val().order.products.length; j++) {
-        if (!this.isCategoryIncluded(categories, orders[i].payload.val().order.products[j].product.prodsCategory)) {
-          categories.push(orders[i].payload.val().order.products[j].product.prodsCategory)
-          let col = this.color.pop()
-          if (col) {
-            this.pieChartColors[0].backgroundColor.push(col);
-          }
+      let cont = 0;
+      for (let i=0;i<order.payload.val().order.products.length;i++) {
+        if (order.payload.val().order.products[i].quantity != 0) {
+          let total = order.payload.val().order.products[i].discountPrice * order.payload.val().order.products[i].quantity
+          doc.text(order.payload.val().order.products[i].quantity.toString(), 10, line3 + 10*cont);
+          doc.text(order.payload.val().order.products[i].product.title, 30, line3 + 10*cont);
+          doc.text("$"+order.payload.val().order.products[i].discountPrice.toFixed(1), 125, line3 + 10*cont);
+          doc.text("$"+total.toFixed(1), 155, line3 + 10*cont);
+          doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
+          cont +=1;
         }
       }
+
+      let footerVertPos = line3 + 10 * cont + 10;
+      doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
+      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + this.ordersService.getTotalAmount(order.payload.val().order.products).toFixed(1), 10, footerVertPos);
+
+
+      // Save the PDF
+      doc.save('order.pdf');
     }
-    return categories;
   }
 
-  isCategoryIncluded(categories: string[], category: string) {
-    for (let i=0;i<categories.length; i++) {
-      if (categories[i]==category) return true;
+  remove(id: any) {
+    if (confirm('Está segur@ que quiere eliminar este pedido?')) {
+      this.ordersService.removeOrder(id);
     }
-    return false;
-  }
-
-  getAmounts(orders: any, categories: string[]) {
-    let amounts = [];
-    for (let i=0;i<categories.length;i++) {
-      let amount = 0;
-      for (let j=0;j<orders.length;j++) {
-        for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
-          if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
-            amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)*parseInt(orders[j].payload.val().order.products[k].quantity)*(1+orders[j].payload.val().iva/100)
-          }
-        }
-      }
-      amounts.push(amount)
-    }
-    return amounts;
-  }
-
-  getPercentage(data: any){  //porcentaje de la facturacion de cada categoria sobre el total
-    let sum=0;
-    for (let i=0;i<this.pieChartData.length;i++) {
-      sum += this.pieChartData[i];
-    }
-    return 100*data/sum
-  }
-  getTotalCategs(){  //facturacion total de las orders filtradas
-    let sum=0;
-    for (let i=0;i<this.pieChartData.length;i++) {
-      sum += this.pieChartData[i];
-    }
-    return sum
   }
 }

@@ -2,7 +2,7 @@ import { SellersService } from 'src/app/services/sellers.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ClientsCategoryService } from 'src/app/services/clients-category.service';
+import { CategoryService } from 'src/app/services/category.service';
 import { ClientsService } from 'src/app/services/clients.service';
 
 @Component({
@@ -13,7 +13,7 @@ import { ClientsService } from 'src/app/services/clients.service';
 export class ClientsFormComponent implements OnInit {
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
-  clientsCategories$: Observable<any>;
+  clientsCategories: Observable<any>;
   sellers$: Observable<any>;
   client:any = {};
   id:any;
@@ -21,11 +21,11 @@ export class ClientsFormComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private clientsCategoryService: ClientsCategoryService,
+    private categoryService: CategoryService,
     private clientsService: ClientsService,
     private sellersService: SellersService) {
 
-    this.clientsCategories$ = clientsCategoryService.getAll();
+    this.clientsCategories = categoryService.getAllClientsCategories();
     this.sellers$ = sellersService.getAll();
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) this.clientsService.get(this.id).take(1).subscribe(p => {

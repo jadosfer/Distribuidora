@@ -18,7 +18,7 @@ export class StockService {
   buyId:any;
   filteredProducts:any;
   products:any;
-  prodCategory: string | null;
+  prodsCategory: string | null;
   subscription: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
@@ -34,11 +34,11 @@ export class StockService {
       this.subscription = this.productService.getAll().subscribe(products => {
         this.filteredProducts = this.products = products;
         this.route.queryParamMap.subscribe(params => {
-          this.prodCategory = params.get('prodCategory');
+          this.prodsCategory = params.get('prodsCategory');
           if (this.products) {
-            this.filteredProducts = (this.prodCategory) ?
-            this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodCategory: string | null; }; }; }) =>
-              p.payload.val().prodCategory == this.prodCategory) :
+            this.filteredProducts = (this.prodsCategory) ?
+            this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodsCategory: string | null; }; }; }) =>
+              p.payload.val().prodsCategory == this.prodsCategory) :
             this.products;
           }
           this.subscription2 = this.getStock().subscribe(stock => {
@@ -167,7 +167,7 @@ export class StockService {
 
   }
 
-  sendPedido(pedido: any) {
+  sendOrder(order: any) {
     for (let i=0;i<this.buy.length;i++) {
       let quantity = this.stock[i].payload.val().quantity + this.buy[i].payload.val().quantity;
       this.db.object('/stock/' + this.stock[i].key).update({
@@ -193,12 +193,12 @@ export class StockService {
     return 0;
   }
 
-  aprove(pedido: any) {
+  aprove(order: any) {
 
-    for (let i=0;i<pedido.payload.val().pedido.products.length;i++) {
+    for (let i=0;i<order.payload.val().order.products.length;i++) {
       for (let j=0;j<this.stock.length;j++) {
-        if (this.stock[j].payload.val().product.title == pedido.payload.val().pedido.products[i].product.title) {
-            let quantity = this.stock[j].payload.val().quantity - pedido.payload.val().pedido.products[i].quantity;
+        if (this.stock[j].payload.val().product.title == order.payload.val().order.products[i].product.title) {
+            let quantity = this.stock[j].payload.val().quantity - order.payload.val().order.products[i].quantity;
             this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
         }
       }

@@ -11,7 +11,7 @@ import { ChartOptions, ChartType } from 'chart.js';
 
 
 export class PieChartComponent implements OnInit {
-  @Input("pedidos") pedidos: Array<any>;
+  @Input("orders") orders: Array<any>;
 
   // Pie
   public pieChartOptions: ChartOptions = {
@@ -43,9 +43,9 @@ export class PieChartComponent implements OnInit {
   ngOnInit(): void {
     this.pieChartLabels = [];
     this.pieChartData = [];
-    let categories = this.getCategories(this.pedidos);
+    let categories = this.getCategories(this.orders);
     this.pieChartLabels = categories;
-    let amounts = this.getAmounts(this.pedidos, categories);
+    let amounts = this.getAmounts(this.orders, categories);
     this.pieChartData = amounts;
   }
 
@@ -58,23 +58,23 @@ export class PieChartComponent implements OnInit {
     console.log(event, active);
   }
 
-  graphic(pedidos: any) {
+  graphic(orders: any) {
     this.pieChartLabels = [];
     this.pieChartData = [];
-    let categories = this.getCategories(pedidos);
+    let categories = this.getCategories(orders);
     this.pieChartLabels = categories;
-    let amounts = this.getAmounts(pedidos, categories);
+    let amounts = this.getAmounts(orders, categories);
     this.pieChartData = amounts;
   }
 
 
 
-  getCategories(pedidos: any) {
+  getCategories(orders: any) {
     let categories: string[] = []
-    for (let i=0;i<pedidos.length;i++) {
-      for (let j=0;j<pedidos[i].payload.val().pedido.products.length; j++) {
-        if (!this.isCategoryIncluded(categories, pedidos[i].payload.val().pedido.products[j].product.prodCategory)) {
-          categories.push(pedidos[i].payload.val().pedido.products[j].product.prodCategory)
+    for (let i=0;i<orders.length;i++) {
+      for (let j=0;j<orders[i].payload.val().order.products.length; j++) {
+        if (!this.isCategoryIncluded(categories, orders[i].payload.val().order.products[j].product.prodsCategory)) {
+          categories.push(orders[i].payload.val().order.products[j].product.prodsCategory)
         }
       }
     }
@@ -88,14 +88,14 @@ export class PieChartComponent implements OnInit {
     return false;
   }
 
-  getAmounts(pedidos: any, categories: string[]) {
+  getAmounts(orders: any, categories: string[]) {
     let amounts = [];
     for (let i=0;i<categories.length;i++) {
       let amount = 0;
-      for (let j=0;j<pedidos.length;j++) {
-        for (let k=0;k<pedidos[j].payload.val().pedido.products.length; k++) {
-          if (pedidos[j].payload.val().pedido.products[k].product.prodCategory == categories[i]) {
-            amount += parseInt(pedidos[j].payload.val().pedido.products[k].discountPrice)
+      for (let j=0;j<orders.length;j++) {
+        for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
+          if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
+            amount += parseInt(orders[j].payload.val().order.products[k].discountPrice)
           }
         }
       }

@@ -1,16 +1,24 @@
 <div class="SCContainer" *ngIf="appUser">
-  <div style="margin-bottom:20px;margin-top:20px;margin-left:20px;">
+  <div fxLayout="row" style="margin-bottom:20px;margin-top:20px;margin-left:30px;">
     <div>
       <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
       <a mat-raised-button color="accent" routerLink="/buys">Ver compras</a>
-      <div>&nbsp;</div>
+    </div>
+    <div fxLayout="row" style="margin-top:10px;margin-left:30px;">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div><input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar producto..."></div>
+    </div>
+  </div>
+
+    <div style="margin-left:30px;">
       <tr *ngFor="let p of alertProducts">
         <span><b>*Comprar: </b> {{p.payload.val().product.title}},&nbsp;</span>
         <span><b>quedan </b>{{p.payload.val().quantity}} unidades</span>
       </tr>
     </div>
+
     <div>&nbsp;</div>
-    <div>
+    <div style="margin-top:10px;margin-left:30px;">
       <h1>STOCK</h1>
       <table matSort (matSortChange)="sortData($event)">
         <tr>
@@ -18,11 +26,12 @@
           <th mat-sort-header="quantity">Cantidad</th>
         </tr>
 
-        <tr *ngFor="let p of stock">
+        <tr *ngFor="let p of filteredStock">
           <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.payload.val().quantity}}</td>
         </tr>
       </table>
     </div>
-  </div>
+
 </div>
+

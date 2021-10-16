@@ -24,7 +24,7 @@
         <mat-form-field appearance="fill">
           <mat-label>Canal de venta</mat-label>
           <mat-select #clientCategory="ngModel" [(ngModel)]="client.clientCategory" name="clientCategory" required>
-            <mat-option *ngFor="let c of clientsCategories$ | async" [value]="c.name">
+            <mat-option *ngFor="let c of clientsCategories | async" [value]="c.name">
               {{c.name}}
             </mat-option>
           </mat-select>

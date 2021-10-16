@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { PedidosService } from '../services/pedidos.service';
+import { OrdersService } from '../services/orders.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
 
@@ -19,6 +19,7 @@ export class StockComponent implements OnInit {
   stock: any;
   sortedData: any[];
   alertProducts: any[];
+  filteredStock: any;
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -28,7 +29,7 @@ export class StockComponent implements OnInit {
 
   ngOnInit(){
     this.stockService.getStock().subscribe(stock => {
-      this.stock = stock;
+      this.stock = this.filteredStock = stock;
       let alertProducts = []
       for (let i=0;i<this.stock.length;i++) {
         if (this.stock[i].payload.val().quantity < 5) {
@@ -42,6 +43,12 @@ export class StockComponent implements OnInit {
         this.appUser = appUser;
     });
 
+  }
+
+  filter(query: string) {
+    this.filteredStock = (query) ?
+      this.stock.filter( (p: { payload: { val: () => { (): any; new(): any; product: { (): any; new(): any; title: string; }; }; }; }) => p.payload.val().product.title.toLowerCase().includes(query.toLowerCase())) :
+      this.stock;
   }
 
   sortData(sort: Sort) {
