@@ -32,10 +32,12 @@ export class ClientsService {
     return this.db.object('/clients/' + clientId).remove();
   }
 
-  addclientAmount(clientFantasyName: string, amount: number) {
+  addPaymentAmount(clientFantasyName: string, amount: number) {
     for (let i=0;i<this.clients.length;i++) {
       if (this.clients[i].payload.val().fantasyName == clientFantasyName) {
-        let debt = this.clients[i].payload.val().debt - amount;
+        let debt = 0;
+        if (this.clients[i].payload.val().debt) debt = parseFloat(this.clients[i].payload.val().debt) - amount;
+        else debt = -amount
         let client = {"debt": debt}
         this.update(this.clients[i].key, client)
         break

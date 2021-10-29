@@ -92,10 +92,10 @@
             </mat-accordion>
           </td>
           <td><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-          <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order.key)" color="accent" ><mat-icon>delete</mat-icon></button></td>
+          <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
          </tr>
          <tr>
-          <th mat-sort-header="total2">TOTAL</th>
+          <th mat-sort-header="totalTwo">TOTAL</th>
           <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
         </tr>
       </table>

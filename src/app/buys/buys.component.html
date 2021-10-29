@@ -1,4 +1,4 @@
-<div class="SCContainer" *ngIf="appUser">
+<div class="BsContainer" *ngIf="appUser">
   <div>
     <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva Compra</a>
   </div>
@@ -49,7 +49,7 @@
       <tr *ngFor="let b of filteredBuys; let i = index" >
 
         <td *ngIf="b.payload.val().buyItemsCount !=0">{{b.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td *ngIf="b.payload.val().buyItemsCount !=0">${{this.stockService.getTotalCost(b)}}</td>
+        <td *ngIf="b.payload.val().buyItemsCount !=0">${{this.stockService.getTotalCost(b) | number:'1.1-1'}}</td>
 
          <mat-accordion *ngIf="b.payload.val().buyItemCount !=0">
             <mat-expansion-panel hideToggle>
@@ -68,8 +68,8 @@
               <tr *ngFor="let item of b.payload.val().buy; let i = index">
                 <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
                 <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td *ngIf="item.quantity !=0">${{item.price}}</td>
-                <td *ngIf="item.quantity !=0">${{item.price * item.quantity}}</td>
+                <td *ngIf="item.quantity !=0">${{item.price | number:'1.1-1'}}</td>
+                <td *ngIf="item.quantity !=0">${{item.price * item.quantity | number:'1.1-1'}}</td>
               </tr>
             </mat-expansion-panel>
           </mat-accordion>

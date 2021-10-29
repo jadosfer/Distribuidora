@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'mat-navbar',
@@ -13,13 +14,15 @@ export class MatNavbarComponent implements OnInit{
   appUser: AppUser;
   sellers: any;
 
-  constructor(private auth: AuthService, private ordersService: OrdersService,
+  constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router,
     private sellersService: SellersService) {
   }
 
   logout() {
+    //this.router.navigateByUrl('/checkout');
     this.ordersService.clearOrder();
     this.auth.logout()
+    this.router.navigate(['/checkout/']);
   }
 
   getTotalItems() {

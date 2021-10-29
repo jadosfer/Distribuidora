@@ -117,6 +117,7 @@ export class OrdersService implements OnDestroy {
   }
 
   clearOrder() {
+    //this.db.object('/order/').remove(); elimina todo "order" de la base
     if (!this.order) return;
     for (let i=0;i<this.order.length;i++) {
       if (this.order[i].payload.val().sellerName == this.appUser.name) this.db.object('/order/'+ this.order[i].key).remove();
@@ -197,7 +198,7 @@ export class OrdersService implements OnDestroy {
       "amount": amount,
       "debt": amount
     })
-    this.clientsService.addclientAmount(clientFantasyName, -amount)
+    this.clientsService.addPaymentAmount(clientFantasyName, -amount)
   }
 
   getClientCategory(clientFantasyName: any) {
@@ -212,59 +213,6 @@ export class OrdersService implements OnDestroy {
     }
     return clientCategory
   }
-
-  // updatePrices(order: any, clientFantasyName: any) {
-  //   let clientCategory = this.getClientCategory(clientFantasyName);
-  //   let price;
-  //   let products = []
-  //     if (!order) return
-  //     for (let i=0;i<order.payload.val().products.length;i++) {
-  //       switch (clientCategory) {
-  //         case "":
-  //           price = order.payload.val().products[i].product.discPrice1;
-  //            break;
-  //         case "Distribuidor":
-  //           price = order.payload.val().products[i].product.discPrice1;
-  //           break;
-  //         case "Comercio":
-  //           price = order.payload.val().products[i].product.discPrice2;
-  //           break;
-  //         case "Gimnasio":
-  //           price = order.payload.val().products[i].product.discPrice3;
-  //           break;
-  //         default:
-  //           return order.payload.val().products[i].price;
-  //       }
-  //       let discountPrice = price;
-  //       if (order.payload.val().products[i].discount) {
-  //         discountPrice =  price * (1 - order.payload.val().products[i].discount/100) //ojo aca
-  //       };
-  //       products.push({
-  //         "price": price,
-  //         "discountPrice": discountPrice,
-  //         "product": {
-  //           "buyPrice": order.payload.val().products[i].product.buyPrice,
-  //           "prodsCategory": order.payload.val().products[i].product.prodsCategory,
-  //           "price1": order.payload.val().products[i].product.price1,
-  //           "price2": order.payload.val().products[i].product.price2,
-  //           "price3": order.payload.val().products[i].product.price3,
-  //           "discPrice1": order.payload.val().products[i].product.discPrice1,
-  //           "discPrice2": order.payload.val().products[i].product.discPrice2,
-  //           "discPrice3": order.payload.val().products[i].product.discPrice3,
-  //           "title": order.payload.val().products[i].product.title
-  //         },
-  //         "productId": order.payload.val().products[i].productId,
-  //         "quantity": order.payload.val().products[i].quantity,
-  //         "discount": order.payload.val().products[i].discount
-  //       })
-  //     }
-
-  //     this.db.object('/order/' + order.key).update({
-  //       "orderItemsCount": order.payload.val().orderItemsCount,
-  //       "sellerName": this.appUser.name,
-  //       "products": products
-  //     });
-  // }
 
   getTotalAmount(products: any) {
     let totalAmount = 0;

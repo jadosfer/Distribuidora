@@ -20,13 +20,43 @@
 
       <tr *ngFor="let p of filteredBuy">
         <td style="max-width: 280px;">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td>{{p.quantity}}</td>
+        <!-- <td><input>{{p.quantity}}</td> -->
+        <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}"></td>
         <td>{{getQuantityOfP(p)}}</td>
         <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
         <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>
       </tr>
     </table>
   </div>
+
+  <!-- <div *ngFor="let p of this.filteredBuy; let i = index">
+    <form #f="ngForm" (ngSubmit)="saveBuy(f.value, p)">
+
+      <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
+        <input matInput placeholder="${{p.product.title}}" readonly>
+        <mat-hint>Producto</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;">
+        <input #quantity="ngModel" matInput [(ngModel)]="p.quantity" name="buyPrice" placeholder="" required [min]="0">
+        <div class="alert alert-danger" *ngIf="quantity.touched && quantity.invalid">
+          <div *ngIf="quantity.errors?.required">La cantidad es necesaria</div>
+        </div>
+        <mat-hint>Cantidad</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
+        <input matInput placeholder="${{getQuantityOfP(p)}}" readonly>
+        <mat-hint>Stock Actual</mat-hint>
+      </mat-form-field>
+      <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
+      <button (click)="delete(p.key)" mat-raised-button type="button" color="warn">Eliminar</button>
+    <span *ngIf="!f.valid">&nbsp;&nbsp;ERROR: hay datos inválidos! </span>
+  </form>
+</div> -->
+
+
+
 
 
   <div style="margin-left:10px;">

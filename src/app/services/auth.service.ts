@@ -34,9 +34,9 @@ export class AuthService {
   }
 
   logout() {
-    this.router.navigateByUrl('/checkout');
     this.afAuth.signOut()
     location.reload();
+    this.router.navigateByUrl('/checkout');
   }
 
   get appUser$() : Observable<AppUser> {

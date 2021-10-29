@@ -65,7 +65,7 @@ export class PaymentsService {
     let time = new Date().getTime()
     payment.paymentDate = time;
     payment.aproved = false;
-    this.clientsService.addclientAmount(payment.client, payment.amount)
+    this.clientsService.addPaymentAmount(payment.client, payment.amount)
     this.clearDebts(payment.client, payment.amount)
     return this.db.list('/payments').push(payment);
   }
@@ -93,7 +93,6 @@ export class PaymentsService {
     let rest = amount
     for (let i=0;i<this.orders.length;i++) {
       if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        console.log("aca")
         if (this.orders[i].payload.val().debt && this.orders[i].payload.val().debt <= rest) {
           console.log("key", this.orders[i].key)
           this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})

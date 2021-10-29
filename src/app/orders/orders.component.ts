@@ -137,7 +137,6 @@ export class OrdersComponent implements OnInit {
     return item.title;
   }
 
-
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
@@ -152,9 +151,9 @@ export class OrdersComponent implements OnInit {
     return total;
   }
 
-  removeOrder(orderId: any) {
-    this.ordersService.removeOrder(orderId);
-  }
+  // removeOrder(orderId: any) {
+  //   this.ordersService.removeOrder(orderId);
+  // }
 
   aprove(order: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
@@ -235,7 +234,7 @@ export class OrdersComponent implements OnInit {
 
       let footerVertPos = line3 + 10 * cont + 10;
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
-      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + this.ordersService.getTotalAmount(order.payload.val().order.products).toFixed(1), 10, footerVertPos);
+      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
 
       // Save the PDF
@@ -243,9 +242,10 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  remove(id: any) {
-    if (confirm('Está segur@ que quiere eliminar este pedido?')) {
-      this.ordersService.removeOrder(id);
+  remove(order: any) {
+    if (confirm('Está segur@ que quiere eliminar este pedido? Se restará el monto del pedido a la deuda del cliente')) {
+      this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt)
+      this.ordersService.removeOrder(order.key);
     }
   }
 }

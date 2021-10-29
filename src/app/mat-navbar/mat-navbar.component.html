@@ -21,6 +21,9 @@
     </ng-container>
     <a mat-menu-item (click)="logout()">Log Out</a>
   </mat-menu>
-  <h2 *ngIf="appUser" style="margin-left: 300px;">GENTECH - MAR DEL PLATA</h2>
+  <div fxHide.lt-md>
+    <h2 *ngIf="appUser" style="margin-left: 300px;">GENTECH - MAR DEL PLATA</h2>
+  </div>
+
 
 </mat-toolbar>

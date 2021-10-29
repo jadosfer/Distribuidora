@@ -105,4 +105,29 @@ export class BuyComponent implements OnInit {
       return this.stockService.getQuantityOfP(pBuy);
     }
 
+    // saveBuy(product: any, formproduct: any) {
+    //   if (confirm('Está segur@ que quiere guardar estos valores?')) {
+    //     let prod = {
+    //       "disc1": product.disc1,
+    //       "disc2": product.disc2,
+    //       "disc3": product.disc3,
+    //       "disc4": product.disc4,
+    //       "buyPrice": product.buyPrice,
+    //       "price1": formproduct.payload.val().price1,
+    //       "price2": formproduct.payload.val().price2,
+    //       "price3": formproduct.payload.val().price3,
+    //       "price4": formproduct.payload.val().price4,
+    //       "discPrice1": formproduct.payload.val().discPrice1,
+    //       "discPrice2": formproduct.payload.val().discPrice2,
+    //       "discPrice3": formproduct.payload.val().discPrice3,
+    //       "discPrice4": formproduct.payload.val().discPrice4,
+    //       "prodsCategory": product.prodsCategory,
+    //       "title": product.title
+    //     }
+    //     this.productService.update(formproduct.key, prod);
+    //     location.reload();
+    //     //this.router.navigate(['/admin/prods']);
+    //   }
+    // }
+
 }

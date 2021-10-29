@@ -1,5 +1,5 @@
 import { Product } from './../models/product';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ProductService } from '../services/product.service';
@@ -18,7 +18,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './order.component.html',
   styleUrls: ['./order.component.scss']
 })
-export class OrderComponent implements OnInit {
+export class OrderComponent implements OnInit, OnDestroy {
 
   appUser: AppUser;
 
@@ -84,7 +84,6 @@ export class OrderComponent implements OnInit {
           if (this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
             this.orderIndex = i
             this.products = this.order[this.orderIndex].payload.val().products;
-            console.log("prodsOnInit", this.products)
             break
           }
         }
@@ -122,12 +121,10 @@ export class OrderComponent implements OnInit {
                 this.filteredOrder.push(this.order[this.orderIndex].payload.val().products[i]);
               }
             }
-            console.log("filtered", this.filteredOrder)
           }
           this.showedProducts = this.filteredOrder;
           this.filter(this.prodQuery);
           if (!this.prodsCategory) this.showedProducts = this.products;
-          console.log("prodsCategory", this.prodsCategory);
         });
 
 
@@ -240,6 +237,8 @@ export class OrderComponent implements OnInit {
       if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
         this.sended = true;
         //this.order.totalAmount = this.ordersService.getTotalAmount(this.order)
+        // let iva = this.iva;
+        // if (this.clientFantasyName == "Gimnasio" || this.clientFantasyName == "Kiosko") iva = 0;
         this.ordersService.sendOrder(this.order, this.clientFantasyName, this.iva, this.aproved, this.products, this.quantity);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
@@ -274,7 +273,7 @@ export class OrderComponent implements OnInit {
 
   updatePrices() {
     let clientCategory = this.getClientCategory();
-
+    console.log("update")
     let price;
     let products = [];
     if (!this.products) return
@@ -293,17 +292,27 @@ export class OrderComponent implements OnInit {
           this.products[i].price = this.products[i].product.discPrice2;
           this.products[i].discountPrice = this.products[i].product.discPrice2*(1-this.products[i].discount/100) ;
           break;
-          case "kiosko":
+          case "Kiosko":
           this.products[i].price = this.products[i].product.discPrice3;
           this.products[i].discountPrice = this.products[i].product.discPrice3*(1-this.products[i].discount/100) ;
+          this.iva = 0;
           break;
         case "Gimnasio":
           this.products[i].price = this.products[i].product.discPrice4;
           this.products[i].discountPrice = this.products[i].product.discPrice4*(1-this.products[i].discount/100) ;
+          this.iva = 0;
           break;
       }
     }
     this.showedProducts = this.products;
     if (this.clientFantasyName != "") this.router.navigateByUrl('/orders/order');
+  }
+  ngOnDestroy() {
+    this.ordersService.clearOrder();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadHandler(event: Event) {
+    this.ordersService.clearOrder();
   }
 }
