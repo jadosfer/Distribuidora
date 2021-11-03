@@ -1,6 +1,6 @@
 import { StockService } from '../services/stock.service';
 import { OrdersService } from '../services/orders.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,7 @@ import { jsPDF } from "jspdf";
 //import * as jspdf from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ClientsService } from '../services/clients.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class OrdersComponent implements OnInit {
     end: new FormControl()
   });
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   appUser: AppUser;
 
   order: any;
@@ -38,6 +41,7 @@ export class OrdersComponent implements OnInit {
   subscription: Subscription;
   filteredProduct:any[];
   filteredOrders:any[];
+  currentItemsToShow:any[];
   dateRangefilteredOrders:any[];
   datefilteredOrders:any[];
   products:any[];
@@ -87,39 +91,52 @@ export class OrdersComponent implements OnInit {
         }
         this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
         this.dateValue = today + "/" + month;
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length})
       });
     });
     this.clientsService.getAll().subscribe(clients => {
       this.clients = clients;
     });
-
   }
 
   filter(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredOrders;
+      this.userOrders.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterBySeller(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => p.payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredOrders;
+      this.userOrders.filter(p => p.payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterByDate(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-      this.filteredOrders;
+      this.userOrders.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+      [];
     }
     else this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+  }
+
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredOrders.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
   }
 
   sortData(sort: Sort) {
@@ -188,6 +205,8 @@ export class OrdersComponent implements OnInit {
       this.filteredOrders;
     }
     else this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   clearRange() {
@@ -198,6 +217,7 @@ export class OrdersComponent implements OnInit {
     this.clientValue = "";
     this.dateValue = "";
     this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length})
   }
 
   isOrderInDebt(order: any) {

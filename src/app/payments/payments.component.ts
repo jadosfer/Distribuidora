@@ -62,7 +62,7 @@ export class PaymentsComponent implements OnInit {
     this.auth.appUser$.subscribe(appUser => {
       this.subscription = this.paymentsService.getAll().subscribe(payments => {
         this.appUser = appUser;
-        this.payments =  payments;
+        this.payments = payments;
         this.userPayments = [];
         for (let i=0;i<this.payments.length;i++) {
           if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().sellerName == this.appUser.name)) {
@@ -75,10 +75,10 @@ export class PaymentsComponent implements OnInit {
   }
 
   filter(query: string) {
-    if (query != "") {
+    if (query && query != "") {
       this.filteredPayments = (query) ?
-      this.filteredPayments.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredPayments;
+      this.userPayments.filter(p => p.payload.val().client.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredPayments = this.userPayments;
   }
@@ -86,8 +86,8 @@ export class PaymentsComponent implements OnInit {
   filterBySeller(query: string) {
     if (query != "") {
       this.filteredPayments = (query) ?
-      this.filteredPayments.filter(p => p.payload.val().sellerName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredPayments;
+      this.userPayments.filter(p => p.payload.val().sellerName.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredPayments = this.userPayments;
   }
@@ -95,8 +95,8 @@ export class PaymentsComponent implements OnInit {
   filterByDate(query: string) {
     if (query != "") {
       this.filteredPayments = (query) ?
-      this.filteredPayments.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-      this.filteredPayments;
+      this.userPayments.filter(p => this.datepipe.transform(p.payload.val().paymentDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+      [];
     }
     else this.filteredPayments = this.userPayments;
   }
