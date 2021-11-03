@@ -19,6 +19,7 @@ import { BuysComponent } from './buys/buys.component';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
+import { CreditNoteComponent } from './credit-note/credit-note.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: "", component: CheckOutComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "orders/order", component: OrderComponent },
+  { path: "orders/creditNote", component: CreditNoteComponent },
   { path: "payments/payment", component: PaymentComponent },
   { path: "payments/payments", component: PaymentsComponent },
   { path: "client/client", component: ClientsComponent },

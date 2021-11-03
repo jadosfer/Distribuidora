@@ -78,11 +78,21 @@ export class OrdersComponent implements OnInit {
           }
         }
         this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
+        //genera el string para la fecha de HOY
+        let today = new Date().getDate().toString();
+        let mon = new Date().getMonth() +1
+        let month = mon.toString();
+        if (mon < 10) {
+          month = "0" + mon.toString();
+        }
+        this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
+        this.dateValue = today + "/" + month;
       });
     });
     this.clientsService.getAll().subscribe(clients => {
       this.clients = clients;
     });
+
   }
 
   filter(query: string) {

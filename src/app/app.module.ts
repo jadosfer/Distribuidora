@@ -45,6 +45,7 @@ import { CheckOutComponent } from './check-out/check-out.component';
 import { OrdersComponent } from './orders/orders.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
+import { CreditNoteComponent } from './credit-note/credit-note.component';
 
 
 
@@ -71,7 +72,8 @@ import { PaymentComponent } from './payment/payment.component';
     AdminProdsComponent,
     CheckOutComponent,
     PaymentsComponent,
-    PaymentComponent
+    PaymentComponent,
+    CreditNoteComponent
 
   ],
   imports: [

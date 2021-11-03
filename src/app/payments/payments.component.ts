@@ -60,17 +60,18 @@ export class PaymentsComponent implements OnInit {
 
   ngOnInit(){
     this.filter("");
-    this.subscription = this.paymentsService.getAll().subscribe(payments => {
-      this.auth.appUser$.subscribe(appUser => {
+    this.auth.appUser$.subscribe(appUser => {
+      this.subscription = this.paymentsService.getAll().subscribe(payments => {
         this.appUser = appUser;
         this.payments =  payments;
         this.userPayments = [];
         for (let i=0;i<this.payments.length;i++) {
-          if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().payment.sellerName == this.appUser.name)) {
+          if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().sellerName == this.appUser.name)) {
             this.userPayments.push(this.payments[i]);
           }
         }
         this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments;
+        console.log("this.filteredPayments", this.filteredPayments)
       });
     });
   }

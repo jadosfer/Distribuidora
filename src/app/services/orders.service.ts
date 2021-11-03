@@ -177,12 +177,14 @@ export class OrdersService implements OnDestroy {
       }
     }
 
-    let time = new Date().getTime();
+    let time = new Date();
+    time.getHours();
+    //time.getMinutes();
     let debt = false;
     if (this.isClientInDebt(clientFantasyName)) {
       debt = true;
     }
-    let isAproved = aproved && !debt;
+    let isAproved = aproved && !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
 
     let result = this.db.list('/orders/').push({
       "order": {
@@ -190,7 +192,7 @@ export class OrdersService implements OnDestroy {
         "products":prods,
         "sellerName": order[this.orderIndex].payload.val().sellerName,
       },
-      "creationDate": time,
+      "creationDate": time.getTime(),
       "paid": "NO",
       "iva": iva,
       "clientFantasyName": clientFantasyName,

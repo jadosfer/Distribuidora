@@ -71,7 +71,7 @@
           <th mat-sort-header="payWay">Forma de Pago</th>
           <th mat-sort-header="seller">Vendedor</th>
           <th mat-sort-header="date">Fecha</th>
-          <th mat-sort-header="delete">Eliminar</th>
+          <th mat-sort-header="delete" *ngIf ="appUser.isAdmin">Eliminar</th>
         </tr>
           <tr *ngFor="let pay of filteredPayments; let i = index" >
 
