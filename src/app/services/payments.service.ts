@@ -129,15 +129,15 @@ export class PaymentsService {
     return clientCategory
   }
 
-  getTotalCost(ped: any) {
-    let totalCost = 0;
-    if (ped.payload.val().payment.products) {
-      for (let i = 0;i < ped.payload.val().payment.products.length;i++) {
-        totalCost += ped.payload.val().payment.products[i].discountPrice * ped.payload.val().payment.products[i].quantity
-      }
-    }
-    return totalCost;
-  }
+  // getTotalCost(p: any) {
+  //   let totalCost = 0;
+  //   if (p.payload.val().amount) {
+  //     for (let i = 0;i < p.payload.val().payment.products.length;i++) {
+  //       totalCost += p.payload.val().payment.products[i].discountPrice * p.payload.val().payment.products[i].quantity
+  //     }
+  //   }
+  //   return totalCost;
+  // }
 
   aprove(payment:any) {
     this.updatePayment(payment.key, {"aproved": true})

@@ -76,10 +76,6 @@ export class BuysComponent implements OnInit {
           case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
           case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
           case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
-          //case 'import': return this.compare(this.stockService.getTotalCost(a), this.stockService.getTotalCost(b), isAsc);
-          //case 'aproved': return this.compare(a.payload.val().aproved, b.payload.val().aproved, isAsc);
-
-
           default: return 0;
         }
       });
@@ -147,9 +143,6 @@ export class BuysComponent implements OnInit {
           cont +=1;
         }
       }
-        // let footerVertPos = 30 + 10 * cont + 10;
-        // doc.text("TOTAL:    " + this.stockService.getTotalCost(buy).toString(), 10, footerVertPos);
-
 
       // Save the PDF
       doc.save('buy.pdf');

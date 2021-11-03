@@ -65,7 +65,7 @@ export class PaymentsComponent implements OnInit {
         this.payments =  payments;
         this.userPayments = [];
         for (let i=0;i<this.payments.length;i++) {
-          if (this.appUser && (this.payments[i].payload.val().sellerName == this.appUser.name)) {
+          if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().sellerName == this.appUser.name)) {
             this.userPayments.push(this.payments[i]);
           }
         }
@@ -86,7 +86,7 @@ export class PaymentsComponent implements OnInit {
   filterBySeller(query: string) {
     if (query != "") {
       this.filteredPayments = (query) ?
-      this.filteredPayments.filter(p => p.payload.val().payment.sellerName.toLowerCase().includes(query.toLowerCase())) :
+      this.filteredPayments.filter(p => p.payload.val().sellerName.toLowerCase().includes(query.toLowerCase())) :
       this.filteredPayments;
     }
     else this.filteredPayments = this.userPayments;
@@ -111,14 +111,11 @@ export class PaymentsComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        //case 'nroPayment': return this.compare(a.i, b.i, isAsc);
-        case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
-        case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
-        case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
-        case 'import': return this.compare(this.paymentsService.getTotalCost(a), this.paymentsService.getTotalCost(b), isAsc);
-        case 'aproved': return this.compare(a.payload.val().aproved, b.payload.val().aproved, isAsc);
-
-
+        case 'cliente': return this.compare(a.payload.val().client, b.payload.val().client, isAsc);
+        case 'amount': return this.compare(a.payload.val().amount, b.payload.val().amount, isAsc);
+        case 'payWay': return this.compare(a.payload.val().payWay, b.payload.val().payWay, isAsc);
+        case 'seller': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
+        case 'date': return this.compare(a.payload.val().paymentDate, b.payload.val().paymentDate, isAsc);
         default: return 0;
       }
     });
@@ -133,15 +130,15 @@ export class PaymentsComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  getTotal() {
-    let total = 0;
-    if (this.filteredPayments) {
-      this.filteredPayments.forEach(payment => {
-        total += this.paymentsService.getTotalCost(payment);
-      });
-    }
-    return total;
-  }
+  // getTotal() {
+  //   let total = 0;
+  //   if (this.filteredPayments) {
+  //     this.filteredPayments.forEach(payment => {
+  //       total += this.paymentsService.getTotalCost(payment);
+  //     });
+  //   }
+  //   return total;
+  // }
 
   removePayment(paymentId: any) {
     this.paymentsService.removePayment(paymentId);

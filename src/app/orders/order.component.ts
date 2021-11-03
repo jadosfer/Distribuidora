@@ -273,11 +273,9 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   updatePrices() {
     let clientCategory = this.getClientCategory();
-    console.log("update")
     let price;
     let products = [];
     if (!this.products) return
-    console.log("prods", this.products)
     for (let i=0;i<this.products.length;i++) {
       switch (clientCategory) {
         case "":

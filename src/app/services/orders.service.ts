@@ -173,7 +173,6 @@ export class OrdersService implements OnDestroy {
       if (products[i].quantity != 0) { //solo guardo los prod con quant>0
         prods.push(products[i]);
         amount += products[i].quantity * products[i].discountPrice * (1 + iva/100)
-        console.log(amount)
       }
     }
 
