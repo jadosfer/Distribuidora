@@ -80,7 +80,7 @@
             <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().paymentDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-            <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay.key)" color="accent"><mat-icon>delete</mat-icon></button></td>
+            <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay.key, pay.payload.val().amount, pay.payload.val().client)" color="accent"><mat-icon>delete</mat-icon></button></td>
         </tr>
       </table>
 

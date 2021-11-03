@@ -15,7 +15,7 @@
         <mat-form-field appearance="fill">
           <mat-label>Cliente</mat-label>
           <mat-select #client="ngModel" [(ngModel)]="payment.client" name="client" required>
-            <mat-option *ngFor="let c of clients" [value]="c.payload.val().fantasyName">
+            <mat-option *ngFor="let c of this.filteredClients" [value]="c.payload.val().fantasyName">
               {{c.payload.val().fantasyName}}
             </mat-option>
           </mat-select>

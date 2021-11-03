@@ -22,7 +22,7 @@ export class PaymentComponent implements OnInit {
   payment:any = {};
   id:any;
   appUser: AppUser;
-
+  filteredClients:any[] = [];
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -35,6 +35,11 @@ export class PaymentComponent implements OnInit {
         this.appUser = appUser
         clientsService.getAll().subscribe(clients =>{
           this.clients = clients;
+          for (let i=0;i<this.clients.length;i++) {
+            if (appUser.isAdmin || this.clients[i].payload.val().designatedSeller == appUser.name) {
+              this.filteredClients.push(this.clients[i]);
+            }
+          }
         });
         categoryService.getAllPaysCategories().subscribe(payWays =>{
           this.payWays = payWays;

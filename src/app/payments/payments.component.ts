@@ -1,3 +1,4 @@
+import { ClientsService } from './../services/clients.service';
 import { StockService } from '../services/stock.service';
 import { PaymentsService } from '../services/payments.service';
 import { Component, OnInit } from '@angular/core';
@@ -50,11 +51,9 @@ export class PaymentsComponent implements OnInit {
 
   aproveFirst:boolean = false;
 
-  constructor(public paymentsService: PaymentsService,
-  private productService: ProductService,
-  private route: ActivatedRoute,
-  private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
+  constructor(public paymentsService: PaymentsService,  private productService: ProductService,
+  private route: ActivatedRoute,  private auth: AuthService, public datepipe: DatePipe,
+  public stockService: StockService, private dateAdapter: DateAdapter<Date>, private clientsService: ClientsService) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
@@ -66,7 +65,7 @@ export class PaymentsComponent implements OnInit {
         this.payments =  payments;
         this.userPayments = [];
         for (let i=0;i<this.payments.length;i++) {
-          if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().sellerName == this.appUser.name)) {
+          if (this.appUser && (this.payments[i].payload.val().sellerName == this.appUser.name)) {
             this.userPayments.push(this.payments[i]);
           }
         }
@@ -188,9 +187,10 @@ export class PaymentsComponent implements OnInit {
     return this.paymentsService.isPaymentInDebt(payment);
   }
 
-  remove(id: any) {
+  remove(id: any, amount: number, client: string) {
     if (confirm('Está segur@ que quiere eliminar este cobro?')) {
       this.paymentsService.removePayment(id);
+      this.clientsService.addPaymentAmount(client, -1*amount)
     }
   }
 }
