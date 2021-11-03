@@ -94,7 +94,6 @@ export class PaymentsService {
     for (let i=0;i<this.orders.length;i++) {
       if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
         if (this.orders[i].payload.val().debt && this.orders[i].payload.val().debt <= rest) {
-          console.log("key", this.orders[i].key)
           this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})
           rest = rest - this.orders[i].payload.val().debt;
           if (rest < 10) break

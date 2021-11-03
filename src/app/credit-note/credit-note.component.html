@@ -1,1 +1,30 @@
-<p>credit-note works!</p>
+<div fxLayout.xs-sm="column" >
+  <div id='productsList'>
+    <h1>Nota de Crédito</h1>
+    <form #f="ngForm" (ngSubmit)="sendNote(f.value)" class="example-form" style="margin-top:20px;margin-left:0px;">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Cliente</mat-label>
+        <input name="clientFantasyName" type="text" placeholder="Elija uno" aria-label="Number" matInput required
+          [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
+            {{client.payload.val().fantasyName}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field class="example-full-width" appearance="fill" style="margin:10px;">
+        <mat-label>Ingrese el monto</mat-label>
+        <input name="amount" #amount="ngModel" [(ngModel)]="note.amount" type="number" matInput required>
+      </mat-form-field>
+      <button class="left-btn" type="submit" mat-raised-button color="primary">Enviar Nota</button>
+    </form>
+    <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
+      <div>
+        <span *ngIf="!noteEmpty">Debe ingresar un valor!</span>
+        <!-- <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button> -->
+      </div>
+    </div>
+
+
+  </div>
+</div>

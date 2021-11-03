@@ -70,7 +70,6 @@ export class PaymentsComponent implements OnInit {
           }
         }
         this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments;
-        console.log("this.filteredPayments", this.filteredPayments)
       });
     });
   }

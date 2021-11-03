@@ -203,6 +203,17 @@ export class OrdersService implements OnDestroy {
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
   }
 
+  sendNote (amount: any, clientFantasyName: string) {
+
+    let result = this.db.list('/creditNotes/').push({
+      "amount": amount,
+      "clienteFantasyName": clientFantasyName,
+      "creationDate": new Date().getTime()
+    });
+
+    this.clientsService.addPaymentAmount(clientFantasyName, -amount)
+  }
+
   getClientCategory(clientFantasyName: any) {
     let clientCategory = "";
     if (this.clients) {

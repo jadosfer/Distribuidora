@@ -27,7 +27,7 @@ const routes: Routes = [
   { path: "", component: CheckOutComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "orders/order", component: OrderComponent },
-  { path: "orders/creditNote", component: CreditNoteComponent },
+  { path: "payments/creditNote", component: CreditNoteComponent },
   { path: "payments/payment", component: PaymentComponent },
   { path: "payments/payments", component: PaymentsComponent },
   { path: "client/client", component: ClientsComponent },
