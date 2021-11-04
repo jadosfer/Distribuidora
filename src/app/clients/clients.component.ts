@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { PaymentsComponent } from './../payments/payments.component';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Observable, Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { ClientsService } from '../services/clients.service';
+import { PaymentsService } from '../services/payments.service';
+import { OrdersService } from '../services/orders.service';
 
 @Component({
   selector: 'clients',
@@ -11,6 +14,7 @@ import { ClientsService } from '../services/clients.service';
   styleUrls: ['./clients.component.scss']
 })
 export class ClientsComponent implements OnInit {
+
   appUser: AppUser;
   clients$: Observable<any>;
   clients: any;
@@ -19,7 +23,8 @@ export class ClientsComponent implements OnInit {
   subscription: Subscription;
   sortedData: any[];
 
-  constructor(private clientsService: ClientsService, private auth: AuthService) {
+  constructor(private clientsService: ClientsService, private auth: AuthService,
+    private paymentsService: PaymentsService, private ordersService: OrdersService) {
    }
 
   ngOnInit() {
@@ -62,4 +67,11 @@ export class ClientsComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+  searchPayments(clientFantasyName: string) {
+    this.paymentsService.clientFantasyName = clientFantasyName;
+  }
+
+  searchOrders(clientFantasyName: string) {
+    this.ordersService.clientFantasyName = clientFantasyName;
+  }
 }

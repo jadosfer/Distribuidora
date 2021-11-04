@@ -25,6 +25,7 @@ export class PaymentsService {
   filteredProducts:any;
   paymentIndex: number;
   orders: any;
+  clientFantasyName: string;
 
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router, private ordersService: OrdersService) {

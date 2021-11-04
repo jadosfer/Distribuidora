@@ -11,12 +11,11 @@ import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { jsPDF } from "jspdf";
 
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
-  styleUrls: ['./payments.component.scss']
+  styleUrls: ['./payments.component.scss'],
 })
 export class PaymentsComponent implements OnInit {
 
@@ -70,6 +69,11 @@ export class PaymentsComponent implements OnInit {
           }
         }
         this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments;
+        if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          this.filter(this.paymentsService.clientFantasyName); // idem
+          this.clientValue = this.paymentsService.clientFantasyName; // idem
+          this.paymentsService.clientFantasyName = ""; // idem
+        }
       });
     });
   }

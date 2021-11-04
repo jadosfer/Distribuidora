@@ -47,8 +47,6 @@ export class StockService {
               this.create();
             }
           });
-
-
         });
       });
       this.subscription3 = this.getBuy().subscribe(buy => {
@@ -167,15 +165,18 @@ export class StockService {
 
   }
 
-  sendOrder(order: any) {
-    for (let i=0;i<this.buy.length;i++) {
-      let quantity = this.stock[i].payload.val().quantity + this.buy[i].payload.val().quantity;
-      this.db.object('/stock/' + this.stock[i].key).update({
-        product: this.stock[i].payload.val().product,
-        "quantity": quantity
-      });
+  updateStocks(prods: any) {
+    for (let i=0;i<prods.length;i++) {
+      for (let j=0;j<this.stock.length;j++) {
+        if (prods[i].product.title == this.stock[j].payload.val().product.title) {
+          let quantity = this.stock[j].payload.val().quantity - prods[i].quantity;
+          this.db.object('/stock/' + this.stock[j].key).update({
+            product: this.stock[i].payload.val().product,
+            "quantity": quantity
+          });
+        }
+      }
     }
-    this.db.object('/buy/').remove();
   }
 
   reset() {

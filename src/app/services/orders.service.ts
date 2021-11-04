@@ -8,6 +8,7 @@ import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ClientsService } from './clients.service';
 import { ProductService } from './product.service';
+import { StockService } from './stock.service';
 
 
 @Injectable({
@@ -24,9 +25,10 @@ export class OrdersService implements OnDestroy {
   prodsCategory: string | null;
   filteredProducts:any;
   orderIndex: number;
+  clientFantasyName: string;
 
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
-    private auth: AuthService, private route: ActivatedRoute, private router: Router) {
+    private auth: AuthService, private route: ActivatedRoute, private router: Router,  private stockService: StockService) {
 
 
     this.auth.appUser$.subscribe(appUser => {
@@ -164,7 +166,7 @@ export class OrdersService implements OnDestroy {
       }
   }
 
-  sendOrder(order: any, clientFantasyName: string, iva: number, aproved: boolean, products: any, quantity: number) {
+  sendOrder(sellerName: string, clientFantasyName: string, iva: number, aproved: boolean, products: any, quantity: number) {
 
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
@@ -175,7 +177,6 @@ export class OrdersService implements OnDestroy {
         amount += products[i].quantity * products[i].discountPrice * (1 + iva/100)
       }
     }
-
     let time = new Date();
     time.getHours();
     //time.getMinutes();
@@ -189,7 +190,7 @@ export class OrdersService implements OnDestroy {
       "order": {
         "orderItemsCount": quantity,
         "products":prods,
-        "sellerName": order[this.orderIndex].payload.val().sellerName,
+        "sellerName": sellerName,
       },
       "creationDate": time.getTime(),
       "paid": "NO",
@@ -200,6 +201,7 @@ export class OrdersService implements OnDestroy {
       "debt": amount
     })
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
+    this.stockService.updateStocks(prods);
   }
 
   sendNote (amount: any, clientFantasyName: string) {

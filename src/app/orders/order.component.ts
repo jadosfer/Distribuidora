@@ -1,3 +1,4 @@
+import { StockService } from './../services/stock.service';
 import { Product } from './../models/product';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
@@ -236,10 +237,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (send) {
       if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
         this.sended = true;
-        //this.order.totalAmount = this.ordersService.getTotalAmount(this.order)
-        // let iva = this.iva;
-        // if (this.clientFantasyName == "Gimnasio" || this.clientFantasyName == "Kiosko") iva = 0;
-        this.ordersService.sendOrder(this.order, this.clientFantasyName, this.iva, this.aproved, this.products, this.quantity);
+        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.aproved, this.products, this.quantity);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);

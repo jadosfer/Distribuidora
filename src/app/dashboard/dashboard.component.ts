@@ -12,7 +12,6 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
-import { DashboardService } from '../services/dashboard.service';
 import { PieChartComponent } from '../pieChart/pieChart.component';
 import { ChartOptions, ChartType } from 'chart.js';
 
@@ -76,7 +75,6 @@ export class DashboardComponent implements OnInit {
 
   constructor(public ordersService: OrdersService,
   private productService: ProductService,
-  private dashboardService: DashboardService,
   private pieChartComponent: PieChartComponent,
   private route: ActivatedRoute,
   private auth: AuthService, public datepipe: DatePipe,

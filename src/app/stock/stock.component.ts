@@ -14,7 +14,6 @@ import { StockService } from '../services/stock.service';
   styleUrls: ['./stock.component.scss']
 })
 export class StockComponent implements OnInit {
-
   appUser: AppUser;
   stock: any;
   sortedData: any[];

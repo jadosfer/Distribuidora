@@ -4,6 +4,8 @@ import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { ClientsService } from 'src/app/services/clients.service';
+import { OrdersService } from 'src/app/services/orders.service';
+import { PaymentsService } from 'src/app/services/payments.service';
 
 @Component({
   selector: 'admin-clients',
@@ -12,7 +14,7 @@ import { ClientsService } from 'src/app/services/clients.service';
 })
 export class AdminClientsComponent implements OnInit {
 
-  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt', 'edit'];
+  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt', 'edit', 'payments', 'orders'];
   dataSource: any;
   clients:any[];
   sortedData:any[];
@@ -21,7 +23,7 @@ export class AdminClientsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private clientsService: ClientsService) {
+  constructor(private clientsService: ClientsService, private paymentsService: PaymentsService, private ordersService: OrdersService) {
   }
 
   ngOnInit() {
@@ -50,8 +52,8 @@ export class AdminClientsComponent implements OnInit {
     this.sortedData = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'fantasyName': return compare(a.payload.val().fantasyName, b.payload.val().fantasyName, isAsc);
-        case 'businessName': return compare(a.payload.val().businessName, b.payload.val().businessName, isAsc);
+        case 'fantasyName': return this.compare(a.payload.val().fantasyName, b.payload.val().fantasyName, isAsc);
+        case 'businessName': return this.compare(a.payload.val().businessName, b.payload.val().businessName, isAsc);
         default: return 0;
       }
     });
@@ -59,13 +61,24 @@ export class AdminClientsComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  searchPayments(clientFantasyName: string) {
+    this.paymentsService.clientFantasyName = clientFantasyName;
+  }
+
+  searchOrders(clientFantasyName: string) {
+    this.ordersService.clientFantasyName = clientFantasyName;
+  }
+
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  }
+
 
   ngOnDestroy() {
   //   this.subscription.unsubscribe();
   }
-
 }
 
-function compare(a: number | string, b: number | string, isAsc: boolean) {
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-}
+// function compare(a: number | string, b: number | string, isAsc: boolean) {
+//   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+// }

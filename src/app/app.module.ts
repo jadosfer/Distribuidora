@@ -91,7 +91,7 @@ import { CreditNoteComponent } from './credit-note/credit-note.component';
     ChartsModule
   ],
   providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService,
-    ProductService, AuthService, OrdersService, DatePipe, PieChartComponent, {
+    ProductService, AuthService, OrdersService, DatePipe, PieChartComponent, PaymentsComponent, {
       provide: MAT_RADIO_DEFAULT_OPTIONS,
       useValue: { color: 'primary' },
   }],

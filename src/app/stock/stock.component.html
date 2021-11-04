@@ -18,10 +18,13 @@
               Faltantes
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <tr *ngFor="let p of alertProducts">
-            <span><b>Comprar: </b> {{p.payload.val().product.title}},&nbsp;</span>
-            <span>quedan <b>{{p.payload.val().quantity}} unidades</b></span>
-          </tr>
+          <table>
+            <tr *ngFor="let p of alertProducts">
+              <td>
+                <span><b>Comprar: </b> {{p.payload.val().product.title}},&nbsp;quedan <b>{{p.payload.val().quantity}} unidades</b></span>
+              </td>
+            </tr>
+          </table>
         </mat-expansion-panel>
       </mat-accordion>
       <!-- <tr *ngFor="let p of alertProducts">
