@@ -13,6 +13,7 @@ export class MatNavbarComponent implements OnInit{
 
   appUser: AppUser;
   sellers: any;
+  production = true;
 
   constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router,
     private sellersService: SellersService) {

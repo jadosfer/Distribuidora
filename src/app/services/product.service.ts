@@ -164,5 +164,20 @@ export class ProductService implements OnInit{
     });
   }
 
+  updateStocks(prods: any, thisProds: any, add: boolean) {
+    for (let i=0;i<prods.length;i++) {
+      for (let j=0;j<thisProds.length;j++) {
+        if (prods[i].product.title == thisProds[j].payload.val().title) {
+          let quantity;
+          if (add) quantity = parseInt(thisProds[j].payload.val().stock) + parseInt(prods[i].quantity);
+          else quantity = parseInt(thisProds[j].payload.val().stock) - parseInt(prods[i].quantity);
+          this.db.object('/products/' + thisProds[j].key).update({
+            "stock": quantity
+          });
+        }
+      }
+    }
+  }
+
 }
 

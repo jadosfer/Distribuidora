@@ -201,7 +201,8 @@ export class OrdersService implements OnDestroy {
       "debt": amount
     })
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
-    this.stockService.updateStocks(prods);
+    // crear este metodo en products service
+    this.productService.updateStocks(prods, this.products, false);
   }
 
   sendNote (amount: any, clientFantasyName: string) {
@@ -211,7 +212,6 @@ export class OrdersService implements OnDestroy {
       "clienteFantasyName": clientFantasyName,
       "creationDate": new Date().getTime()
     });
-
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
   }
 
@@ -271,6 +271,4 @@ export class OrdersService implements OnDestroy {
     }
     return false;
   }
-
-
 }

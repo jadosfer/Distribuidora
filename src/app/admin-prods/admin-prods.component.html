@@ -64,9 +64,8 @@
     </div>
 
   </div>
-
-  <div class="admin-prods-form" *ngFor="let product of this.filteredProducts; let i = index">
-    <div>
+  <div>
+    <div class="admin-prods-form" *ngFor="let product of currentItemsToShow; index as i;">
       <form #f="ngForm" (ngSubmit)="saveProd(f.value, product)">
           <mat-form-field appearance="legacy" style="width:25vw;min-width:320px;margin-right: 10px; ">
             <input #title="ngModel" matInput [(ngModel)]="product.payload.val().title" name="title" placeholder="" required>
@@ -126,12 +125,21 @@
             <input matInput placeholder="${{product.payload.val().discPrice4 | number:'1.1-1'}}" readonly>
             <mat-hint>Precio gimnasio</mat-hint>
           </mat-form-field>
+
           <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;">
             <input #disc4="ngModel" matInput [(ngModel)]="product.payload.val().disc4" name="disc4" placeholder="" required>
             <div class="alert alert-danger" *ngIf="disc4.touched && disc4.invalid">
               <div *ngIf="disc4.errors?.required">campo obligatorio</div>
             </div>
             <mat-hint>Desc.(%)</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;margin:3px">
+            <input #stock="ngModel" matInput [(ngModel)]="product.payload.val().stock" name="stock" placeholder="" required>
+            <div class="alert alert-danger" *ngIf="stock.touched && stock.invalid">
+              <div *ngIf="stock.errors?.required">campo obligatorio</div>
+            </div>
+            <mat-hint>Stock</mat-hint>
           </mat-form-field>
 
           <mat-form-field appearance="legacy" style="width:5vw;min-width:80px;">
@@ -152,4 +160,5 @@
       </form>
     </div>
   </div>
+  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredProducts.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 </div>

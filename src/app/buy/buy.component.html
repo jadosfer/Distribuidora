@@ -21,7 +21,7 @@
       <tr *ngFor="let p of filteredBuy">
         <td style="max-width: 280px;">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <!-- <td><input>{{p.quantity}}</td> -->
-        <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}"></td>
+        <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}" (blur)="setBuyItemQuantity(this.buy, p, p.quantity)"></td>
         <td>{{getQuantityOfP(p)}}</td>
         <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
         <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>

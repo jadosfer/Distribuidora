@@ -91,7 +91,7 @@ export class OrdersComponent implements OnInit {
         }
         this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
         this.dateValue = today + "/" + month;
-        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 5, length: this.filteredOrders.length})
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
         if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
           this.filter(this.ordersService.clientFantasyName); // idem
           this.clientValue = this.ordersService.clientFantasyName; // idem

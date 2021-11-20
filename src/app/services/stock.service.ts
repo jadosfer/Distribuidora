@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
@@ -19,9 +18,6 @@ export class StockService {
   filteredProducts:any;
   products:any;
   prodsCategory: string | null;
-  subscription: Subscription;
-  subscription2: Subscription;
-  subscription3: Subscription;
 
   constructor(private db: AngularFireDatabase, private productService: ProductService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
@@ -31,7 +27,7 @@ export class StockService {
       });
 
       this.filteredProducts = [];
-      this.subscription = this.productService.getAll().subscribe(products => {
+      this.productService.getAll().subscribe(products => {
         this.filteredProducts = this.products = products;
         this.route.queryParamMap.subscribe(params => {
           this.prodsCategory = params.get('prodsCategory');
@@ -41,7 +37,7 @@ export class StockService {
               p.payload.val().prodsCategory == this.prodsCategory) :
             this.products;
           }
-          this.subscription2 = this.getStock().subscribe(stock => {
+          this.getStock().subscribe(stock => {
             this.stock = stock;
             if (this.stock.length == 0) {
               this.create();
@@ -49,7 +45,7 @@ export class StockService {
           });
         });
       });
-      this.subscription3 = this.getBuy().subscribe(buy => {
+      this.getBuy().subscribe(buy => {
         this.buy = buy;
         if (this.buy.length == 0) {
           this.createBuy();
@@ -109,37 +105,64 @@ export class StockService {
 
   updateBuyItemQuantity(buy:any, product:any, change: number){
 
-    let buyItemsCount = buy[0].payload.val().buyItemsCount + change;
-      let products = []
-      for (let i=0;i<buy[0].payload.val().products.length;i++) {
-        let plus = 0;
-        if (product.productId == buy[0].payload.val().products[i].productId) plus = change;
+    let buyItemsCount = parseInt(buy[0].payload.val().buyItemsCount) + change;
+    let products = []
+    for (let i=0;i<buy[0].payload.val().products.length;i++) {
+      let plus = 0;
+      if (product.productId == buy[0].payload.val().products[i].productId) plus = change;
+      products.push({
+            "price": buy[0].payload.val().products[i].price,
+            "product": buy[0].payload.val().products[i].product,
+            "productId": buy[0].payload.val().products[i].productId,
+            "quantity": parseInt(buy[0].payload.val().products[i].quantity) + plus,
+          })
+      plus = 0;
+    }
+
+    this.db.object('/buy/' + buy[0].key).update({
+      "buyItemsCount": buyItemsCount,
+      "products": products
+    });
+  }
+
+  setBuyItemQuantity(buy: any, product: any, quantity: number) {
+    let buyItemsCount = 0;
+    let products = []
+    for (let i=0;i<buy[0].payload.val().products.length;i++) {
+      if (product.productId == buy[0].payload.val().products[i].productId){
         products.push({
-              "price": buy[0].payload.val().products[i].price,
-              "product": buy[0].payload.val().products[i].product,
-              "productId": buy[0].payload.val().products[i].productId,
-              "quantity": buy[0].payload.val().products[i].quantity + plus,
-            })
-        plus = 0;
+          "price": buy[0].payload.val().products[i].price,
+          "product": buy[0].payload.val().products[i].product,
+          "productId": buy[0].payload.val().products[i].productId,
+          "quantity": quantity
+        })
+        buyItemsCount += quantity;
       }
+      else {
+        products.push({
+          "price": buy[0].payload.val().products[i].price,
+          "product": buy[0].payload.val().products[i].product,
+          "productId": buy[0].payload.val().products[i].productId,
+          "quantity": buy[0].payload.val().products[i].quantity,
+        })
+        buyItemsCount += parseInt(buy[0].payload.val().products[i].quantity);
+      }
+    }
 
-      this.db.object('/buy/' + buy[0].key).update({
-        "buyItemsCount": buyItemsCount,
-        "products": products
-      });
-
-
-
+    this.db.object('/buy/' + buy[0].key).update({
+      "buyItemsCount": buyItemsCount,
+      "products": products
+    });
   }
 
   sendBuy(buy: any) {
 
     for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
       if  (this.buy[0].payload.val().products[i].quantity != 0) {
-        let quantity = this.stock[i].payload.val().quantity + this.buy[0].payload.val().products[i].quantity;
-        this.db.object('/stock/' + this.stock[i].key).update({
-          product: this.stock[i].payload.val().product,
-          "quantity": quantity
+        let quantity = this.products[i].payload.val().stock + this.buy[0].payload.val().products[i].quantity;
+        this.db.object('/stock/' + this.products[i].key).update({
+          //product: this.stock[i].payload.val().product,
+          "stock": quantity
         });
       }
     }
@@ -184,10 +207,10 @@ export class StockService {
   }
 
   getQuantityOfP(pBuy: any) {
-    if (this.stock) {
-      for (let i=0;i<this.stock.length;i++) {
-        if (pBuy.product.title == this.stock[i].payload.val().product.title) {
-          return this.stock[i].payload.val().quantity;
+    if (this.products) {
+      for (let i=0;i<this.products.length;i++) {
+        if (pBuy.product.title == this.products[i].payload.val().title) {
+          return this.products[i].payload.val().stock;
         }
       }
     }

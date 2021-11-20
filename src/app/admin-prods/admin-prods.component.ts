@@ -15,6 +15,12 @@ import { jsPDF } from 'jspdf';
   styleUrls: ['./admin-prods.component.scss']
 })
 export class AdminProdsComponent implements OnInit {
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  currentItemsToShow:any[];
+  pageSize: number = 20;
+  pageIndex: number = 0;
+
   dist:number;
   com:number;
   gym:number;
@@ -26,14 +32,12 @@ export class AdminProdsComponent implements OnInit {
   categoryPDF: any;
   clientCategories: any;
 
-  filteredProducts:any[];
+  filteredProducts:any[] = [];
   prodsCategories$: Observable<any>;
   subscription: Subscription;
 
   recharged: boolean;
   mobile:boolean = false;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private productService: ProductService, private db: AngularFireDatabase, private router: Router,
      private categoryService: CategoryService) {
@@ -44,8 +48,10 @@ export class AdminProdsComponent implements OnInit {
     this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
       this.clientCategories = clientCategories;
     })
-    this.subscription = this.productService.getAll().subscribe(products => {
+    this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
+      this.onPageChange({previousPageIndex: 0, pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.filteredProducts.length})
+      //this.createStockValue(this.products);
     });
     this.productService.getAllRecharges().subscribe(recharges => {
       this.recharges = recharges;
@@ -57,10 +63,21 @@ export class AdminProdsComponent implements OnInit {
     if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
   }
 
+  // filter(query: string) {
+  //   this.filteredProducts = (query) ?
+  //     this.products.filter((p: { payload: { val: () => { (): any; new(): any; title: string; }; }; }) => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
+  //     this.products;
+  // }
+
   filter(query: string) {
-    this.filteredProducts = (query) ?
+    if (query != "") {
+      this.filteredProducts = (query) ?
       this.products.filter((p: { payload: { val: () => { (): any; new(): any; title: string; }; }; }) => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
-      this.products;
+      [];
+    }
+    else this.filteredProducts = this.products;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredProducts.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   saveProd(product: any, formproduct: any) {
@@ -79,11 +96,12 @@ export class AdminProdsComponent implements OnInit {
         "discPrice2": formproduct.payload.val().discPrice2,
         "discPrice3": formproduct.payload.val().discPrice3,
         "discPrice4": formproduct.payload.val().discPrice4,
+        "stock": product.stock,
         "prodsCategory": product.prodsCategory,
         "title": product.title
       }
       this.productService.update(formproduct.key, prod);
-      location.reload();
+      //location.reload();
       //this.router.navigate(['/admin/prods']);
     }
   }
@@ -114,6 +132,17 @@ export class AdminProdsComponent implements OnInit {
 
   applyDiscount(p: any, priceNumber: any, disc: number){
     this.productService.applyDiscount(p, priceNumber, disc);
+  }
+
+  onPageChange($event: any) {
+    this.pageIndex = $event.pageIndex;
+    this.pageSize = $event.pageSize;
+    console.log(this.pageIndex = $event.pageIndex);
+    console.log(this.pageSize = $event.pageSize);
+    this.currentItemsToShow = this.filteredProducts.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
   }
 
   exportPDF(prod: any) {

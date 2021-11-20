@@ -21,7 +21,8 @@
           <table>
             <tr *ngFor="let p of alertProducts">
               <td>
-                <span><b>Comprar: </b> {{p.payload.val().product.title}},&nbsp;quedan <b>{{p.payload.val().quantity}} unidades</b></span>
+                <span><b>Comprar: </b> {{p.title}},&nbsp;quedan <b>{{p.stock}} unidades</b></span>
+                <!-- <span><b>Comprar: </b> {{p.payload.val().product.title}},&nbsp;quedan <b>{{p.payload.val().quantity}} unidades</b></span> -->
               </td>
             </tr>
           </table>
@@ -42,9 +43,9 @@
           <th mat-sort-header="quantity">Cantidad</th>
         </tr>
 
-        <tr *ngFor="let p of filteredStock">
-          <td>{{p.payload.val().product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-          <td>{{p.payload.val().quantity}}</td>
+        <tr *ngFor="let p of filteredProducts">
+          <td>{{p.payload.val().title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td>{{p.payload.val().stock}}</td>
         </tr>
       </table>
     </div>

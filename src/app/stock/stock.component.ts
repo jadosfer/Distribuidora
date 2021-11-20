@@ -17,8 +17,10 @@ export class StockComponent implements OnInit {
   appUser: AppUser;
   stock: any;
   sortedData: any[];
-  alertProducts: any[];
+  alertProducts: any[] = [];
   filteredStock: any;
+  filteredProducts: any;
+  products: any;
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -27,27 +29,38 @@ export class StockComponent implements OnInit {
     }
 
   ngOnInit(){
-    this.stockService.getStock().subscribe(stock => {
-      this.stock = this.filteredStock = stock;
-      let alertProducts = []
-      for (let i=0;i<this.stock.length;i++) {
-        if (this.stock[i].payload.val().quantity < 5) {
-          alertProducts.push(this.stock[i]);
+    this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
+      this.productService.getAll().subscribe(products => {
+        this.products = this.filteredProducts = products;
+        let alertProducts = []
+        for (let i=0;i<this.products.length;i++) {
+          if (this.products[i].payload.val().stock < 5) {
+            alertProducts.push(this.products[i].payload.val());
+          }
         }
-      }
-      this.alertProducts = alertProducts;
-     });
-
-      this.auth.appUser$.subscribe(appUser => {
-        this.appUser = appUser;
+        this.alertProducts = alertProducts;
+      });
+    // this.stockService.getStock().subscribe(stock => {
+    //   this.stock = this.filteredStock = stock;
+    //   let alertProducts = []
+    //   for (let i=0;i<this.stock.length;i++) {
+    //     if (this.stock[i].payload.val().quantity < 5) {
+    //       alertProducts.push(this.stock[i]);
+    //     }
+    //   }
+    //   this.alertProducts = alertProducts;
+    //  });
     });
-
   }
 
   filter(query: string) {
-    this.filteredStock = (query) ?
-      this.stock.filter( (p: { payload: { val: () => { (): any; new(): any; product: { (): any; new(): any; title: string; }; }; }; }) => p.payload.val().product.title.toLowerCase().includes(query.toLowerCase())) :
-      this.stock;
+    // this.filteredStock = (query) ?
+    //   this.stock.filter( (p: { payload: { val: () => { (): any; new(): any; product: { (): any; new(): any; title: string; }; }; }; }) => p.payload.val().product.title.toLowerCase().includes(query.toLowerCase())) :
+    //   this.stock;
+    this.filteredProducts = (query) ?
+      this.products.filter( (p: { payload: { val: () => { (): any; new(): any; title: string; }; }; }) => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
+      this.products;
   }
 
   sortData(sort: Sort) {

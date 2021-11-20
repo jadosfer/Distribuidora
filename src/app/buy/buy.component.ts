@@ -1,3 +1,4 @@
+import { Product } from './../models/product';
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
@@ -37,30 +38,36 @@ export class BuyComponent implements OnInit {
     this.stockService.getBuy().subscribe(buy => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-      });
-      this.buy = buy;
-      this.route.queryParamMap.subscribe(params => {
-        this.prodsCategory = params.get('prodsCategory');
-
-        this.filteredBuy = [];
-        if (this.buy[0]) {
-          for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-            if (this.buy[0].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
-              this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+        this.productService.getAll().subscribe(products => {
+          this.products = products;
+          this.buy = buy;
+          this.route.queryParamMap.subscribe(params => {
+            this.prodsCategory = params.get('prodsCategory');
+            this.filteredBuy = [];
+            if (this.buy[0]) {
+              for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+                if (this.buy[0].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
+                  this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+                }
+              }
+              if (this.filteredBuy.length == 0) {
+                for (let i=0;i<this.buy[0].payload.val().products.length;i++)
+                  this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+              }
             }
-          }
-          if (this.filteredBuy.length == 0) {
-            for (let i=0;i<this.buy[0].payload.val().products.length;i++)
-              this.filteredBuy.push(this.buy[0].payload.val().products[i]);
-          }
-        }
+          });
+        })
       });
     });
     }
 
     updateBuyItemQuantity(buy: any, product: any, change: number){
-      //this.sended = false;
       this.stockService.updateBuyItemQuantity(buy, product, change);
+    }
+
+    setBuyItemQuantity(buy: any, product: any, quantity: string) {
+      let quan = parseInt(quantity)
+      this.stockService.setBuyItemQuantity(buy, product, quan);
     }
 
     sortData(sort: Sort) {
@@ -86,12 +93,13 @@ export class BuyComponent implements OnInit {
     }
 
     sendBuy() {
-      if (this.buy[0].payload.val().buyItemsCount == 0) {
+      if (parseInt(this.buy[0].payload.val().buyItemsCount) == 0) {
         this.buyEmpty = true;
         return;
       }
       if (confirm('Está segur@ que quiere cargar la compra? No podrá modificarla')) {
         this.stockService.sendBuy(this.buy);
+        this.productService.updateStocks(this.buy[0].payload.val().products, this.products, true);
       }
     }
 
