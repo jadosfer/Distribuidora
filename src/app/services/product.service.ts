@@ -179,5 +179,16 @@ export class ProductService implements OnInit{
     }
   }
 
+  restoreStock(order: any, products: any) {
+    let prods = [];
+    for (let i=0;i<order.payload.val().order.products.length;i++) {
+      for (let j=0;j<products.length;j++) {
+        if (order.payload.val().order.products[i].product.title == products[j].payload.val().title)
+        this.db.object('/products/' + products[j].key).update({
+          "stock": products[j].payload.val().stock + order.payload.val().order.products[i].quantity
+        });
+      }
+    }
+  }
 }
 

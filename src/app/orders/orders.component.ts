@@ -283,7 +283,7 @@ export class OrdersComponent implements OnInit {
   remove(order: any) {
     if (confirm('Está segur@ que quiere eliminar este pedido? Se restará el monto del pedido a la deuda del cliente')) {
       this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt)
-      this.ordersService.removeOrder(order.key);
+      this.ordersService.removeOrder(order);
     }
   }
 

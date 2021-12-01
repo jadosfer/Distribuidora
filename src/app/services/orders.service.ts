@@ -135,8 +135,9 @@ export class OrdersService implements OnDestroy {
     return this.db.object('/orders/' + key).update(order);
   }
 
-  removeOrder(orderId: any) {
-    this.db.object('/orders/' + orderId).remove();
+  removeOrder(order: any) {
+    this.db.object('/orders/' + order.key).remove();
+    this.productService.restoreStock(order, this.products)
   }
 
   resetOrder(orderIndex: any){

@@ -1,8 +1,8 @@
 <div class="SCContainer" *ngIf="appUser">
   <div fxLayout="row" style="margin-bottom:20px;margin-top:20px;margin-left:30px;">
     <div>
-      <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
-      <a mat-raised-button color="accent" routerLink="/buys">Ver compras</a>
+      <a *ngIf="appUser.isAdmin" mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
+      <a *ngIf="appUser.isAdmin" mat-raised-button color="accent" routerLink="/buys">Ver compras</a>
     </div>
     <div fxLayout="row" style="margin-top:10px;margin-left:30px;">
       <div><mat-icon matSuffix>search</mat-icon></div>
