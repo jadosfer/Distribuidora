@@ -286,4 +286,11 @@ export class OrdersComponent implements OnInit {
       this.ordersService.removeOrder(order.key);
     }
   }
+
+  cleanDebt(order: any) {
+    if (confirm('Está segur@ que quiere eliminar la DEUDA de este pedido? no modificará la deuda del cliente')) {
+      this.ordersService.cleanDebt(order);
+    }
+  }
+
 }

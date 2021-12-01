@@ -1,5 +1,3 @@
-import { StockService } from './../services/stock.service';
-import { Product } from './../models/product';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -57,6 +55,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   mobile:boolean;
   aproved: boolean = true;
   giveRecive: boolean = false;
+  noStock: boolean = false;
 
 
   constructor(
@@ -72,6 +71,11 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(){
+    this.ordersService.getOrderNumber().subscribe(orderNumber => {
+      if (!orderNumber) this.ordersService.createOrderNumber();
+      this.ordersService.orderNumber = orderNumber;
+    });
+
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       this.orderIndex = 0;
@@ -203,6 +207,13 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   sendOrder() {
+    if (!this.ordersService.isStock(this.order[this.orderIndex], this.products)) {
+      this.noStock = true;
+      setTimeout(()=> {
+        this.noStock = false;
+       }, 1200);
+      return
+    }
     this.orderEmpty = true;
     let give = false,recive = false;
     for (let i=0;i<this.products.length;i++) {
@@ -265,8 +276,6 @@ export class OrderComponent implements OnInit, OnDestroy {
         break
       }
     }
-    this.aproved = false;
-
   }
 
   updatePrices() {

@@ -37,12 +37,12 @@ export class StockService {
               p.payload.val().prodsCategory == this.prodsCategory) :
             this.products;
           }
-          this.getStock().subscribe(stock => {
-            this.stock = stock;
-            if (this.stock.length == 0) {
-              this.create();
-            }
-          });
+          // this.getStock().subscribe(stock => {
+          //   this.stock = stock;
+          //   if (this.stock.length == 0) {
+          //     this.create();
+          //   }
+          // });
         });
       });
       this.getBuy().subscribe(buy => {
@@ -53,16 +53,16 @@ export class StockService {
       });
      }
 
-  public create() {
-    for (let i=0;i<this.products.length;i++) {
-      this.db.list('/stock').push({
-        product: this.products[i].payload.val(),
-        "quantity": 0
-      });
-    }
-    let result = this.db.list('/stock').snapshotChanges();
-    return result;
-  }
+  // public create() {
+  //   for (let i=0;i<this.products.length;i++) {
+  //     this.db.list('/stock').push({
+  //       product: this.products[i].payload.val(),
+  //       "quantity": 0
+  //     });
+  //   }
+  //   let result = this.db.list('/stock').snapshotChanges();
+  //   return result;
+  // }
 
   public createBuy() {
     let products = []
@@ -81,10 +81,10 @@ export class StockService {
     this.buyId = result.key;
   }
 
-  public getStock() {
-    let result = this.db.list('/stock').snapshotChanges();
-    return result;
-  }
+  // public getStock() {
+  //   let result = this.db.list('/stock').snapshotChanges();
+  //   return result;
+  // }
 
   public getBuy() {
     let result = this.db.list('/buy').snapshotChanges();
@@ -95,13 +95,13 @@ export class StockService {
     return this.db.list('/buys').snapshotChanges();
   }
 
-  updateItemQuantity(p:any, quantity: number, stockKey: number){
+  // updateItemQuantity(p:any, quantity: number, stockKey: number){
 
-    this.db.object('/stock/' + stockKey).update({
-      product: p,
-      "quantity": quantity
-    })
-  }
+  //   this.db.object('/stock/' + stockKey).update({
+  //     product: p,
+  //     "quantity": quantity
+  //   })
+  // }
 
   updateBuyItemQuantity(buy:any, product:any, change: number){
 
@@ -157,21 +157,21 @@ export class StockService {
 
   sendBuy(buy: any) {
 
-    for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-      if  (this.buy[0].payload.val().products[i].quantity != 0) {
-        let quantity = this.products[i].payload.val().stock + this.buy[0].payload.val().products[i].quantity;
-        this.db.object('/stock/' + this.products[i].key).update({
-          //product: this.stock[i].payload.val().product,
-          "stock": quantity
-        });
-      }
-    }
+    // for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+    //   if  (this.buy[0].payload.val().products[i].quantity != 0) {
+    //     let quantity = this.products[i].payload.val().stock + this.buy[0].payload.val().products[i].quantity;
+        // this.db.object('/stock/' + this.products[i].key).update({
+        //   //product: this.stock[i].payload.val().product,
+        //   "stock": quantity
+        // });
+    //   }
+    // }
 
     let prods = [];
 
     for (let i=0;i<buy[0].payload.val().products.length;i++) {
       if  (this.buy[0].payload.val().products[i].quantity != 0) {
-        prods.push(buy[0].payload.val().products[i])
+        prods.push({"title": buy[0].payload.val().products[i].product.title, "quantity": buy[0].payload.val().products[i].quantity, "price": buy[0].payload.val().products[i].product.discPrice1} )
       }
     }
 
@@ -188,19 +188,19 @@ export class StockService {
 
   }
 
-  updateStocks(prods: any) {
-    for (let i=0;i<prods.length;i++) {
-      for (let j=0;j<this.stock.length;j++) {
-        if (prods[i].product.title == this.stock[j].payload.val().product.title) {
-          let quantity = this.stock[j].payload.val().quantity - prods[i].quantity;
-          this.db.object('/stock/' + this.stock[j].key).update({
-            product: this.stock[i].payload.val().product,
-            "quantity": quantity
-          });
-        }
-      }
-    }
-  }
+  // updateStocks(prods: any) {
+  //   for (let i=0;i<prods.length;i++) {
+  //     for (let j=0;j<this.stock.length;j++) {
+  //       if (prods[i].product.title == this.stock[j].payload.val().product.title) {
+  //         let quantity = this.stock[j].payload.val().quantity - prods[i].quantity;
+  //         this.db.object('/stock/' + this.stock[j].key).update({
+  //           product: this.stock[i].payload.val().product,
+  //           "quantity": quantity
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   reset() {
     this.db.object('/buy/').remove();
@@ -219,14 +219,14 @@ export class StockService {
 
   aprove(order: any) {
 
-    for (let i=0;i<order.payload.val().order.products.length;i++) {
-      for (let j=0;j<this.stock.length;j++) {
-        if (this.stock[j].payload.val().product.title == order.payload.val().order.products[i].product.title) {
-            let quantity = this.stock[j].payload.val().quantity - order.payload.val().order.products[i].quantity;
-            this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
-        }
-      }
-    }
+    // for (let i=0;i<order.payload.val().order.products.length;i++) {
+    //   for (let j=0;j<this.stock.length;j++) {
+    //     if (this.stock[j].payload.val().product.title == order.payload.val().order.products[i].product.title) {
+    //         let quantity = this.stock[j].payload.val().quantity - order.payload.val().order.products[i].quantity;
+    //         this.updateItemQuantity(this.stock[j].payload.val().product, quantity, this.stock[j].key)
+    //     }
+    //   }
+    // }
 
   }
 

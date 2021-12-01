@@ -1,6 +1,6 @@
 import { StockService } from './../services/stock.service';
 import { OrdersService } from '../services/orders.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,7 @@ import { jsPDF } from "jspdf";
 import html2canvas from 'html2canvas';
 import { PieChartComponent } from '../pieChart/pieChart.component';
 import { ChartOptions, ChartType } from 'chart.js';
+import { MatPaginator } from '@angular/material/paginator';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { ChartOptions, ChartType } from 'chart.js';
 })
 export class DashboardComponent implements OnInit {
 
-
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   range = new FormGroup({
     start: new FormControl(),
@@ -55,6 +56,7 @@ export class DashboardComponent implements OnInit {
   selected: string = "NO";
 
   showGraph: boolean = false;
+  currentItemsToShow:any[];
 
   public data: any;
 
@@ -95,6 +97,7 @@ export class DashboardComponent implements OnInit {
           }
         }
         this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
       });
     });
   }
@@ -102,31 +105,34 @@ export class DashboardComponent implements OnInit {
   filter(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredOrders;
+      this.userOrders.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterBySeller(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => p.payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())) :
-      this.filteredOrders;
+      this.userOrders.filter(p => p.payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())) :
+      [];
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterByDate(query: string) {
     if (query != "") {
       this.filteredOrders = (query) ?
-      this.filteredOrders.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-      this.filteredOrders;
+      this.userOrders.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+      [];
     }
     else this.filteredOrders = this.userOrders;
-    if (this.showGraph) this.graphic()
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   sortData(sort: Sort) {
@@ -204,10 +210,12 @@ export class DashboardComponent implements OnInit {
       start: null,
       end: null
     });
+    this.sellerValue = "";
     this.clientValue = "";
     this.dateValue = "";
-    this.sellerValue = "";
     this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   isOrderInDebt(order: any) {
@@ -302,5 +310,12 @@ export class DashboardComponent implements OnInit {
       sum += this.pieChartData[i];
     }
     return sum
+  }
+
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredOrders.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
   }
 }

@@ -26,10 +26,11 @@ export class OrdersService implements OnDestroy {
   filteredProducts:any;
   orderIndex: number;
   clientFantasyName: string;
+  hasDiscount: boolean = false;
+  orderNumber: any = [];
 
   constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router,  private stockService: StockService) {
-
 
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
@@ -85,6 +86,23 @@ export class OrdersService implements OnDestroy {
     return result;
   }
 
+  isStock(order: any, products: any) {
+    console.log("products", products[0])
+    for (let i=0;i<order.payload.val().products.length;i++) {
+      if (products[i].quantity > 0 && !this.isProductStock(products[i])) {
+        return false
+      }
+    }
+    return true
+  }
+
+  isProductStock(product: any) {
+    for (let i=0;i<this.products.length;i++) {
+      if (this.products[i].payload.val().title == product.product.title && this.products[i].payload.val().stock < product.quantity) return false
+    }
+    return true
+  }
+
   public createOrder() {
     if (!this.appUser) return;
     if (!this.products) return;
@@ -103,6 +121,13 @@ export class OrdersService implements OnDestroy {
       "orderItemsCount": 0,
       "sellerName": this.appUser.name,
       "products": products
+    });
+  }
+
+  public createOrderNumber() {
+    console.log("crea2")
+    let result = this.db.list('/orderNumber/').push({
+      "orderNumber": 0
     });
   }
 
@@ -129,6 +154,12 @@ export class OrdersService implements OnDestroy {
 
   public getOrder() {
     let result = this.db.list('/order').snapshotChanges();
+    return result;
+  }
+
+  public getOrderNumber() {
+    let result = this.db.list('/orderNumber').snapshotChanges();
+    console.log("getOrderNumber")
     return result;
   }
 
@@ -167,13 +198,14 @@ export class OrdersService implements OnDestroy {
   }
 
   sendOrder(sellerName: string, clientFantasyName: string, iva: number, aproved: boolean, products: any, quantity: number) {
-
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
     for (let i=0;i<products.length;i++) {
-      if (products[i].quantity != 0) { //solo guardo los prod con quant>0
-        prods.push(products[i]);
+      if (products[i].discount != 0) this.hasDiscount = true;
+      if (products[i].quantity != 0) { //solo guardo los prod con quant > 0
+        prods.push({"discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
+        "product": {"title": products[i].product.title, "prodsCategory": products[i].product.prodsCategory}});
         amount += products[i].quantity * products[i].discountPrice * (1 + iva/100)
       }
     }
@@ -184,7 +216,15 @@ export class OrdersService implements OnDestroy {
     if (this.isClientInDebt(clientFantasyName)) {
       debt = true;
     }
-    let isAproved = aproved && !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
+    let isAproved = !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
+    let updatedDebt = amount
+    if (this.getClientDebt(clientFantasyName) < 0) {
+      if (amount + this.getClientDebt(clientFantasyName) <=0) {
+        updatedDebt = 0
+      }
+      else updatedDebt = amount + this.getClientDebt(clientFantasyName);
+    }
+
 
     let result = this.db.list('/orders/').push({
       "order": {
@@ -198,11 +238,22 @@ export class OrdersService implements OnDestroy {
       "clientFantasyName": clientFantasyName,
       "aproved": isAproved,
       "amount": amount,
-      "debt": amount
+      "debt": updatedDebt,
+      "hasDiscount": this.hasDiscount,
+      "clientInDebt": debt,
+      "orderNumber": this.orderNumber[0].payload.val().orderNumber
     })
+    this.incrementOrderNumber();
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
-    // crear este metodo en products service
     this.productService.updateStocks(prods, this.products, false);
+  }
+
+  getClientDebt(clientFantasyName: string) {
+    let debt = 0;
+    for (let i=0;i<this.clients.length;i++) {
+      if (this.clients[i].payload.val().fantasyName == clientFantasyName) debt = parseFloat(this.clients[i].payload.val().debt)
+    }
+    return debt
   }
 
   sendNote (amount: any, clientFantasyName: string) {
@@ -213,6 +264,10 @@ export class OrdersService implements OnDestroy {
       "creationDate": new Date().getTime()
     });
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
+  }
+
+  cleanDebt(order: any) {
+    this.updateOrder(order.key, {"debt": 0})
   }
 
   getClientCategory(clientFantasyName: any) {
@@ -270,5 +325,10 @@ export class OrdersService implements OnDestroy {
       this.isOrderInDebt(this.orders[i])) return true;
     }
     return false;
+  }
+
+  incrementOrderNumber() {
+    let orderNumb = parseInt(this.orderNumber[0].payload.val().orderNumber) + 1;
+    return this.db.object('/orderNumber/' + this.orderNumber[0].key).update({"orderNumber": orderNumb});
   }
 }

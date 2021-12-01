@@ -94,13 +94,13 @@ export class PaymentsService {
     let rest = amount
     for (let i=0;i<this.orders.length;i++) {
       if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        if (this.orders[i].payload.val().debt && this.orders[i].payload.val().debt <= rest) {
+        if (parseInt(this.orders[i].payload.val().debt) && parseInt(this.orders[i].payload.val().debt) <= rest) {
           this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})
-          rest = rest - this.orders[i].payload.val().debt;
+          rest = rest - parseInt(this.orders[i].payload.val().debt);
           if (rest < 10) break
         }
         else if (this.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().debt - rest})
+          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseInt(this.orders[i].payload.val().debt) - rest})
           break
         }
       }

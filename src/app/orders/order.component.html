@@ -37,6 +37,7 @@
           <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Kiosko'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kioskos 0%</span>
           <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
           <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+          <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente</span>
           <span *ngIf="giveRecive">&nbsp;&nbsp;&nbsp;&nbsp;*No pueden haber cantidades negativas y positivas en el mismo pedido</span>
         </div>
 
@@ -82,6 +83,8 @@
         <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+        <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente</span>
+        <span *ngIf="giveRecive">&nbsp;&nbsp;&nbsp;&nbsp;*No pueden haber cantidades negativas y positivas en el mismo pedido</span>
         <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kioskos 0% IVA</span>
       </div>
 

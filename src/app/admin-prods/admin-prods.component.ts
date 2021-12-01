@@ -159,7 +159,13 @@ export class AdminProdsComponent implements OnInit {
       doc.setFontSize(9);
       doc.text('GENTECH MAR DEL PLATA', col1, line1);
       doc.text('PRODUCTO', col1, line2);
-      doc.text('Importe s/iva', 140, line2);
+      if (prod.categoryPDF == "Kiosko" || prod.categoryPDF == "Gimnasio") {
+        doc.text('Importe', 140, line2);
+      }
+      else {
+        doc.text('Importe s/IVA', 140, line2);
+      }
+
       doc.setFontSize(8);
 
       let cont = 0;

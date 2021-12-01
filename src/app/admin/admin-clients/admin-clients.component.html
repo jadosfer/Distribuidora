@@ -1,6 +1,7 @@
 <div class="container-edit">
   <p>
     <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
+    <button mat-raised-button style="margin-left: 5px;" type="submit" color="primary" (click)=exportPDF(this.clients)>Descargar PDF</button>
   </p>
   <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
   <div>

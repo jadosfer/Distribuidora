@@ -75,6 +75,7 @@
           <th mat-sort-header="payWay">Forma de Pago</th>
           <th mat-sort-header="seller">Vendedor</th>
           <th mat-sort-header="date">Fecha</th>
+          <th mat-sort-header="orderNumber">Nro. Fact</th>
           <th mat-sort-header="delete" *ngIf ="appUser.isAdmin">Eliminar</th>
         </tr>
           <tr *ngFor="let pay of filteredPayments; let i = index" >
@@ -84,6 +85,7 @@
             <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().paymentDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>{{pay.payload.val().orderNumber}}&nbsp;&nbsp;</td>
             <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay.key, pay.payload.val().amount, pay.payload.val().client)" color="accent"><mat-icon>delete</mat-icon></button></td>
         </tr>
       </table>

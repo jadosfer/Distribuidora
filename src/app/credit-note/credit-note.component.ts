@@ -83,7 +83,8 @@ export class CreditNoteComponent implements OnInit {
         "client": this.clientFantasyName,
         "payWay": "Nota de Crédito",
         "paymentDay": time,
-        "sellerName": this.appUser.name
+        "sellerName": this.appUser.name,
+        "orderNumber": note.orderNumber
       });
       this.router.navigateByUrl('/payments/payments');
     }

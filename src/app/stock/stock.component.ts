@@ -64,20 +64,20 @@ export class StockComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    const data = this.stock;
-    if (!sort.active || sort.direction === '') {
-      this.sortedData = data;
-      return;
-    }
+    // const data = this.stock;
+    // if (!sort.active || sort.direction === '') {
+    //   this.sortedData = data;
+    //   return;
+    // }
 
-    this.sortedData = data.sort((a: any, b: any) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'title': return this.compare(a.payload.val().product.title, b.payload.val().product.title, isAsc);
-        case 'quantity': return this.compare(a.payload.val().quantity, b.payload.val().quantity, isAsc);
-        default: return 0;
-      }
-    });
+    // this.sortedData = data.sort((a: any, b: any) => {
+    //   const isAsc = sort.direction === 'asc';
+    //   switch (sort.active) {
+    //     case 'title': return this.compare(a.payload.val().product.title, b.payload.val().product.title, isAsc);
+    //     case 'quantity': return this.compare(a.payload.val().quantity, b.payload.val().quantity, isAsc);
+    //     default: return 0;
+    //   }
+    // });
   }
 
   compare(a: number | string, b: number | string, isAsc: boolean) {
