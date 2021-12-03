@@ -37,7 +37,7 @@
           <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Kiosko'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kioskos 0%</span>
           <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
           <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
-          <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente</span>
+          <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
           <span *ngIf="giveRecive">&nbsp;&nbsp;&nbsp;&nbsp;*No pueden haber cantidades negativas y positivas en el mismo pedido</span>
         </div>
 
@@ -47,6 +47,7 @@
         <tr>
           <th mat-sort-header="title">Producto</th>
           <th id="quantity" mat-sort-header="quantity">Cantidad</th>
+          <th mat-sort-header="stock">Stock</th>
           <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;s/iva</th>
           <th mat-sort-header="totalPriceProduct">Subtotal</th>
           <th mat-sort-header="quit">&nbsp;&nbsp;&nbsp;Quitar</th>
@@ -57,6 +58,7 @@
         <tr *ngFor="let p of showedProducts; let i = index">
           <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td>{{p.quantity}}</td>
+          <td>{{getStock(p)}}</td>
           <td>${{p.discountPrice | number : '1.1-1'}}</td>
           <td>${{p.discountPrice*p.quantity | number:'1.1-1'}}</td>
           <td><button class="left-btn" (click)="updateOrderItemQuantity(p, -1, i)" mat-raised-button color="basic">-</button></td>
@@ -75,7 +77,7 @@
           <th mat-sort-header="total">UNIDADES TOTALES</th>
           <th mat-sort-header="showTotalQuantity">{{this.quantity}}&nbsp; Unidades</th>
           <th mat-sort-header="totalPrice">IMPORTE TOTAL(incluye el IVA)</th>
-          <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.products)*(1+this.iva/100) | number:'1.1-1'}}</th>
+          <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.orderProducts)*(1+this.iva/100) | number:'1.1-1'}}</th>
         </tr>
       </table>
       <div style="margin-bottom:20px;margin-top:20px;">
@@ -83,12 +85,10 @@
         <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
-        <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente</span>
+        <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
         <span *ngIf="giveRecive">&nbsp;&nbsp;&nbsp;&nbsp;*No pueden haber cantidades negativas y positivas en el mismo pedido</span>
         <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kioskos 0% IVA</span>
       </div>
-
-
     </div>
 </div>
 

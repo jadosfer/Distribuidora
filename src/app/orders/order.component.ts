@@ -32,7 +32,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   filteredClients:any[];
   showedProducts:any;
   prodsCategory: string | null;
-  products:any[] = []
+  orderProducts:any[] = []
   filteredProducts:any[];
   filteredOrder: any;
   prodQuery: string;
@@ -82,13 +82,12 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.ordersService.getOrder().subscribe(order => {
         this.order = order;
         if (this.order.length == 0) this.ordersService.createOrder();
-        //if (this.order[0]) this.products = this.order[0].payload.val().products;
 
         this.orderIndex = -1
         for (let i=0;i<this.order.length;i++) {
           if (this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
             this.orderIndex = i
-            this.products = this.order[this.orderIndex].payload.val().products;
+            this.orderProducts = this.order[this.orderIndex].payload.val().products;
             break
           }
         }
@@ -115,21 +114,19 @@ export class OrderComponent implements OnInit, OnDestroy {
           if (this.orderIndex>=0 && this.order[0]) {
             for (let i=0;i<this.order[this.orderIndex].payload.val().products.length;i++) {
               if (this.order[this.orderIndex].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
-                this.order[this.orderIndex].payload.val().products[i].quantity = this.products[i].quantity;
-                //this.filteredOrder.push(this.order[this.orderIndex].payload.val().products[i]);
-                this.filteredOrder.push(this.products[i]);
+                this.order[this.orderIndex].payload.val().products[i].quantity = this.orderProducts[i].quantity;
+                this.filteredOrder.push(this.orderProducts[i]);
               }
             }
             if (this.filteredOrder.length == 0) {
               for (let i=0;i<this.order[this.orderIndex].payload.val().products.length;i++) {
-                //this.filteredOrder.push(this.order[this.orderIndex].payload.val().products[i]);
                 this.filteredOrder.push(this.order[this.orderIndex].payload.val().products[i]);
               }
             }
           }
           this.showedProducts = this.filteredOrder;
           this.filter(this.prodQuery);
-          if (!this.prodsCategory) this.showedProducts = this.products;
+          if (!this.prodsCategory) this.showedProducts = this.orderProducts;
         });
 
 
@@ -196,9 +193,15 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   updateOrderItemQuantity(product: any, change: number, index: number){
-    for (let i=0;i<this.products.length;i++) {
-      if (product.product.title == this.products[i].product.title) {
-        this.products[i].quantity += change;
+    for (let i=0;i<this.orderProducts.length;i++) {
+      if (product.product.title == this.orderProducts[i].product.title) {
+        if (this.orderProducts[i].quantity + change > this.ordersService.getStock(product) ) {
+          this.noStock = true;
+          setTimeout(()=> {
+            this.noStock = false;
+           }, 1600);
+          return;}
+        this.orderProducts[i].quantity += change;
         //this.ordersService.updateOrderItemQuantity(this.order, product, change, i)
         break
       }
@@ -207,18 +210,18 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   sendOrder() {
-    if (!this.ordersService.isStock(this.order[this.orderIndex], this.products)) {
+    if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
       this.noStock = true;
       setTimeout(()=> {
         this.noStock = false;
-       }, 1200);
+       }, 1600);
       return
     }
     this.orderEmpty = true;
     let give = false,recive = false;
-    for (let i=0;i<this.products.length;i++) {
-      if (this.products[i].quantity > 0) give = true;
-      if (this.products[i].quantity < 0) recive = true;
+    for (let i=0;i<this.orderProducts.length;i++) {
+      if (this.orderProducts[i].quantity > 0) give = true;
+      if (this.orderProducts[i].quantity < 0) recive = true;
       if (give && recive) {
         this.giveRecive = true;
         setTimeout(()=> {
@@ -226,7 +229,7 @@ export class OrderComponent implements OnInit, OnDestroy {
          }, 1700);
         return;
       }
-      if (this.products[i].quantity != 0) {
+      if (this.orderProducts[i].quantity != 0) {
         this.orderEmpty = false;
       }
     }
@@ -248,7 +251,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (send) {
       if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
         this.sended = true;
-        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.aproved, this.products, this.quantity);
+        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.aproved, this.orderProducts, this.quantity);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);
@@ -260,18 +263,18 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   reset() {
     if (confirm('Está segur@ que quiere anular el pedido que no ha enviado?')) {
-      for (let i=0;i<this.products.length;i++) {
-        this.products[i].quantity = 0;
+      for (let i=0;i<this.orderProducts.length;i++) {
+        this.orderProducts[i].quantity = 0;
       }
       this.ordersService.resetOrder(this.orderIndex);
     }
   }
 
   discount(e: any, p: any, disc: number) {
-    for (let i=0;i<this.products.length;i++) {
-      if (p.product.title == this.products[i].product.title) {
-        this.products[i].discount = disc;
-        this.products[i].discountPrice = this.products[i].price*(1 - disc/100);
+    for (let i=0;i<this.orderProducts.length;i++) {
+      if (p.product.title == this.orderProducts[i].product.title) {
+        this.orderProducts[i].discount = disc;
+        this.orderProducts[i].discountPrice = this.orderProducts[i].price*(1 - disc/100);
         this.disc = 0 ;
         break
       }
@@ -282,38 +285,42 @@ export class OrderComponent implements OnInit, OnDestroy {
     let clientCategory = this.getClientCategory();
     let price;
     let products = [];
-    if (!this.products) return
-    for (let i=0;i<this.products.length;i++) {
+    if (!this.orderProducts) return
+    for (let i=0;i<this.orderProducts.length;i++) {
       switch (clientCategory) {
         case "":
-          this.products[i].price = this.products[i].product.discPrice1;
-          this.products[i].discountPrice = this.products[i].product.discPrice1*(1-this.products[i].discount/100) ;
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
             break;
         case "Distribuidor":
-          this.products[i].price = this.products[i].product.discPrice1;
-          this.products[i].discountPrice = this.products[i].product.discPrice1*(1-this.products[i].discount/100) ;
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
           break;
         case "Comercio":
-          this.products[i].price = this.products[i].product.discPrice2;
-          this.products[i].discountPrice = this.products[i].product.discPrice2*(1-this.products[i].discount/100) ;
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
           break;
           case "Kiosko":
-          this.products[i].price = this.products[i].product.discPrice3;
-          this.products[i].discountPrice = this.products[i].product.discPrice3*(1-this.products[i].discount/100) ;
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
           this.iva = 0;
           break;
         case "Gimnasio":
-          this.products[i].price = this.products[i].product.discPrice4;
-          this.products[i].discountPrice = this.products[i].product.discPrice4*(1-this.products[i].discount/100) ;
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice4;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice4*(1-this.orderProducts[i].discount/100) ;
           this.iva = 0;
           break;
       }
     }
-    this.showedProducts = this.products;
+    this.showedProducts = this.orderProducts;
     if (this.clientFantasyName != "") this.router.navigateByUrl('/orders/order');
   }
   ngOnDestroy() {
     this.ordersService.clearOrder();
+  }
+
+  getStock(product: any) {
+    return this.ordersService.getStock(product);
   }
 
   @HostListener('window:beforeunload', ['$event'])

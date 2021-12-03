@@ -1,3 +1,4 @@
+import { OrdersService } from 'src/app/services/orders.service';
 import { ClientsService } from './../services/clients.service';
 import { StockService } from '../services/stock.service';
 import { PaymentsService } from '../services/payments.service';
@@ -52,7 +53,8 @@ export class PaymentsComponent implements OnInit {
 
   constructor(public paymentsService: PaymentsService,  private productService: ProductService,
   private route: ActivatedRoute,  private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService, private dateAdapter: DateAdapter<Date>, private clientsService: ClientsService) {
+  public stockService: StockService, private dateAdapter: DateAdapter<Date>, private clientsService: ClientsService,
+  private ordersService: OrdersService) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
@@ -187,10 +189,11 @@ export class PaymentsComponent implements OnInit {
     return this.paymentsService.isPaymentInDebt(payment);
   }
 
-  remove(id: any, amount: number, client: string) {
+  remove(pay: any) {
     if (confirm('Está segur@ que quiere eliminar este cobro?')) {
-      this.paymentsService.removePayment(id);
-      this.clientsService.addPaymentAmount(client, -1*amount)
+      if (pay.payload.val().orderNumber > 0) this.ordersService.restoreOrderAmount(pay);
+      this.paymentsService.removePayment(pay.key);
+      this.clientsService.addPaymentAmount(pay.payload.val().client, -1*pay.payload.val().amount)
     }
   }
 }

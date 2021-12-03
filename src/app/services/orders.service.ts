@@ -103,6 +103,15 @@ export class OrdersService implements OnDestroy {
     return true
   }
 
+  getStock(product: any) {
+    if (this.products) {
+      for (let i=0;i<this.products.length;i++) {
+        if (this.products[i].payload.val().title == product.product.title) return this.products[i].payload.val().stock
+      }
+    }
+    return 0;
+  }
+
   public createOrder() {
     if (!this.appUser) return;
     if (!this.products) return;
@@ -138,6 +147,7 @@ export class OrdersService implements OnDestroy {
   removeOrder(order: any) {
     this.db.object('/orders/' + order.key).remove();
     this.productService.restoreStock(order, this.products)
+    this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().amount)
   }
 
   resetOrder(orderIndex: any){
@@ -247,6 +257,50 @@ export class OrdersService implements OnDestroy {
     this.incrementOrderNumber();
     this.clientsService.addPaymentAmount(clientFantasyName, -amount)
     this.productService.updateStocks(prods, this.products, false);
+  }
+
+  restoreOrderAmount(payment: any) {
+    let rest = 0;
+    if (payment.payload) rest = payment.payload.val().amount;
+    else rest = payment.amount;
+    console.log("rest", rest)
+    for (let i=0;i<this.orders.length;i++) {
+      if (payment.payload && payment.payload.val().orderNumber > 0 && this.orders[i].payload.val().orderNumber == payment.payload.val().orderNumber) {
+        console.log("aca1")
+        console.log("resta", parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt), "pay amount", payment.payload.val().amount);
+        if (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.payload.val().amount) {
+          console.log("aca2")
+          rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
+          this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
+          console.log("debt a guardar", this.orders[i].payload.val().amount)
+          if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.payload.val().client})
+          break
+        }
+        else if (parseFloat(this.orders[i].payload.val().debt)) {
+          let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
+          this.updateOrder(this.orders[i].key, {"debt": debt});
+          break
+        }
+      }
+    }
+    for (let i=0;i<this.orders.length;i++) {
+      if (this.orders[i].payload.val().clientFantasyName == payment.client) {
+        if (parseFloat(this.orders[i].payload.val().amount) && parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
+          rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
+          console.log("rest segundo for", rest);
+          console.log("debt", this.orders[i].payload.val().debt)
+          console.log("amount", this.orders[i].payload.val().amount)
+          this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
+          if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.client})
+          break
+        }
+        else if (parseFloat(this.orders[i].payload.val().debt)) {
+          let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
+          this.updateOrder(this.orders[i].key, {"debt": debt});
+          break
+        }
+      }
+    }
   }
 
   getClientDebt(clientFantasyName: string) {

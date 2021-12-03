@@ -9,6 +9,7 @@ import { PaymentsService } from '../services/payments.service';
 import { CategoryService } from '../services/category.service';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
+import { OrdersService } from '../services/orders.service';
 
 @Component({
   selector: 'app-payment',
@@ -23,16 +24,25 @@ export class PaymentComponent implements OnInit {
   id:any;
   appUser: AppUser;
   filteredClients:any[] = [];
+  orders:any[] = [];
+  filteredOrders:any[] = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private auth: AuthService,
     private paymentsService: PaymentsService,
     private categoryService: CategoryService,
-    private clientsService: ClientsService)
+    private clientsService: ClientsService,
+    private ordersService: OrdersService)
     {
+
+
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser
+        ordersService.getAll().subscribe(orders => {
+          this.orders = this.filteredOrders = orders;
+        })
         clientsService.getAll().subscribe(clients =>{
           this.clients = clients;
           for (let i=0;i<this.clients.length;i++) {
@@ -60,6 +70,13 @@ export class PaymentComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  onChooseClient() {
+    this.filteredOrders = [];
+      for (let i=0;i<this.orders.length;i++) {
+        if (this.orders[i].payload.val().clientFantasyName == this.payment.client) this.filteredOrders.push(this.orders[i])
+    }
   }
 
 }

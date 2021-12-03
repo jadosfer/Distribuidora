@@ -67,8 +67,49 @@ export class PaymentsService {
     payment.paymentDate = time;
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
-    this.clearDebts(payment.client, payment.amount)
+    //el cobro es para una factura en particular
+    if (payment.orderNumber > 0) {
+      this.clearOrderDebt(payment)
+    }
+    else { //el cobro no es para una factura en particular
+      this.clearDebts(payment.client, payment.amount)
+    }
     return this.db.list('/payments').push(payment);
+  }
+
+  clearDebts(clientFantasyName: string, amount: number) {
+    let rest = amount
+    for (let i=0;i<this.orders.length;i++) {
+      if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
+        if (parseFloat(this.orders[i].payload.val().debt) && parseFloat(this.orders[i].payload.val().debt) <= rest) {
+          rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
+          this.ordersService.updateOrder(this.orders[i].key, {"debt": 0}) //con este
+          if (rest < 10) break
+        }
+        else if (this.orders[i].payload.val().debt) {
+          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseFloat(this.orders[i].payload.val().debt) - rest})
+          break
+        }
+      }
+    }
+  }
+
+  clearOrderDebt(payment: any) {
+    let rest = payment.amount
+    for (let i=0;i<this.orders.length;i++) {
+      if (this.orders[i].payload.val().orderNumber == payment.orderNumber) {
+        if (parseFloat(this.orders[i].payload.val().debt) && parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
+          rest = rest - parseFloat(this.orders[i].payload.val().debt);
+          this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})
+          this.clearDebts(payment.client, rest);
+          break
+        }
+        else if (this.orders[i].payload.val().debt) {
+          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseFloat(this.orders[i].payload.val().debt) - rest})
+          break
+        }
+      }
+    }
   }
 
   updatePayment(key: any, payment:any) {
@@ -90,22 +131,7 @@ export class PaymentsService {
     }
   }
 
-  clearDebts(clientFantasyName: string, amount: number) {
-    let rest = amount
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        if (parseInt(this.orders[i].payload.val().debt) && parseInt(this.orders[i].payload.val().debt) <= rest) {
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})
-          rest = rest - parseInt(this.orders[i].payload.val().debt);
-          if (rest < 10) break
-        }
-        else if (this.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseInt(this.orders[i].payload.val().debt) - rest})
-          break
-        }
-      }
-    }
-  }
+
 
 
   public getPayment() {

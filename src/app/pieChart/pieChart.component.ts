@@ -95,7 +95,7 @@ export class PieChartComponent implements OnInit {
       for (let j=0;j<orders.length;j++) {
         for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
           if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
-            amount += parseInt(orders[j].payload.val().order.products[k].discountPrice)
+            amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)
           }
         }
       }
