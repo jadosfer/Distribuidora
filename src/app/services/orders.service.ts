@@ -79,8 +79,7 @@ export class OrdersService implements OnDestroy {
     let time = new Date().getTime()
     let result = this.db.list('/orders').push({
       "creationDate": time,
-      "aproved": "NO",
-      "paid": "NO"
+      "aproved": "NO"
     });
     //this.orderId = result.key;
     return result;
@@ -170,7 +169,6 @@ export class OrdersService implements OnDestroy {
 
   public getOrderNumber() {
     let result = this.db.list('/orderNumber').snapshotChanges();
-    console.log("getOrderNumber")
     return result;
   }
 
@@ -244,7 +242,6 @@ export class OrdersService implements OnDestroy {
         "sellerName": sellerName,
       },
       "creationDate": time.getTime(),
-      "paid": "NO",
       "iva": iva,
       "clientFantasyName": clientFantasyName,
       "aproved": isAproved,
@@ -362,15 +359,13 @@ export class OrdersService implements OnDestroy {
     this.updateOrder(order.key, {"aproved": true})
   }
 
-  getPaid(order:any) {
-    this.updateOrder(order.key, {"paid": "SI"})
-  }
-
   isOrderInDebt(order: any) {
     let today = new Date();
-    if((Date.parse(today.toString()) - order.payload.val().creationDate > 30*24*60*60*1000) && order.payload.val().paid == "NO" ) { //que pasen 30 dias
+    if((Date.parse(today.toString()) - order.payload.val().creationDate > 30*24*60*60*1000) && order.payload.val().debt != 0 ) { //que pasen 30 dias
+      console.log("deudor creation:", order.payload.val().creationDate, "orderPaid:", order.payload.val().paid)
       return true;
     }
+    console.log("NO deudor")
     return false;
   }
 

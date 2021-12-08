@@ -46,7 +46,6 @@ export class PaymentsComponent implements OnInit {
   quantity: number;
   sortedData: any[];
   aproved: string[] = ["NO", "SI"];
-  paid: string[] = ["NO", "SI"];
   selected: string = "NO";
 
   aproveFirst:boolean = false;
@@ -157,15 +156,6 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  getPaid(payment: any) {
-    if (payment.payload.val().aproved == "SI") {
-      if (confirm('Está segur@ que quiere dar por pagado el pedido?')) {
-        this.paymentsService.getPaid(payment);
-      }
-    }
-    else alert("Debe aprobar el pedido antes de darlo por cobrado");
-  }
-
   searchDateRange(range: any) {
     if (range.start) {
       this.filteredPayments = (range) ?
@@ -183,10 +173,6 @@ export class PaymentsComponent implements OnInit {
     this.clientValue = "";
     this.dateValue = "";
     this.filteredPayments = this.userPayments;
-  }
-
-  isPaymentInDebt(payment: any) {
-    return this.paymentsService.isPaymentInDebt(payment);
   }
 
   remove(pay: any) {

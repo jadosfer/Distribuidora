@@ -68,11 +68,12 @@ export class PaymentsService {
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
     //el cobro es para una factura en particular
-    if (payment.orderNumber > 0) {
-      this.clearOrderDebt(payment)
-    }
-    else { //el cobro no es para una factura en particular
+    if  (!payment.orderNumber) { //el cobro no es para una factura en particular
+      payment.orderNumber = 0;
       this.clearDebts(payment.client, payment.amount)
+    }
+    else if (payment.orderNumber >= 0) {
+      this.clearOrderDebt(payment)
     }
     return this.db.list('/payments').push(payment);
   }
@@ -169,27 +170,5 @@ export class PaymentsService {
   aprove(payment:any) {
     this.updatePayment(payment.key, {"aproved": true})
   }
-
-  getPaid(payment:any) {
-    this.updatePayment(payment.key, {"paid": "SI"})
-  }
-
-  isPaymentInDebt(payment: any) {
-    let today = new Date();
-    if((Date.parse(today.toString()) - payment.payload.val().creationDate > 30*24*60*60*1000) && payment.payload.val().paid == "NO" ) { //que pasen 30 dias
-      return true;
-    }
-    return false;
-  }
-
-  isClientInDebt(clientFantasyName: string) {
-    for (let i=0;i<this.payments.length;i++) {
-      if (this.payments[i].payload.val().clientFantasyName == clientFantasyName &&
-      this.isPaymentInDebt(this.payments[i])) return true;
-    }
-    return false;
-  }
-
-
 }
 

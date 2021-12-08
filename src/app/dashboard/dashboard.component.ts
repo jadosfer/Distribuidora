@@ -188,15 +188,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  getPaid(order: any) {
-    if (order.payload.val().aproved == "SI") {
-      if (confirm('Está segur@ que quiere dar por pagado el pedido?')) {
-        this.ordersService.getPaid(order);
-      }
-    }
-    else alert("Debe aprobar el pedido antes de darlo por cobrado");
-  }
-
   searchDateRange(range: any) {
     if (range.start) {
       this.filteredOrders = (range) ?

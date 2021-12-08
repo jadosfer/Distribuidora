@@ -54,7 +54,6 @@ export class OrdersComponent implements OnInit {
   quantity: number;
   sortedData: any[];
   aproved: string[] = ["NO", "SI"];
-  // paid: string[] = ["NO", "SI"];
   selected: string = "NO";
 
   aproveFirst: boolean = false;
@@ -193,15 +192,6 @@ export class OrdersComponent implements OnInit {
       this.stockService.aprove(order);
       this.ordersService.aprove(order);
     }
-  }
-
-  getPaid(order: any) {
-    if (order.payload.val().aproved == "SI") {
-      if (confirm('Está segur@ que quiere dar por pagado el pedido?')) {
-        this.ordersService.getPaid(order);
-      }
-    }
-    else alert("Debe aprobar el pedido antes de darlo por cobrado");
   }
 
   searchDateRange(range: any) {
