@@ -132,9 +132,6 @@ export class PaymentsService {
     }
   }
 
-
-
-
   public getPayment() {
     let result = this.db.list('/payment').snapshotChanges();
     return result;
@@ -169,6 +166,18 @@ export class PaymentsService {
 
   aprove(payment:any) {
     this.updatePayment(payment.key, {"aproved": true})
+  }
+
+  getClientPaymentsAmount(fantasyName: string) {
+    let amount = 0;
+    if (this.payments) {
+      for (let i = 0;i < this.payments.length;i++) {
+        if (this.payments[i].payload.val().client == fantasyName) {
+          amount += parseFloat(this.payments[i].payload.val().amount)
+        }
+      }
+    }
+    return amount
   }
 }
 

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClientsService {
   clients: any;
+  clientsPaginator: {"pageIndex": number, "pageSize": number} = {"pageIndex": 0, "pageSize": 10};
+
 
   constructor(private db: AngularFireDatabase) {
     this.getAll().subscribe(clients => { this.clients = clients})

@@ -206,7 +206,7 @@ export class OrdersService implements OnDestroy {
       }
   }
 
-  sendOrder(sellerName: string, clientFantasyName: string, iva: number, aproved: boolean, products: any, quantity: number) {
+  sendOrder(sellerName: string, clientFantasyName: string, iva: number, products: any, quantity: number) {
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
@@ -234,6 +234,8 @@ export class OrdersService implements OnDestroy {
       else updatedDebt = amount + this.getClientDebt(clientFantasyName);
     }
 
+    if (iva != 21) isAproved = false;
+    console.log("iva: ", iva)
 
     let result = this.db.list('/orders/').push({
       "order": {
@@ -369,12 +371,24 @@ export class OrdersService implements OnDestroy {
     return false;
   }
 
-  isClientInDebt(clientFantasyName: string) {
+  isClientInDebt(fantasyName: string) {
     for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == clientFantasyName &&
+      if (this.orders[i].payload.val().clientFantasyName == fantasyName &&
       this.isOrderInDebt(this.orders[i])) return true;
     }
     return false;
+  }
+
+  getClientOrdersAmount(fantasyName: string) {
+    let amount = 0;
+    if (this.orders) {
+      for (let i=0;i<this.orders.length;i++) {
+        if (this.orders[i].payload.val().clientFantasyName == fantasyName) {
+          amount += parseFloat(this.orders[i].payload.val().amount)
+        }
+      }
+    }
+    return amount
   }
 
   incrementOrderNumber() {

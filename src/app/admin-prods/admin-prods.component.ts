@@ -58,9 +58,9 @@ export class AdminProdsComponent implements OnInit {
       if (!recharges) {
         this.productService.createRecharge();
       }
-      this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
+      this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
     });
-    if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
+    if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
   }
 
   // filter(query: string) {
@@ -114,17 +114,17 @@ export class AdminProdsComponent implements OnInit {
 
   save(recharge:any) {
     if (confirm('Está segur@ que quiere cambiar la remarcación?')) {
-      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.kios), Number(recharge.gym))
+      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.pvp), Number(recharge.gym))
     }
   }
 
-  recharge(distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
+  recharge(distRecharge: number, comRecharge: number, pvpRecharge: number, gymRecharge: number) {
     if (this.recharges) {
       this.recharged=true;
       setTimeout(()=> {
         this.recharged = false;
        }, 800);
-      this.productService.recharge(this.products, distRecharge, comRecharge, kiosRecharge, gymRecharge);
+      this.productService.recharge(this.products, distRecharge, comRecharge, pvpRecharge, gymRecharge);
       return
     }
     this.productService.createRecharge();
@@ -159,7 +159,7 @@ export class AdminProdsComponent implements OnInit {
       doc.setFontSize(9);
       doc.text('GENTECH MAR DEL PLATA', col1, line1);
       doc.text('PRODUCTO', col1, line2);
-      if (prod.categoryPDF == "Kiosko" || prod.categoryPDF == "Gimnasio") {
+      if (prod.categoryPDF == "Pvp" || prod.categoryPDF == "Gimnasio") {
         doc.text('Importe', 140, line2);
       }
       else {
@@ -189,7 +189,7 @@ export class AdminProdsComponent implements OnInit {
           case "Comercio":
             doc.text(this.products[i].payload.val().discPrice2.toFixed(1).toString(), col2, line3 + y);
             break;
-          case "Kiosko":
+          case "Pvp":
             doc.text(this.products[i].payload.val().discPrice3.toFixed(1).toString(), col2, line3 + y);
             break;
           case "Gimnasio":

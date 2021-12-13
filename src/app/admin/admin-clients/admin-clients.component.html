@@ -15,7 +15,7 @@
     </tr></table>
   </div>
 
-    <table mat-table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
 
           <!-- businessName Column -->
       <ng-container matColumnDef="businessName">
@@ -25,20 +25,32 @@
 
       <!-- fantasyName Column -->
       <ng-container matColumnDef="fantasyName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h2> Nombre de Fantasía </h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h2> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h2></th>
         <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
       </ng-container>
 
       <!-- debt Column -->
-      <ng-container matColumnDef="debt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda* </h2></th>
+      <!-- <ng-container matColumnDef="debt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda*&nbsp;&nbsp;&nbsp;</h2></th>
         <td mat-cell *matCellDef="let c">{{c.payload.val().debt | number:'1.1-1'}}</td>
+      </ng-container> -->
+
+       <!-- debt sum-rest -->
+       <ng-container matColumnDef="debt2">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h2> Deuda sum-rest* </h2></th>
+        <td mat-cell *matCellDef="let c">{{calcDebt(c) | number:'1.1-1'}}</td>
+      </ng-container>
+
+       <!-- seller -->
+       <ng-container matColumnDef="seller">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h2>Vendedor</h2></th>
+        <td mat-cell *matCellDef="let c">{{c.payload.val().designatedSeller}}&nbsp;</td>
       </ng-container>
 
         <!-- Edit Column -->
         <ng-container matColumnDef="edit">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
-          <td mat-cell *matCellDef="let c"><a [routerLink]="['/admin/clients', c.key]">Edit</a></td>
+          <td mat-cell *matCellDef="let c"><a (click)="getPagination()" [routerLink]="['/admin/clients', c.key]">Editar</a></td>
         </ng-container>
 
         <!-- Payments Column -->

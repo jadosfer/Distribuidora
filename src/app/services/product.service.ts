@@ -74,7 +74,7 @@ export class ProductService implements OnInit{
     return this.db.object('/products/' + productId).remove();
   }
 
-  recharge(products:any, distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
+  recharge(products:any, distRecharge: number, comRecharge: number, pvpRecharge: number, gymRecharge: number) {
     for (let i=0;i<products.length;i++) {
       let prod = {
         "disc1": products[i].payload.val().disc1,
@@ -84,7 +84,7 @@ export class ProductService implements OnInit{
         "buyPrice": products[i].payload.val().buyPrice,
         "price1": products[i].payload.val().buyPrice * (1 + distRecharge/100),
         "price2": products[i].payload.val().buyPrice * (1 + comRecharge/100),
-        "price3": products[i].payload.val().buyPrice * (1 + kiosRecharge/100),
+        "price3": products[i].payload.val().buyPrice * (1 + pvpRecharge/100),
         "price4": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
         "discPrice1": products[i].payload.val().discPrice1,
         "discPrice2": products[i].payload.val().discPrice2,
@@ -105,7 +105,7 @@ export class ProductService implements OnInit{
     this.recharges = {
       "distRecharge": distRecharge,
       "comRecharge": comRecharge,
-      "kiosRecharge": kiosRecharge,
+      "pvpRecharge": pvpRecharge,
       "gymRecharge": gymRecharge
     }
     let result = this.getAllRecharges().subscribe(result => {

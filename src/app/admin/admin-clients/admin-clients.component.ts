@@ -15,7 +15,7 @@ import { jsPDF } from 'jspdf';
 })
 export class AdminClientsComponent implements OnInit {
 
-  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt', 'edit', 'payments', 'orders'];
+  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt2', 'seller', 'edit', 'payments', 'orders'];
   dataSource: any;
   clients:any[];
   sortedData:any[];
@@ -32,6 +32,11 @@ export class AdminClientsComponent implements OnInit {
        this.filteredClients = this.clients = clients;
        this.dataSource = new MatTableDataSource<any>(this.filteredClients);
        this.dataSource.paginator = this.paginator;
+       if (this.clientsService.clientsPaginator.pageIndex > 0 || this.clientsService.clientsPaginator.pageSize != 10) {
+        this.paginator.pageIndex = this.clientsService.clientsPaginator.pageIndex;
+        this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
+        this.dataSource.paginator = this.paginator
+       }
      });
   }
 
@@ -62,6 +67,11 @@ export class AdminClientsComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
   }
 
+  getPagination() {
+    this.clientsService.clientsPaginator.pageIndex = this.paginator.pageIndex;
+    this.clientsService.clientsPaginator.pageSize = this.paginator.pageSize;
+  }
+
   searchPayments(clientFantasyName: string) {
     this.paymentsService.clientFantasyName = clientFantasyName;
   }
@@ -74,6 +84,11 @@ export class AdminClientsComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+  calcDebt(client: any) {
+    let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
+    let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
+    return ordersAmount - paymentsAmount
+  }
 
   ngOnDestroy() {
   //   this.subscription.unsubscribe();

@@ -48,7 +48,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="legacy">
-            <input #kios="ngModel" matInput [(ngModel)]="rechargeDelForm.kios" name="kios" placeholder="kiosko: {{this.recharges[0].payload.val().kiosRecharge}}%" required>
+            <input #pvp="ngModel" matInput [(ngModel)]="rechargeDelForm.pvp" name="pvp" placeholder="pvp: {{this.recharges[0].payload.val().pvpRecharge}}%" required>
             <div class="alert alert-danger" *ngIf="com.touched && com.invalid">campo obligatorio</div>
           </mat-form-field>
 
@@ -110,7 +110,7 @@
 
           <mat-form-field appearance="legacy" style="width:5vw;min-width:63px;background-color: rgb(240, 240, 240);">
             <input matInput placeholder="${{product.payload.val().discPrice3 | number:'1.1-1'}}" readonly>
-            <mat-hint>Precio kiosko</mat-hint>
+            <mat-hint>Precio VP</mat-hint>
           </mat-form-field>
           <mat-form-field appearance="legacy" style="width:2vw;min-width:28px;">
             <input #disc3="ngModel" matInput [(ngModel)]="product.payload.val().disc3" name="disc3" placeholder="" required>

@@ -238,14 +238,22 @@ export class OrdersComponent implements OnInit {
       doc.setFontSize(10);
       doc.text('GENTECH MAR DEL PLATA', 10, 20);
       doc.text('FECHA DEL PEDIDO: ' + date, 80, 20);
+      doc.text('FACT Nº: ' +  order.payload.val().orderNumber, 170, 20);
       doc.text('CLIENTE: ' + order.payload.val().clientFantasyName, 10, line1);
       doc.text('VENDEDOR: ' + order.payload.val().order.sellerName, 80, line1);
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, line1+5);
       doc.text('Cantidad', 10, line2);
       doc.text('Producto', 30, line2);
-      doc.text('Importe/uni', 125, line2);
-      doc.text('Importe', 155, line2);
-      doc.text('Importe+iva', 185, line2);
+      let posX = 0;
+      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+        doc.text('Importe+iva', 185, line2);
+      }
+      else {
+        posX = 30
+      }
+      doc.text('Importe/uni', 125 + posX, line2);
+      doc.text('Importe', 155 + posX, line2);
+
 
       let cont = 0;
       for (let i=0;i<order.payload.val().order.products.length;i++) {
@@ -253,16 +261,26 @@ export class OrdersComponent implements OnInit {
           let total = order.payload.val().order.products[i].discountPrice * order.payload.val().order.products[i].quantity
           doc.text(order.payload.val().order.products[i].quantity.toString(), 10, line3 + 10*cont);
           doc.text(order.payload.val().order.products[i].product.title, 30, line3 + 10*cont);
-          doc.text("$"+order.payload.val().order.products[i].discountPrice.toFixed(1), 125, line3 + 10*cont);
-          doc.text("$"+total.toFixed(1), 155, line3 + 10*cont);
-          doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
+          posX = 0;
+          if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+            doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
+          }
+          else {
+            posX = 30
+          }
+          doc.text("$"+order.payload.val().order.products[i].discountPrice.toFixed(1), 125 + posX, line3 + 10*cont);
+          doc.text("$"+total.toFixed(1), 155 + posX, line3 + 10*cont);
           cont +=1;
         }
       }
 
       let footerVertPos = line3 + 10 * cont + 10;
+      console.log("cat:", this.ordersService.getClientCategory(order.payload.val().clientFantasyName));
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
-      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+        doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+      }
+      else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
 
       // Save the PDF

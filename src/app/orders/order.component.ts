@@ -251,7 +251,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (send) {
       if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
         this.sended = true;
-        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.aproved, this.orderProducts, this.quantity);
+        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);
@@ -300,7 +300,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
           break;
-          case "Kiosko":
+          case "Pvp":
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
           this.iva = 0;
