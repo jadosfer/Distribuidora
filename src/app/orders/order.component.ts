@@ -54,7 +54,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   orderEmpty: boolean = false;
   mobile:boolean;
   aproved: boolean = true;
-  giveRecive: boolean = false;
+  negative: boolean = false;
   noStock: boolean = false;
 
 
@@ -195,6 +195,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   updateOrderItemQuantity(product: any, change: number, index: number){
     for (let i=0;i<this.orderProducts.length;i++) {
       if (product.product.title == this.orderProducts[i].product.title) {
+        if (this.orderProducts[i].quantity + change < 0) return;
         if (this.orderProducts[i].quantity + change > this.ordersService.getStock(product) ) {
           this.noStock = true;
           setTimeout(()=> {
@@ -202,7 +203,6 @@ export class OrderComponent implements OnInit, OnDestroy {
            }, 1600);
           return;}
         this.orderProducts[i].quantity += change;
-        //this.ordersService.updateOrderItemQuantity(this.order, product, change, i)
         break
       }
     }
@@ -218,17 +218,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       return
     }
     this.orderEmpty = true;
-    let give = false,recive = false;
     for (let i=0;i<this.orderProducts.length;i++) {
-      if (this.orderProducts[i].quantity > 0) give = true;
-      if (this.orderProducts[i].quantity < 0) recive = true;
-      if (give && recive) {
-        this.giveRecive = true;
-        setTimeout(()=> {
-          this.giveRecive = false;
-         }, 1700);
-        return;
-      }
       if (this.orderProducts[i].quantity != 0) {
         this.orderEmpty = false;
       }
