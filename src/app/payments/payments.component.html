@@ -1,42 +1,32 @@
 <div class="SCContainer" *ngIf="appUser">
 
 
-  <div fxLayout="row" style="margin:10px">
-    <div><h1 style="display: inline; margin:10px;">Mis cobros&nbsp;&nbsp;</h1></div>
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="start center" style="margin:10px">
+    <div><h1 style="display: inline; margin:10px;">MIS COBROS</h1></div>
     <div>
-      <a style="margin-left:50px;" mat-icon-button routerLink="/payments/payment"><mat-icon>control_point</mat-icon></a><span>Cargar Cobro</span>
-    </div>
-    <div>
-      <a style="margin-left:50px;" mat-icon-button routerLink="/payments/creditNote"><mat-icon>control_point</mat-icon></a><span>Nota de Crédito</span>
+      <a style="margin-left:0px;" mat-icon-button routerLink="/payments/payment"><mat-icon>control_point</mat-icon></a><span>Cargar Cobro</span>
+
+      <a style="margin-left:0px;" mat-icon-button routerLink="/payments/creditNote"><mat-icon>control_point</mat-icon></a><span>Nota de Crédito</span>
     </div>
   </div>
+  <hr>
 
   <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
-    <mat-card>
-      <mat-card-content>
-        <div fxLayout="row" fxLayoutAlign="start center">
-          <div fxLayout="row" style="margin:20px;">
-            <div><mat-icon matSuffix>search</mat-icon></div>
-            <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <div fxLayout="row" style="margin:20px;">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
 
-          </div>
-          <div fxLayout="row" *ngIf="appUser.isAdmin" style="min-width:130px;">
-            <div><mat-icon matSuffix>search</mat-icon></div>
-            <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
-          </div>
-          <div fxLayout="row">
-            <div><mat-icon matSuffix>search</mat-icon></div>
-            <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
-          </div>
-        </div>
-
-    </mat-card-content>
-  </mat-card>
-
-
-
-  <mat-card>
-    <mat-card-content>
+      </div>
+      <div fxLayout="row" *ngIf="appUser.isAdmin" style="min-width:130px;">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
+      </div>
+      <div fxLayout="row">
+        <div><mat-icon matSuffix>search</mat-icon></div>
+        <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
+      </div>
+    </div>
 
     <div fxLayout="row" fxLayoutAlign="space-evenly center">
       <form #f="ngForm" style="margin-left:20px" (ngSubmit)="searchDateRange(range.value)">
@@ -58,13 +48,8 @@
         <button #query style="margin:0px" mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
       </form>
     </div>
-
-  </mat-card-content>
-</mat-card>
-
-
-
   </div>
+  <hr>
 
   <mat-card>
     <mat-card-content>

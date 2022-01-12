@@ -49,6 +49,8 @@ export class OrdersComponent implements OnInit {
   dateValue: string;
   clientValue: string;
   sellerValue: string;
+  ordersNotAproved: number = 0;
+  notAprovedOrders: any[] = [];
 
   title: string;
   quantity: number;
@@ -80,20 +82,28 @@ export class OrdersComponent implements OnInit {
           if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name)) {
 
             this.userOrders.push(this.orders[i]);
+            if (this.orders[i].payload.val().aproved == false) {
+              this.notAprovedOrders.push(this.orders[i].payload.val());
+              this.ordersNotAproved += 1;
+            }
+
           }
         }
+        console.log("orders",  this.userOrders)
         this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
         //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
 
         //genera el string para la fecha de HOY
-        // let today = new Date().getDate().toString();
-        // let mon = new Date().getMonth() +1
-        // let month = mon.toString();
-        // if (mon < 10) {
-        //   month = "0" + mon.toString();
-        // }
+        let today = new Date().getDate().toString();
+        let mon = new Date().getMonth() +1;
+        let year = new Date().getFullYear();
+        let month = mon.toString();
+        if (mon < 10) {
+          month = "0" + mon.toString();
+        }
         // this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
-        // this.dateValue = today + "/" + month;
+        this.dateValue = today + "/" + month + "/" + year;
+        this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
         this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
         if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
@@ -127,11 +137,11 @@ export class OrdersComponent implements OnInit {
   filterBySeller(query: string) {
     this.query.seller = query;
     this.filteredOrders = [];
-    for (let i=0;i<this.orders.length;i++) {
+    for (let i=0;i<this.userOrders.length;i++) {
       if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
       && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) ) {
-        this.filteredOrders.push(this.orders[i])
+        this.filteredOrders.push(this.userOrders[i])
       }
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
@@ -143,12 +153,11 @@ export class OrdersComponent implements OnInit {
   filterByDate(query: string) {
     this.query.date = query;
     this.filteredOrders = [];
-    console.log("aca", this.userOrders[0].payload.val().clientFantasyName)
-    for (let i=0;i<this.orders.length;i++) {
+    for (let i=0;i<this.userOrders.length;i++) {
       if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
       && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query) )
-      this.filteredOrders.push(this.orders[i]);
+      this.filteredOrders.push(this.userOrders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
@@ -159,11 +168,11 @@ export class OrdersComponent implements OnInit {
   searchDateRange(range: any) {
     if (range.start) {
       this.filteredOrders = [];
-      for (let i=0;i<this.orders.length;i++) {
+      for (let i=0;i<this.userOrders.length;i++) {
         if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
         && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
         && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
-        this.filteredOrders.push(this.orders[i]);
+        this.filteredOrders.push(this.userOrders[i]);
       }
       this.filteredOrders = (range) ?
       this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
@@ -216,7 +225,6 @@ export class OrdersComponent implements OnInit {
     if (this.filteredOrders) {
 
       this.filteredOrders.forEach(order => {
-        //console.log("aca", order.payload.val())
         total += this.ordersService.getTotalAmount(order.payload.val().order.products);
       });
     }
@@ -304,7 +312,6 @@ export class OrdersComponent implements OnInit {
       }
 
       let footerVertPos = line3 + 10 * cont + 10;
-      console.log("cat:", this.ordersService.getClientCategory(order.payload.val().clientFantasyName));
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
       if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
         doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);

@@ -24,12 +24,13 @@
 
 
   <div fxLayout="row" style="margin:10px">
-    <div><h1 style="display: inline; margin:10px;">Gráficos&nbsp;&nbsp;</h1></div>
+    <div><h1 style="display: inline; margin:10px;">GRÁFICOS&nbsp;&nbsp;</h1></div>
     <div><button style="display: inline; margin-right:10px;" mat-raised-button color="accent" (click)="graphic()">Graficar</button></div>
     <div><button mat-raised-button color="basic" (click)="showGraph = false">Ocultar</button></div>
   </div>
+  <hr>
 
-  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
+  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center" style="margin:15px">
     <div fxLayout="row" fxLayoutAlign="start center">
       <div fxLayout="row" style="margin:20px;">
         <div><mat-icon matSuffix>search</mat-icon></div>
@@ -46,7 +47,7 @@
     </div>
 
     <div fxLayout="row" fxLayoutAlign="space-evenly center">
-      <form #f="ngForm" style="margin-right:20px;margin-left:-20px;" (ngSubmit)="searchDateRange(range.value)">
+      <form #f="ngForm" style="margin-right:0px" (ngSubmit)="searchDateRange(range.value)">
         <mat-form-field appearance="fill">
           <mat-label>Ingrese un rango de fechas</mat-label>
           <mat-date-range-input [formGroup]="range" [rangePicker]="picker">

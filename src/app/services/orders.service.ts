@@ -86,7 +86,6 @@ export class OrdersService implements OnDestroy {
   }
 
   isStock(order: any, products: any) {
-    console.log("products", products[0])
     for (let i=0;i<order.payload.val().products.length;i++) {
       if (products[i].quantity > 0 && !this.isProductStock(products[i])) {
         return false
@@ -133,7 +132,6 @@ export class OrdersService implements OnDestroy {
   }
 
   public createOrderNumber() {
-    console.log("crea2")
     let result = this.db.list('/orderNumber/').push({
       "orderNumber": 0
     });
@@ -235,7 +233,6 @@ export class OrdersService implements OnDestroy {
     }
 
     if (iva != 21) isAproved = false;
-    console.log("iva: ", iva)
 
     let result = this.db.list('/orders/').push({
       "order": {
@@ -263,7 +260,6 @@ export class OrdersService implements OnDestroy {
     let rest = 0;
     if (payment.payload) rest = payment.payload.val().amount;
     else rest = payment.amount;
-    console.log("rest", rest)
     for (let i=0;i<this.orders.length;i++) {
       if (payment.payload && payment.payload.val().orderNumber > 0 && this.orders[i].payload.val().orderNumber == payment.payload.val().orderNumber) {
         console.log("aca1")
