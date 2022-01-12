@@ -185,7 +185,7 @@ export class ProductService implements OnInit{
       for (let j=0;j<products.length;j++) {
         if (order.payload.val().order.products[i].product.title == products[j].payload.val().title)
         this.db.object('/products/' + products[j].key).update({
-          "stock": products[j].payload.val().stock + order.payload.val().order.products[i].quantity
+          "stock": parseInt(products[j].payload.val().stock) + parseInt(order.payload.val().order.products[i].quantity)
         });
       }
     }

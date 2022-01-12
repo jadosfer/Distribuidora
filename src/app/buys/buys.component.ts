@@ -56,7 +56,7 @@ export class BuysComponent implements OnInit {
     filterByDate(query: string) {
       if (query != "") {
         this.filteredBuys = (query) ?
-        this.filteredBuys.filter((b: { payload: { val: () => { (): any; new(): any; creationDate: string | number | Date; }; }; }) => this.datepipe.transform(b.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+        this.filteredBuys.filter((b: { payload: { val: () => { (): any; new(): any; date: string | number | Date; }; }; }) => this.datepipe.transform(b.payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query)):
         this.filteredBuys;
       }
       else this.filteredBuys = this.buys;
@@ -75,7 +75,7 @@ export class BuysComponent implements OnInit {
           //case 'nroOrder': return this.compare(a.i, b.i, isAsc);
           case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
           case 'vendedor': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
-          case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
+          case 'date': return this.compare(a.payload.val().date, b.payload.val().date, isAsc);
           default: return 0;
         }
       });
@@ -107,7 +107,7 @@ export class BuysComponent implements OnInit {
     searchDateRange(range: any) {
       if (range.start) {
         this.filteredBuys = (range) ?
-        this.filteredBuys.filter((b: { payload: { val: () => { (): any; new(): any; creationDate: number; }; }; }) => b.payload.val().creationDate > Date.parse(range.start._d) && b.payload.val().creationDate < Date.parse(range.end._d)):
+        this.filteredBuys.filter((b: { payload: { val: () => { (): any; new(): any; date: number; }; }; }) => b.payload.val().date > Date.parse(range.start._d) && b.payload.val().date < Date.parse(range.end._d)):
         this.filteredBuys;
       }
       else this.filteredBuys = this.buys;

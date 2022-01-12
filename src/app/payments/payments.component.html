@@ -84,7 +84,7 @@
             <td>{{pay.payload.val().amount}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().paymentDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>{{pay.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
             <td>{{pay.payload.val().orderNumber}}&nbsp;&nbsp;</td>
             <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay)" color="accent"><mat-icon>delete</mat-icon></button></td>
         </tr>

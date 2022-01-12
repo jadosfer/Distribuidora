@@ -51,7 +51,6 @@ const MaterialsComponents = [
   MatBadgeModule,
   MatCheckboxModule,
   MatRadioModule
-
 ]
 @NgModule({
   imports: [

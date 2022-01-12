@@ -24,7 +24,7 @@
           </div>
         </div>
         <div>
-          <button class="left-btn" (click)="sendOrder()" mat-raised-button color="basic">Enviar Pedido</button>
+          <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
           <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         </div>
         <div>
@@ -80,7 +80,7 @@
         </tr>
       </table>
       <div style="margin-bottom:20px;margin-top:20px;">
-        <button class="left-btn" (click)="sendOrder()" mat-raised-button color="basic">Enviar Pedido</button>
+        <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
         <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>

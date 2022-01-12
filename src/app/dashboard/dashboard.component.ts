@@ -54,6 +54,7 @@ export class DashboardComponent implements OnInit {
   aproved: string[] = ["NO", "SI"];
   debt: string[] = ["NO", "SI"];
   selected: string = "NO";
+  query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
   showGraph: boolean = false;
   currentItemsToShow:any[];
@@ -85,7 +86,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.filter("");
     this.subscription = this.ordersService.getAll().subscribe(orders => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
@@ -103,36 +103,72 @@ export class DashboardComponent implements OnInit {
   }
 
   filter(query: string) {
-    if (query != "") {
-      this.filteredOrders = (query) ?
-      this.userOrders.filter(p => p.payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())) :
-      [];
+    this.query.client = query;
+    this.filteredOrders = [];
+    for (let i=0;i<this.userOrders.length;i++) {
+      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
+      this.filteredOrders.push(this.orders[i]);
     }
-    else this.filteredOrders = this.userOrders;
+    this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+
     if (this.paginator) this.paginator.pageIndex = 0;
+    if (this.showGraph) this.graphic();
   }
 
   filterBySeller(query: string) {
-    if (query != "") {
-      this.filteredOrders = (query) ?
-      this.userOrders.filter(p => p.payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())) :
-      [];
+    this.query.seller = query;
+    this.filteredOrders = [];
+    for (let i=0;i<this.orders.length;i++) {
+      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())
+      && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) ) {
+        this.filteredOrders.push(this.orders[i])
+      }
     }
-    else this.filteredOrders = this.userOrders;
+    this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
+    if (this.showGraph) this.graphic();
   }
 
   filterByDate(query: string) {
-    if (query != "") {
-      this.filteredOrders = (query) ?
-      this.userOrders.filter(p => this.datepipe.transform(p.payload.val().creationDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
-      [];
+    this.query.date = query;
+    this.filteredOrders = [];
+    for (let i=0;i<this.orders.length;i++) {
+      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query) )
+      this.filteredOrders.push(this.orders[i]);
     }
-    else this.filteredOrders = this.userOrders;
+    this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
+    if (this.showGraph) this.graphic();
+  }
+
+  searchDateRange(range: any) {
+    if (range.start) {
+      this.filteredOrders = [];
+      for (let i=0;i<this.orders.length;i++) {
+        if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+        && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+        && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
+        this.filteredOrders.push(this.orders[i]);
+      }
+      this.filteredOrders = (range) ?
+      this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
+      this.filteredOrders;
+    }
+    this.query.dateRange.start = new Date(Date.parse(range.start._d));
+    this.query.dateRange.end = new Date(Date.parse(range.end._d));
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+    if (this.showGraph) this.graphic();
   }
 
   sortData(sort: Sort) {
@@ -148,7 +184,7 @@ export class DashboardComponent implements OnInit {
         //case 'nroOrder': return this.compare(a.i, b.i, isAsc);
         case 'cliente': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
         case 'vendedor': return this.compare(a.payload.val().order.sellerName, b.payload.val().order.sellerName, isAsc);
-        case 'date': return this.compare(a.payload.val().creationDate, b.payload.val().creationDate, isAsc);
+        case 'date': return this.compare(a.payload.val().date, b.payload.val().date, isAsc);
         case 'import': return this.compare(this.ordersService.getTotalAmount(a.payload.val().order.products), this.ordersService.getTotalAmount(b.payload.val().order.products), isAsc);
         case 'iva': return this.compare(a.payload.val().iva, b.payload.val().iva, isAsc);
 
@@ -185,14 +221,6 @@ export class DashboardComponent implements OnInit {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
       this.stockService.aprove(order);
       this.ordersService.aprove(order);
-    }
-  }
-
-  searchDateRange(range: any) {
-    if (range.start) {
-      this.filteredOrders = (range) ?
-      this.filteredOrders.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
-      this.filteredOrders;
     }
   }
 

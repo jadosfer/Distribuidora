@@ -64,7 +64,7 @@ export class PaymentsService {
 
   create(payment: any) {
     let time = new Date().getTime()
-    payment.paymentDate = time;
+    payment.date = time;
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
     //el cobro es para una factura en particular

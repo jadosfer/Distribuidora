@@ -137,8 +137,6 @@ export class AdminProdsComponent implements OnInit {
   onPageChange($event: any) {
     this.pageIndex = $event.pageIndex;
     this.pageSize = $event.pageSize;
-    console.log(this.pageIndex = $event.pageIndex);
-    console.log(this.pageSize = $event.pageSize);
     this.currentItemsToShow = this.filteredProducts.slice(
       $event.pageIndex * $event.pageSize,
       $event.pageIndex * $event.pageSize + $event.pageSize

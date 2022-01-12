@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div style="margin-left:20px"><h2>NOVEDADES: esta página se inicia con los pedidos del día. Si quiere ver otros buscar por filtro</h2></div>
+  <div style="margin-left:20px"><h2>NOVEDADES: Se puede buscar por varios filtros a la vez</h2></div>
 
   <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
     <div fxLayout="row" fxLayoutAlign="start center">
@@ -52,7 +52,8 @@
           <th mat-sort-header="date" *ngIf="!isExpanded">Fecha</th>
           <th mat-sort-header="import">Importe c/iva</th>
           <th mat-sort-header="iva">IVA</th>
-          <th mat-sort-header="aproved" *ngIf="!isExpanded">¿Pedido aprobado?</th>
+          <th mat-sort-header="aproved" *ngIf="!isExpanded">¿aprobado?</th>
+          <th mat-sort-header="sended" *ngIf="!isExpanded">¿enviado?</th>
           <th mat-sort-header="debt" *ngIf="!isExpanded">Debe</th>
           <th mat-sort-header="discount" *ngIf="!isExpanded">Descuento?</th>
           <th mat-sort-header="clientDebt" *ngIf="!isExpanded">Deudor</th>
@@ -65,10 +66,11 @@
         <tr *ngFor="let order of currentItemsToShow; let i = index" >
           <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
           <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
-          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
           <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
           <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
           <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><section class="example-section"><mat-checkbox [(ngModel)]="order.payload.val().sended" (ngModelChange)="updateSendedStatus(order)" [disabled]="false"></mat-checkbox></section></td>
           <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td>
           <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
           <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().clientInDebt">NO</span><span *ngIf="order.payload.val().clientInDebt">SI</span>&nbsp;</td>

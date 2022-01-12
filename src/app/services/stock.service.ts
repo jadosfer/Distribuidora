@@ -179,7 +179,7 @@ export class StockService {
     let result = this.db.list('/buys/').push({
       "buyItemsCount": buy[0].payload.val().buyItemsCount,
       "buy": prods,
-      "creationDate": time
+      "date": time
     });
     this.db.object('/buy/').remove();
   }

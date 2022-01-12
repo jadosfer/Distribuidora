@@ -48,7 +48,7 @@
 
       <tr *ngFor="let b of filteredBuys; let i = index" >
 
-        <td *ngIf="b.payload.val().buyItemsCount !=0">{{b.payload.val().creationDate | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td *ngIf="b.payload.val().buyItemsCount !=0">{{b.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td *ngIf="b.payload.val().buyItemsCount !=0">${{this.stockService.getTotalCost(b) | number:'1.1-1'}}</td>
 
          <mat-accordion *ngIf="b.payload.val().buyItemCount !=0">

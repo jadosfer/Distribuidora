@@ -100,7 +100,7 @@ export class PaymentsComponent implements OnInit {
   filterByDate(query: string) {
     if (query != "") {
       this.filteredPayments = (query) ?
-      this.userPayments.filter(p => this.datepipe.transform(p.payload.val().paymentDate, 'dd/MM/yyyy HH:mm')?.includes(query)):
+      this.userPayments.filter(p => this.datepipe.transform(p.payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query)):
       [];
     }
     else this.filteredPayments = this.userPayments;
@@ -120,7 +120,7 @@ export class PaymentsComponent implements OnInit {
         case 'amount': return this.compare(a.payload.val().amount, b.payload.val().amount, isAsc);
         case 'payWay': return this.compare(a.payload.val().payWay, b.payload.val().payWay, isAsc);
         case 'seller': return this.compare(a.payload.val().sellerName, b.payload.val().sellerName, isAsc);
-        case 'date': return this.compare(a.payload.val().paymentDate, b.payload.val().paymentDate, isAsc);
+        case 'date': return this.compare(a.payload.val().date, b.payload.val().date, isAsc);
         default: return 0;
       }
     });
@@ -159,7 +159,7 @@ export class PaymentsComponent implements OnInit {
   searchDateRange(range: any) {
     if (range.start) {
       this.filteredPayments = (range) ?
-      this.filteredPayments.filter(p => p.payload.val().creationDate > Date.parse(range.start._d) && p.payload.val().creationDate < Date.parse(range.end._d)):
+      this.filteredPayments.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
       this.filteredPayments;
     }
     else this.filteredPayments = this.userPayments;

@@ -13,6 +13,7 @@ import { ClientsService } from 'src/app/services/clients.service';
 export class ClientsFormComponent implements OnInit {
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
+  IVAConditions:string[] = ["Inscripto", "Monotributista", "Consumidor Final"];
   clientsCategories: Observable<any>;
   sellers$: Observable<any>;
   client:any = {};

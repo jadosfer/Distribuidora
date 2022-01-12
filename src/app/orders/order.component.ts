@@ -49,13 +49,14 @@ export class OrderComponent implements OnInit, OnDestroy {
   title: string;
   quantity: number = 0;
   sortedData: any[];
-  sended: boolean = false;
   client: boolean = true;
   orderEmpty: boolean = false;
   mobile:boolean;
   aproved: boolean = true;
   negative: boolean = false;
   noStock: boolean = false;
+
+  query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
 
   constructor(
@@ -81,7 +82,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.orderIndex = 0;
       this.ordersService.getOrder().subscribe(order => {
         this.order = order;
-        if (this.order.length == 0) this.ordersService.createOrder();
+        if (this.order.length == 0) this.ordersService.createOrderEmpty();
 
         this.orderIndex = -1
         for (let i=0;i<this.order.length;i++) {
@@ -92,7 +93,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           }
         }
         if (this.appUser && this.orderIndex == -1) {
-          this.ordersService.createOrder();
+          this.ordersService.createOrderEmpty();
         }
 
         this.clientsService.getAll().subscribe(clients => {
@@ -209,7 +210,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.quantity += change;
   }
 
-  sendOrder() {
+  createOrder() {
     if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
       this.noStock = true;
       setTimeout(()=> {
@@ -233,15 +234,14 @@ export class OrderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let send = false;
+    let clientOk = false;
     for (let i=0;i<this.clients.length;i++) {
       if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)
-      send = true;
+      clientOk = true;
     }
-    if (send) {
-      if (confirm('Está segur@ que quiere enviar el pedido? No podrá modificarlo')) {
-        this.sended = true;
-        this.ordersService.sendOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity);
+    if (clientOk) {
+      if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
+        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);
@@ -252,7 +252,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   reset() {
-    if (confirm('Está segur@ que quiere anular el pedido que no ha enviado?')) {
+    if (confirm('Está segur@ que quiere anular el pedido que no ha creado?')) {
       for (let i=0;i<this.orderProducts.length;i++) {
         this.orderProducts[i].quantity = 0;
       }
@@ -305,6 +305,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.showedProducts = this.orderProducts;
     if (this.clientFantasyName != "") this.router.navigateByUrl('/orders/order');
   }
+
   ngOnDestroy() {
     this.ordersService.clearOrder();
   }

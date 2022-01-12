@@ -19,13 +19,13 @@
 
           <!-- businessName Column -->
       <ng-container matColumnDef="businessName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h2> Razon Social </h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h3> Razon Social </h3></th>
         <td mat-cell *matCellDef="let c"> {{c.payload.val().businessName}} &nbsp;&nbsp;</td>
       </ng-container>
 
       <!-- fantasyName Column -->
       <ng-container matColumnDef="fantasyName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h2> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h3> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h3></th>
         <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
       </ng-container>
 
@@ -37,14 +37,26 @@
 
        <!-- debt sum-rest -->
        <ng-container matColumnDef="debt2">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h2> Deuda sum-rest* </h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h3> Deuda sum-rest* </h3></th>
         <td mat-cell *matCellDef="let c">{{calcDebt(c) | number:'1.1-1'}}</td>
       </ng-container>
 
        <!-- seller -->
        <ng-container matColumnDef="seller">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h2>Vendedor</h2></th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h3>Vendedor</h3></th>
         <td mat-cell *matCellDef="let c">{{c.payload.val().designatedSeller}}&nbsp;</td>
+      </ng-container>
+
+      <!-- IVA Condition -->
+      <ng-container matColumnDef="IVACond">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="IVACond"><h3>Condición IVA</h3></th>
+        <td mat-cell *matCellDef="let c">{{c.payload.val().IVACondition}}&nbsp;</td>
+      </ng-container>
+
+       <!-- Resume -->
+       <ng-container matColumnDef="resume">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="resume"><h3>Resumen</h3></th>
+        <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="resumePDF(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
       </ng-container>
 
         <!-- Edit Column -->
