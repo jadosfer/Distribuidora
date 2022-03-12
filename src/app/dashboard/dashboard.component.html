@@ -73,46 +73,13 @@
     <tr>
       <th mat-sort-header="client">Cliente</th>
       <th mat-sort-header="seller">Vendedor</th>
-      <th mat-sort-header="date">Fecha</th>
-      <th mat-sort-header="import">Importe c/iva</th>
-      <th mat-sort-header="iva">IVA</th>
+      <th mat-sort-header="amount">Importe s/iva</th>
     </tr>
 
-
-    <tr *ngFor="let order of currentItemsToShow; let i = index" >
-
-      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
-      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-      <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount| number:'1.1-1'}}</td>
-      <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
-
-        <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
-          <mat-expansion-panel hideToggle>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                Detalle
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <tr>
-              <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
-              <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-              <th mat-sort-header="unitPrice;{{i}}">Importe/unidad s/iva</th>
-              <th mat-sort-header="Price;{{i}}">Importe</th>
-            </tr>
-            <tr *ngFor="let item of order.payload.val().order.products; let i = index">
-              <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
-              <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-              <td *ngIf="item.quantity !=0">${{item.discountPrice | number:'1.1-1'}}</td>
-              <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
-            </tr>
-            <tr>
-              <th mat-sort-header="totalSI;{{i}}">Total s/iva:</th>
-              <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
-            </tr>
-          </mat-expansion-panel>
-        </mat-accordion>
-
+   <tr *ngFor="let client of sortedData; let i = index" >
+    <td>{{ client.client }}&nbsp;&nbsp;</td>
+    <td>{{ client.seller }}&nbsp;&nbsp;</td>
+    <td>{{ client.totalAmount | number:'1.1-1'}}&nbsp;&nbsp;</td>
   </tr>
 
     <tr>
@@ -121,7 +88,7 @@
     </tr>
 
   </table>
-  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
+  <mat-paginator (page)="onPageChange($event)" [length]="this.dashLength" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 
 </div>
 

@@ -205,7 +205,7 @@ export class OrdersComponent implements OnInit {
         case 'client': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
         case 'seller': return this.compare(a.payload.val().order.sellerName, b.payload.val().order.sellerName, isAsc);
         case 'date': return this.compare(a.payload.val().date, b.payload.val().date, isAsc);
-        case 'import': return this.compare(this.ordersService.getTotalAmount(a.payload.val().order.products), this.ordersService.getTotalAmount(b.payload.val().order.products), isAsc);
+        case 'amount': return this.compare(this.ordersService.getTotalAmount(a.payload.val().order.products), this.ordersService.getTotalAmount(b.payload.val().order.products), isAsc);
         case 'iva': return this.compare(a.payload.val().iva, b.payload.val().iva, isAsc);
         case 'debt': return this.compare(a.payload.val().debt, b.payload.val().debt, isAsc);
         default: return 0;
