@@ -1,7 +1,7 @@
 <div class="container-edit">
   <p>
     <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
-    <button mat-raised-button style="margin-left: 5px;" type="submit" color="primary" (click)=exportPDF(this.clients)>Descargar PDF</button>
+    <button mat-raised-button style="margin-left: 5px;" type="submit" color="primary" (click)=printService.exportClients(this.clients)>Descargar PDF</button>
   </p>
   <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
   <div>
@@ -56,7 +56,7 @@
        <!-- Resume -->
        <ng-container matColumnDef="resume">
         <th mat-header-cell *matHeaderCellDef mat-sort-header="resume"><h3>Resumen</h3></th>
-        <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="resumePDF(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="this.printService.exportResume(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
       </ng-container>
 
         <!-- Edit Column -->

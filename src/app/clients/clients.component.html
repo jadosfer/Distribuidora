@@ -21,6 +21,7 @@
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
         <th mat-sort-header="debt">Deuda*</th>
+        <th mat-sort-header="resume">Estado de cuenta</th>
       </tr>
 
       <tr *ngFor="let client of filteredClients; let i = index">
@@ -29,6 +30,7 @@
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
+        <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>
       </tr>

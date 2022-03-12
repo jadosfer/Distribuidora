@@ -5,9 +5,9 @@
       <a  mat-icon-button routerLink="/orders/order"><mat-icon>control_point</mat-icon></a><span>Crear Pedido</span>
     </div>
     <div  *ngIf="ordersNotAproved > 0" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
-      <div  style="display: inline; margin:10px;">PEDIDOS SIN APROBAR: <strong>{{this.ordersNotAproved}}</strong></div>
-      <div>
-        <mat-accordion >
+      <div  style="display: inline; margin:10px;">PEDIDOS SIN APROBAR: &nbsp;&nbsp;&nbsp;&nbsp;<span matBadge="{{this.ordersNotAproved}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      <div style="margin-right:50px;">
+        <mat-accordion>
           <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -39,7 +39,7 @@
     <div fxLayout="row" fxLayoutAlign="space-around center">
       <div fxLayout="row">
         <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
+        <div><input [(ngModel)]="clientValue" matInput #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
       </div>
       <div fxLayout="row" *ngIf="appUser.isAdmin">
         <div><mat-icon matSuffix>search</mat-icon></div>
@@ -156,9 +156,10 @@
           <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
         </tr>
       </table>
-      <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
+      <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
     </mat-card-content>
   </mat-card>
+  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 </div>
 
 

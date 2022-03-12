@@ -5,7 +5,8 @@
     <div><h1 style="display: inline; margin:10px;">MIS COBROS</h1></div>
     <div>
       <a style="margin-left:0px;" mat-icon-button routerLink="/payments/payment"><mat-icon>control_point</mat-icon></a><span>Cargar Cobro</span>
-
+    </div>
+    <div *ngIf="appUser.isAdmin">
       <a style="margin-left:0px;" mat-icon-button routerLink="/payments/creditNote"><mat-icon>control_point</mat-icon></a><span>Nota de Crédito</span>
     </div>
   </div>

@@ -61,6 +61,7 @@ export class OrdersComponent implements OnInit {
 
   aproveFirst: boolean = false;
   isExpanded: boolean = false;
+  changeCheckbox: boolean = false;
 
   constructor(public ordersService: OrdersService,
   private productService: ProductService,
@@ -86,12 +87,10 @@ export class OrdersComponent implements OnInit {
               this.notAprovedOrders.push(this.orders[i].payload.val());
               this.ordersNotAproved += 1;
             }
-
           }
         }
-        console.log("orders",  this.userOrders)
         this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
-        //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+        //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
 
         //genera el string para la fecha de HOY
         let today = new Date().getDate().toString();
@@ -105,15 +104,17 @@ export class OrdersComponent implements OnInit {
         this.dateValue = today + "/" + month + "/" + year;
         this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
-        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+        //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
         if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-          this.filter(this.ordersService.clientFantasyName); // idem
-          this.clientValue = this.ordersService.clientFantasyName; // idem
-          this.ordersService.clientFantasyName = ""; // idem
           this.dateValue = "";
+          this.clientValue = this.ordersService.clientFantasyName; // idem
+          this.filter(this.ordersService.clientFantasyName); // idem
+          this.ordersService.clientFantasyName = ""; // idem
+          this.filterByDate("");
         }
       });
     });
+    //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
     this.clientsService.getAll().subscribe(clients => {
       this.clients = clients;
     });
@@ -129,7 +130,7 @@ export class OrdersComponent implements OnInit {
       this.filteredOrders.push(this.orders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
 
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -146,7 +147,7 @@ export class OrdersComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -161,7 +162,7 @@ export class OrdersComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -180,7 +181,7 @@ export class OrdersComponent implements OnInit {
     }
     this.query.dateRange.start = new Date(Date.parse(range.start._d));
     this.query.dateRange.end = new Date(Date.parse(range.end._d));
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -251,7 +252,7 @@ export class OrdersComponent implements OnInit {
     this.clientValue = "";
     this.dateValue = "";
     this.filteredOrders = this.userOrders;
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -329,7 +330,7 @@ export class OrdersComponent implements OnInit {
 
   remove(order: any) {
     if (confirm('Está segur@ que quiere eliminar este pedido? Se restará el monto del pedido a la deuda del cliente')) {
-      this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt)
+      //this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt)
       this.ordersService.removeOrder(order);
     }
   }

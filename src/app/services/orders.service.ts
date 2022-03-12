@@ -143,8 +143,8 @@ export class OrdersService implements OnDestroy {
 
   removeOrder(order: any) {
     this.db.object('/orders/' + order.key).remove();
-    this.productService.restoreStock(order, this.products)
-    this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().amount)
+    this.productService.restoreStock(order, this.products);
+    this.clientsService.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt);
   }
 
   resetOrder(orderIndex: any){

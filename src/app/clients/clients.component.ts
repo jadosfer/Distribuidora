@@ -1,3 +1,4 @@
+import { PrintService } from './../services/print.service';
 import { PaymentsComponent } from './../payments/payments.component';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Sort } from '@angular/material/sort';
@@ -23,7 +24,7 @@ export class ClientsComponent implements OnInit {
   subscription: Subscription;
   sortedData: any[];
 
-  constructor(private clientsService: ClientsService, private auth: AuthService,
+  constructor(private clientsService: ClientsService, private auth: AuthService, public printService: PrintService,
     private paymentsService: PaymentsService, private ordersService: OrdersService) {
    }
 
