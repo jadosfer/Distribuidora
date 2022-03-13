@@ -69,56 +69,54 @@
       </form>
     </div>
   </div>
+    <table class="table table-striped table-sm mat-elevation-z8">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Vendedor</th>
+          <th *ngIf="!isExpanded">Fecha</th>
+          <th> Importe c/iva</th>
+          <th >IVA</th>
+          <th *ngIf="!isExpanded">¿aprobado?</th>
+          <th *ngIf="!isExpanded && appUser.isAdmin">¿env?</th>
+          <th *ngIf="!isExpanded">Debe</th>
+          <th *ngIf="!isExpanded">Desc?</th>
+          <th *ngIf="!isExpanded">Deudor</th>
+          <th *ngIf="!isExpanded">Nro. Fact</th>
+          <th>Detalle</th>
+          <th>PDF</th>
+          <th *ngIf ="appUser.isAdmin">Eliminar</th>
+          <th>Limpiar Deuda</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of currentItemsToShow; let i = index" >
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
+          <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0 && appUser.isAdmin"><section class="example-section"><mat-checkbox [(ngModel)]="order.payload.val().sended" (ngModelChange)="updateSendedStatus(order)" [disabled]="false"></mat-checkbox></section></td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().clientInDebt">NO</span><span *ngIf="order.payload.val().clientInDebt">SI</span>&nbsp;</td>
+          <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().orderNumber}}&nbsp;</td>
 
-  <mat-card>
-    <mat-card-content>
-      <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
-        <thead>
-          <tr>
-            <th mat-sort-header="client">Cliente</th>
-            <th mat-sort-header="seller">Vendedor</th>
-            <th mat-sort-header="date" *ngIf="!isExpanded">Fecha</th>
-            <th mat-sort-header="amount">Importe c/iva</th>
-            <th mat-sort-header="iva">IVA</th>
-            <th mat-sort-header="aproved" *ngIf="!isExpanded">¿aprobado?</th>
-            <th mat-sort-header="sended" *ngIf="!isExpanded && appUser.isAdmin">¿env?</th>
-            <th mat-sort-header="debt" *ngIf="!isExpanded">Debe</th>
-            <th mat-sort-header="discount" *ngIf="!isExpanded">Desc?</th>
-            <th mat-sort-header="clientDebt" *ngIf="!isExpanded">Deudor</th>
-            <th mat-sort-header="orderNumber" *ngIf="!isExpanded">Nro. Fact</th>
-            <th mat-sort-header="detail">Detalle</th>
-            <th mat-sort-header="pdf">PDF</th>
-            <th *ngIf ="appUser.isAdmin" mat-sort-header="delete">Eliminar</th>
-            <th mat-sort-header="clean">Limpiar Deuda</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let order of currentItemsToShow; let i = index" >
-            <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-            <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-            <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
-            <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0 && appUser.isAdmin"><section class="example-section"><mat-checkbox [(ngModel)]="order.payload.val().sended" (ngModelChange)="updateSendedStatus(order)" [disabled]="false"></mat-checkbox></section></td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().clientInDebt">NO</span><span *ngIf="order.payload.val().clientInDebt">SI</span>&nbsp;</td>
-            <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().orderNumber}}&nbsp;</td>
-
-            <td>
-              <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
-                <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      Detalle
-                    </mat-panel-title>
-                  </mat-expansion-panel-header>
-                  <!-- <tr>
-                    <th mat-sort-header="prodQuantity;{{i}}">Cantidad</th>
-                    <th mat-sort-header="prodTitle;{{i}}">Producto</th>
-                    <th mat-sort-header="unitPrice;{{i}}">Importe/unid s/iva</th>
-                    <th mat-sort-header="Price;{{i}}">Importe</th>
+          <td>
+            <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
+              <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Detalle
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table>
+                  <tr>
+                    <th>Cantidad</th>
+                    <th>Producto</th>
+                    <th>Importe/unid s/iva</th>
+                    <th>Importe</th>
                   </tr>
                   <tr *ngFor="let item of order.payload.val().order.products; let i = index">
                     <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
@@ -127,43 +125,23 @@
                     <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
                   </tr>
                   <tr>
-                    <th mat-sort-header="total">Total s/iva:</th> -->
-                  <table>
-                    <tr>
-                      <th>Cantidad</th>
-                      <th>Producto</th>
-                      <th>Importe/unid s/iva</th>
-                      <th>Importe</th>
-                    </tr>
-                    <tr *ngFor="let item of order.payload.val().order.products; let i = index">
-                      <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
-                      <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                      <td *ngIf="item.quantity !=0">${{item.discountPrice | number:'1.1-1'}}</td>
-                      <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
-                    </tr>
-                    <tr>
-                      <th>Total s/iva:</th>
-                      <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
-                    </tr>
-                  </table>
-
-                </mat-expansion-panel>
-              </mat-accordion>
-            </td>
-            <td><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-            <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
-            <td *ngIf ="appUser.isAdmin && order.payload.val().debt != 0"><button mat-icon-button (click)="cleanDebt(order)" color="accent" ><mat-icon>clear</mat-icon></button></td>
-           </tr>
-           <tr>
-            <th mat-sort-header="totalTwo">TOTAL</th>
-            <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
+                    <th>Total s/iva:</th>
+                    <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
+                  </tr>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </td>
+          <td><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+          <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
+          <td *ngIf ="appUser.isAdmin && order.payload.val().debt != 0"><button mat-icon-button (click)="cleanDebt(order)" color="accent" ><mat-icon>clear</mat-icon></button></td>
           </tr>
-        </tbody>
-
-      </table>
-      <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
-    </mat-card-content>
-  </mat-card>
+          <tr>
+          <th>TOTAL</th>
+          <th>${{getTotal() | number:'1.1-1'}}</th>
+        </tr>
+      </tbody>
+    </table>
   <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 </div>
 
