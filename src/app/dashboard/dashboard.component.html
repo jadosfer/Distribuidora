@@ -69,24 +69,26 @@
     </div>
   </div>
 
-  <table style="margin-left:20px;" matSort (matSortChange)="sortData($event)">
-    <tr>
-      <th mat-sort-header="client">Cliente</th>
-      <th mat-sort-header="seller">Vendedor</th>
-      <th mat-sort-header="amount">Importe s/iva</th>
-    </tr>
+  <table class="table table-striped" matSort (matSortChange)="sortData($event)">
+    <thead>
+      <tr>
+        <th mat-sort-header="client">Cliente</th>
+        <th mat-sort-header="seller">Vendedor</th>
+        <th mat-sort-header="amount">Importe s/iva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of sortedData; let i = index" >
+        <td>{{ client.client }}&nbsp;&nbsp;</td>
+        <td>{{ client.seller }}&nbsp;&nbsp;</td>
+        <td>{{ client.totalAmount | number:'1.1-1'}}&nbsp;&nbsp;</td>
+      </tr>
 
-   <tr *ngFor="let client of sortedData; let i = index" >
-    <td>{{ client.client }}&nbsp;&nbsp;</td>
-    <td>{{ client.seller }}&nbsp;&nbsp;</td>
-    <td>{{ client.totalAmount | number:'1.1-1'}}&nbsp;&nbsp;</td>
-  </tr>
-
-    <tr>
-      <th mat-sort-header="globalTotal">TOTAL</th>
-      <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
-    </tr>
-
+      <tr>
+        <th mat-sort-header="globalTotal">TOTAL</th>
+        <th mat-sort-header="showTotal">${{getTotal() | number:'1.1-1'}}</th>
+      </tr>
+    </tbody>
   </table>
   <mat-paginator (page)="onPageChange($event)" [length]="this.dashLength" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 
