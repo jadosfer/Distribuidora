@@ -51,33 +51,32 @@
     </div>
   </div>
   <hr>
+  <table class="table table-striped table-sm" matSort (matSortChange)="sortData($event)">
+    <thead>
+      <tr>
+        <th mat-sort-header="client">Cliente</th>
+        <th mat-sort-header="amount">Monto</th>
+        <th mat-sort-header="payWay">Forma de Pago</th>
+        <th mat-sort-header="seller">Vendedor</th>
+        <th mat-sort-header="date">Fecha</th>
+        <th mat-sort-header="orderNumber">Nro. Fact</th>
+        <th mat-sort-header="delete" *ngIf ="appUser.isAdmin">Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pay of filteredPayments; let i = index" >
 
-  <mat-card>
-    <mat-card-content>
-      <table style="margin-left:20px" matSort (matSortChange)="sortData($event)">
-        <tr>
-          <th mat-sort-header="client">Cliente</th>
-          <th mat-sort-header="amount">Monto</th>
-          <th mat-sort-header="payWay">Forma de Pago</th>
-          <th mat-sort-header="seller">Vendedor</th>
-          <th mat-sort-header="date">Fecha</th>
-          <th mat-sort-header="orderNumber">Nro. Fact</th>
-          <th mat-sort-header="delete" *ngIf ="appUser.isAdmin">Eliminar</th>
-        </tr>
-          <tr *ngFor="let pay of filteredPayments; let i = index" >
+        <td>{{pay.payload.val().client}}&nbsp;&nbsp;</td>
+        <td>{{pay.payload.val().amount}}&nbsp;&nbsp;</td>
+        <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
+        <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
+        <td>{{pay.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>{{pay.payload.val().orderNumber}}&nbsp;&nbsp;</td>
+        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay)" color="accent"><mat-icon>delete</mat-icon></button></td>
+    </tr>
+    </tbody>
+  </table>
 
-            <td>{{pay.payload.val().client}}&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().amount}}&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-            <td>{{pay.payload.val().orderNumber}}&nbsp;&nbsp;</td>
-            <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay)" color="accent"><mat-icon>delete</mat-icon></button></td>
-        </tr>
-      </table>
-
-    </mat-card-content>
-  </mat-card>
 
 
 
