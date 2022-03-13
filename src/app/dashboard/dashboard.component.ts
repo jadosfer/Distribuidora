@@ -39,20 +39,16 @@ export class DashboardComponent implements OnInit {
   sellerValue: string;
 
   sortedData: any[];
-  aproved: string[] = ["NO", "SI"];
-  debt: string[] = ["NO", "SI"];
-  selected: string = "NO";
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
   showGraph: boolean = false;
-  dashLength: number;
   dashData: any = {};
 
-  public pieChartLabels: Array<string> =[]
-  public pieChartData: Array<any> = []
-  public pieChartType: ChartType = 'pie';
-  public pieChartLegend = true;
-  public pieChartColors = [
+  pieChartLabels: Array<string> =[]
+  pieChartData: Array<any> = []
+  pieChartType: ChartType = 'pie';
+  pieChartLegend = true;
+  pieChartColors = [
     {
       backgroundColor: ['rgba(164,38,98)'],
     }
@@ -190,20 +186,6 @@ export class DashboardComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  getTotal() {
-    let total = 0;
-    if (this.filteredOrders) {
-      this.filteredOrders.forEach(order => {
-        total += order.payload.val().amount;
-      });
-    }
-    return total;
-  }
-
-  removeOrder(orderId: any) {
-    this.ordersService.removeOrder(orderId);
-  }
-
   clearRange() {
     this.range.setValue({
       start: null,
@@ -216,10 +198,6 @@ export class DashboardComponent implements OnInit {
     this.produceDashData(this.filteredOrders);
     this.dataSource = new MatTableDataSource<any>(this.dashData);
     this.dataSource.paginator = this.paginator;
-  }
-
-  isOrderInDebt(order: any) {
-    return this.ordersService.isOrderInDebt(order);
   }
 
   // Pie
