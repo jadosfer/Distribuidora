@@ -69,24 +69,25 @@
     </div>
   </div>
 
-  <table style="margin-left:20px;">
-    <tr>
-      <th>Cliente</th>
-      <th>Vendedor</th>
-      <th>Importe s/iva</th>
-    </tr>
-
-   <tr *ngFor="let client of dashData; let i = index" >
-    <td>{{ client.client }}&nbsp;&nbsp;</td>
-    <td>{{ client.seller }}&nbsp;&nbsp;</td>
-    <td>{{ client.totalAmount | number:'1.1-1'}}&nbsp;&nbsp;</td>
-  </tr>
-
-    <tr>
-      <th>TOTAL</th>
-      <th>${{getTotal() | number:'1.1-1'}}</th>
-    </tr>
-
+  <table class="table table-bordered table-striped m-3" style="margin-left:20px;">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Vendedor</th>
+        <th>Importe s/iva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of dashData; let i = index" >
+        <td>{{ client.client }}&nbsp;&nbsp;</td>
+        <td>{{ client.seller }}&nbsp;&nbsp;</td>
+        <td>{{ client.totalAmount | number:'1.1-1'}}&nbsp;&nbsp;</td>
+      </tr>
+      <tr>
+        <th>TOTAL</th>
+        <th>${{getTotal() | number:'1.1-1'}}</th>
+      </tr>
+    </tbody>
   </table>
 </div>
 

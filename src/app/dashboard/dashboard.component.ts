@@ -137,7 +137,7 @@ export class DashboardComponent implements OnInit {
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
     this.produceDashData(this.filteredOrders);
-    
+
 
     if (this.showGraph) this.graphic();
   }
