@@ -2,14 +2,11 @@ import { StockService } from './../services/stock.service';
 import { OrdersService } from '../services/orders.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
-import { ProductService } from '../services/product.service';
-import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { PieChartComponent } from '../pieChart/pieChart.component';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -67,11 +64,8 @@ export class DashboardComponent implements OnInit {
 
 
   constructor(public ordersService: OrdersService,
-  private productService: ProductService,
-  private pieChartComponent: PieChartComponent,
-  private route: ActivatedRoute,
-  private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
+    private auth: AuthService, public datepipe: DatePipe,
+    public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
@@ -208,13 +202,6 @@ export class DashboardComponent implements OnInit {
 
   removeOrder(orderId: any) {
     this.ordersService.removeOrder(orderId);
-  }
-
-  aprove(order: any) {
-    if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
-      this.stockService.aprove(order);
-      this.ordersService.aprove(order);
-    }
   }
 
   clearRange() {
