@@ -10,8 +10,6 @@ import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
-import { jsPDF } from "jspdf";
-import html2canvas from 'html2canvas';
 import { PieChartComponent } from '../pieChart/pieChart.component';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatPaginator } from '@angular/material/paginator';
