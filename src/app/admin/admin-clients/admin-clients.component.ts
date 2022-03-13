@@ -101,9 +101,5 @@ export class AdminClientsComponent implements OnInit {
     let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
     return ordersAmount - paymentsAmount
   }
-
-  ngOnDestroy() {
-  //   this.subscription.unsubscribe();
-  }
 }
 

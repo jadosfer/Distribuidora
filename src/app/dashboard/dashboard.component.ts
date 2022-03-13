@@ -3,7 +3,6 @@ import { OrdersService } from '../services/orders.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
@@ -13,6 +12,7 @@ import { DateAdapter } from '@angular/material/core';
 import { PieChartComponent } from '../pieChart/pieChart.component';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 @Component({
@@ -22,6 +22,9 @@ import { MatPaginator } from '@angular/material/paginator';
 })
 export class DashboardComponent implements OnInit {
 
+  displayedColumns: string[] = ['client', 'seller', 'amount'];
+  dataSource: any;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   range = new FormGroup({
@@ -30,24 +33,14 @@ export class DashboardComponent implements OnInit {
   });
 
   appUser: AppUser;
-
-  order: any;
   orders: any[];
   userOrders: any[] = [];
-  titles: string[]=[];
-  subscription: Subscription;
-  filteredProduct:any[];
   filteredOrders:any[];
-  dateRangefilteredOrders:any[];
-  datefilteredOrders:any[];
-  products:any[];
-  date: any;
+
   dateValue: string;
   clientValue: string;
   sellerValue: string;
 
-  title: string;
-  quantity: number;
   sortedData: any[];
   aproved: string[] = ["NO", "SI"];
   debt: string[] = ["NO", "SI"];
@@ -55,12 +48,8 @@ export class DashboardComponent implements OnInit {
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
   showGraph: boolean = false;
-  currentItemsToShow:any[];
   dashLength: number;
-
-  public data: any;
-  public dashData: any = {};
-  public dashElement: any = { "seller": null, "totalAmount" : 0}
+  dashData: any = {};
 
   public pieChartLabels: Array<string> =[]
   public pieChartData: Array<any> = []
@@ -87,7 +76,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.subscription = this.ordersService.getAll().subscribe(orders => {
+    this.ordersService.getAll().subscribe(orders => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
         this.orders =  orders;
@@ -97,10 +86,10 @@ export class DashboardComponent implements OnInit {
             this.userOrders.push(this.orders[i]);
           }
         }
-
-        this.produceDashData2(this.userOrders);
-        this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
-        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length})
+        this.produceDashData(this.userOrders);
+        this.filteredOrders = this.userOrders;
+        this.dataSource = new MatTableDataSource<any>(this.dashData);
+        this.dataSource.paginator = this.paginator;
       });
     });
   }
@@ -116,13 +105,10 @@ export class DashboardComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.produceDashData2(this.filteredOrders);
-
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length});
-
-    if (this.paginator) this.paginator.pageIndex = 0;
-    if (this.showGraph) this.graphic();
-  }
+    this.produceDashData(this.filteredOrders);
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
+    if (this.showGraph) this.graphic();  }
 
   filterBySeller(query: string) {
     this.query.seller = query;
@@ -136,10 +122,9 @@ export class DashboardComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.produceDashData2(this.filteredOrders);
-
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length});
-    if (this.paginator) this.paginator.pageIndex = 0;
+    this.produceDashData(this.filteredOrders);
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
     if (this.showGraph) this.graphic();
   }
 
@@ -154,10 +139,9 @@ export class DashboardComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.produceDashData2(this.filteredOrders);
-
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length});
-    if (this.paginator) this.paginator.pageIndex = 0;
+    this.produceDashData(this.filteredOrders);
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
     if (this.showGraph) this.graphic();
   }
 
@@ -174,12 +158,12 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
       this.filteredOrders;
 
-      this.produceDashData2(this.filteredOrders);
+      this.produceDashData(this.filteredOrders);
+      this.dataSource = new MatTableDataSource<any>(this.dashData);
+      this.dataSource.paginator = this.paginator;
     }
     this.query.dateRange.start = new Date(Date.parse(range.start._d));
     this.query.dateRange.end = new Date(Date.parse(range.end._d));
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length});
-    if (this.paginator) this.paginator.pageIndex = 0;
     if (this.showGraph) this.graphic();
   }
 
@@ -193,15 +177,14 @@ export class DashboardComponent implements OnInit {
     this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-
-        //arreglar
         case 'client': return this.compare(a.client, b.client, isAsc);
         case 'seller': return this.compare(a.seller, b.seller, isAsc);
-        case 'amount': return this.compare(a.totalAmount, b.totalAmount, isAsc);
-
+        case 'amount': return this.compare(a.amount, b.amount, isAsc);
         default: return 0;
       }
     });
+    this.dataSource = new MatTableDataSource<any>(this.sortedData);
+    this.dataSource.paginator = this.paginator;
   }
 
   getTitle(item: any) {
@@ -243,8 +226,9 @@ export class DashboardComponent implements OnInit {
     this.clientValue = "";
     this.dateValue = "";
     this.filteredOrders = this.userOrders;
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: Object.keys(this.dashData).length});
-    if (this.paginator) this.paginator.pageIndex = 0;
+    this.produceDashData(this.filteredOrders);
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
   }
 
   isOrderInDebt(order: any) {
@@ -341,44 +325,19 @@ export class DashboardComponent implements OnInit {
     return sum
   }
 
-  onPageChange($event: any) {
-    this.sortedData = this.dashData.slice(
-      $event.pageIndex * $event.pageSize,
-      $event.pageIndex * $event.pageSize + $event.pageSize
-    );
-  }
-
   //llena en dashData la lista de clientes con el monto total
   produceDashData(dataArray: any) {
-    this.dashData = {};
-    this.dashElement = {};
-    for (let i=0;i<dataArray.length;i++) {
-      let total = 0;
-      if (this.dashData[dataArray[i].payload.val().clientFantasyName]) {
-        total = parseFloat(this.dashData[dataArray[i].payload.val().clientFantasyName].totalAmount)
-        + parseFloat(dataArray[i].payload.val().amount);
-      }
-      else total = dataArray[i].payload.val().amount;
-
-      this.dashElement = { "seller" : dataArray[i].payload.val().order.sellerName, "totalAmount": total}
-      this.dashData[dataArray[i].payload.val().clientFantasyName] = this.dashElement;
-    }
-    this.dashLength = Object.keys(this.dashData).length;
-  }
-
-  produceDashData2(dataArray: any) {
     this.dashData = [];
     for (let i=0;i<dataArray.length;i++) {
       if (!this.isClientInDashData(dataArray[i].payload.val().clientFantasyName)) {
         this.dashData.push({
-          "client": dataArray[i].payload.val().clientFantasyName, "seller" : dataArray[i].payload.val().order.sellerName, "totalAmount": dataArray[i].payload.val().amount
+          "client": dataArray[i].payload.val().clientFantasyName, "seller" : dataArray[i].payload.val().order.sellerName, "amount": dataArray[i].payload.val().amount
         })
       }
       else {
         this.adAmount(dataArray[i].payload.val().clientFantasyName, dataArray[i].payload.val().amount);
       }
     }
-    this.dashLength = Object.keys(this.dashData).length;
   }
 
   adAmount(client: string, amount: number) {
