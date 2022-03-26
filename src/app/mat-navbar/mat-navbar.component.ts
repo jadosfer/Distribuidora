@@ -7,7 +7,8 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'mat-navbar',
-  templateUrl: './mat-navbar.component.html'
+  templateUrl: './mat-navbar.component.html',
+  styleUrls: ['./mat-navbar.component.scss']
 })
 export class MatNavbarComponent implements OnInit{
 
