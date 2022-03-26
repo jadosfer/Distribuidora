@@ -76,13 +76,14 @@ export class CreditNoteComponent implements OnInit {
       return;
     }
     if (confirm('Está segur@ que quiere crear la nota de crédito?')) {
-      let time = new Date().getTime()
+      // let time = new Date().getTime()
+      let noteDate = new Date(note.date)
       this.paymentsService.create({
         "amount": note.amount,
         "aproved": true,
         "client": this.clientFantasyName,
         "payWay": "Nota de Crédito",
-        "date": time,
+        "date": noteDate.getTime(),
         "sellerName": this.appUser.name,
         "orderNumber": note.orderNumber
       });

@@ -23,6 +23,18 @@
         <input name="orderNumber" #orderNumber="ngModel" [(ngModel)]="note.orderNumber" type="number" matInput required>
       </mat-form-field>
 
+      <!-- <mat-form-field class="example-full-width" appearance="fill" style="margin:10px;">
+        <mat-label>Ingrese la fecha</mat-label>
+        <input name="orderNumber" #orderNumber="ngModel" [(ngModel)]="note.date" type="number" matInput required>
+      </mat-form-field> -->
+
+      <mat-form-field appearance="fill" style="margin:10px;">
+        <mat-label>Ingrese la fecha</mat-label>
+        <input matInput [matDatepicker]="picker" name="date" [(ngModel)]="note.date" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
       <button class="left-btn" type="submit" mat-raised-button color="primary">Crear Nota</button>
     </form>
     <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">

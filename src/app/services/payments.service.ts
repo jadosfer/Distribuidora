@@ -63,15 +63,14 @@ export class PaymentsService {
   }
 
   create(payment: any) {
-    let time = new Date().getTime()
-    payment.date = time;
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
-    //el cobro es para una factura en particular
-    if  (!payment.orderNumber) { //el cobro no es para una factura en particular
+    //el cobro no es para una factura en particular
+    if (!payment.orderNumber) {
       payment.orderNumber = 0;
       this.clearDebts(payment.client, payment.amount)
     }
+    //el cobro es para una factura en particular
     else if (payment.orderNumber >= 0) {
       this.clearOrderDebt(payment)
     }
