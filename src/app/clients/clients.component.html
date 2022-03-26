@@ -1,20 +1,20 @@
-<div class="SCContainer" *ngIf="appUser">
-  <div style="margin-bottom:20px;margin-top:20px;margin-left:20px;">
-    <h1>MIS CLIENTES</h1>
-    <hr>
-    <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
-    <div>
-      <table><tr>
-        <td>
-          <mat-icon matSuffix>search</mat-icon>
-        </td>
-        <td>
-          <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
-        </td>
-      </tr></table>
-    </div>
+<div class="SCContainer" style="margin-left: 15px;" *ngIf="appUser">
+  <h1>MIS CLIENTES</h1>
+  <hr>
+  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
+  <div>
+    <table><tr>
+      <td>
+        <mat-icon matSuffix>search</mat-icon>
+      </td>
+      <td>
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
+      </td>
+    </tr></table>
+  </div>
 
-    <table matSort (matSortChange)="sortData($event)">
+  <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
+    <thead>
       <tr>
         <th mat-sort-header="businessName">Razón social</th>
         <th mat-sort-header="fantasyName">Nombre de Fantasía</th>
@@ -23,19 +23,22 @@
         <th mat-sort-header="debt">Deuda*</th>
         <th mat-sort-header="resume">Estado de cuenta</th>
       </tr>
-
+    </thead>
+    <tbody>
       <tr *ngFor="let client of filteredClients; let i = index">
         <td>{{client.payload.val().businessName}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
+        <!-- <td>{{client.payload.val().debt | number:'1.1-1'}}</td> -->
+        <td>{{calcDebt(client) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>
       </tr>
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>
+
 
 

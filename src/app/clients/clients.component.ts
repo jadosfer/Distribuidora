@@ -75,4 +75,10 @@ export class ClientsComponent implements OnInit {
   searchOrders(clientFantasyName: string) {
     this.ordersService.clientFantasyName = clientFantasyName;
   }
+
+  calcDebt(client: any) {
+    let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
+    let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
+    return ordersAmount - paymentsAmount
+  }
 }

@@ -18,35 +18,36 @@
               Faltantes
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <table>
-            <tr *ngFor="let p of alertProducts">
-              <td>
-                <span><b>Comprar: </b> {{p.title}},&nbsp;quedan <b>{{p.stock}} unidades</b></span>
-                <!-- <span><b>Comprar: </b> {{p.payload.val().product.title}},&nbsp;quedan <b>{{p.payload.val().quantity}} unidades</b></span> -->
-              </td>
-            </tr>
+          <table class="table table-striped table-sm mat-elevation-z8">
+            <tbody>
+              <tr *ngFor="let p of alertProducts">
+                <td>
+                  <span><b>Comprar: </b> {{p.title}},&nbsp;quedan <b>{{p.stock}} unidades</b></span>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </mat-expansion-panel>
       </mat-accordion>
-      <!-- <tr *ngFor="let p of alertProducts">
-        <span><b>*Comprar: </b> {{p.payload.val().product.title}},&nbsp;</span>
-        <span><b>quedan </b>{{p.payload.val().quantity}} unidades</span>
-      </tr> -->
+
     </div>
 
     <div>&nbsp;</div>
     <div style="margin-top:10px;margin-left:30px;">
       <h1>STOCK</h1>
-      <table matSort (matSortChange)="sortData($event)">
-        <tr>
-          <th mat-sort-header="title">Producto</th>
-          <th mat-sort-header="quantity">Cantidad</th>
-        </tr>
-
-        <tr *ngFor="let p of filteredProducts">
-          <td>{{p.payload.val().title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-          <td>{{p.payload.val().stock}}</td>
-        </tr>
+      <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
+        <thead>
+          <tr>
+            <th mat-sort-header="title">Producto</th>
+            <th mat-sort-header="quantity">Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filteredProducts">
+            <td>{{p.payload.val().title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>{{p.payload.val().stock}}</td>
+          </tr>
+        </tbody>
       </table>
     </div>
 

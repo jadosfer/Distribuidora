@@ -1,7 +1,6 @@
 import { StockService } from '../services/stock.service';
 import { OrdersService } from '../services/orders.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -11,8 +10,6 @@ import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
-//import * as jspdf from 'jspdf';
-import html2canvas from 'html2canvas';
 import { ClientsService } from '../services/clients.service';
 import { MatPaginator } from '@angular/material/paginator';
 
@@ -54,7 +51,6 @@ export class OrdersComponent implements OnInit {
 
   title: string;
   quantity: number;
-  sortedData: any[];
   aproved: string[] = ["NO", "SI"];
   selected: string = "NO";
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
@@ -190,27 +186,6 @@ export class OrdersComponent implements OnInit {
       $event.pageIndex * $event.pageSize,
       $event.pageIndex * $event.pageSize + $event.pageSize
     );
-  }
-
-  sortData(sort: Sort) {
-    const data = this.filteredOrders;
-    if (!sort.active || sort.direction === '') {
-      this.sortedData = data;
-      return;
-    }
-
-    this.sortedData = data.sort((a: any, b: any) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'client': return this.compare(a.payload.val().clientFantasyName, b.payload.val().clientFantasyName, isAsc);
-        case 'seller': return this.compare(a.payload.val().order.sellerName, b.payload.val().order.sellerName, isAsc);
-        case 'date': return this.compare(a.payload.val().date, b.payload.val().date, isAsc);
-        case 'amount': return this.compare(this.ordersService.getTotalAmount(a.payload.val().order.products), this.ordersService.getTotalAmount(b.payload.val().order.products), isAsc);
-        case 'iva': return this.compare(a.payload.val().iva, b.payload.val().iva, isAsc);
-        case 'debt': return this.compare(a.payload.val().debt, b.payload.val().debt, isAsc);
-        default: return 0;
-      }
-    });
   }
 
   getTitle(item: any) {
