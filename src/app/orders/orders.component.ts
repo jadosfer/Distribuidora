@@ -58,6 +58,7 @@ export class OrdersComponent implements OnInit {
   aproveFirst: boolean = false;
   isExpanded: boolean = false;
   changeCheckbox: boolean = false;
+  userClients: string[];
 
   constructor(public ordersService: OrdersService,
   private productService: ProductService,
@@ -73,41 +74,50 @@ export class OrdersComponent implements OnInit {
     this.subscription = this.ordersService.getAll().subscribe(orders => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-        this.orders =  orders;
-        this.userOrders = [];
-        for (let i=0;i<this.orders.length;i++) {
-          if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name)) {
-
-            this.userOrders.push(this.orders[i]);
-            if (this.orders[i].payload.val().aproved == false) {
-              this.notAprovedOrders.push(this.orders[i].payload.val());
-              this.ordersNotAproved += 1;
+        this.clientsService.getAll().subscribe(clients => {
+          this.clients = clients;
+          this.userClients = [];
+          for (let i=0;i<this.clients.length;i++) {
+            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
+          }
+          this.orders =  orders;
+          this.userOrders = [];
+          for (let i=0;i<this.orders.length;i++) {
+            if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name || this.isClientInUserClients(this.orders[i].payload.val().clientFantasyName, this.userClients))) {
+              console.log("entra al push")
+              this.userOrders.push(this.orders[i]);
+              if (this.orders[i].payload.val().aproved == false) {
+                this.notAprovedOrders.push(this.orders[i].payload.val());
+                this.ordersNotAproved += 1;
+              }
             }
           }
-        }
-        this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
-        //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
 
-        //genera el string para la fecha de HOY
-        let today = new Date().getDate().toString();
-        let mon = new Date().getMonth() +1;
-        let year = new Date().getFullYear();
-        let month = mon.toString();
-        if (mon < 10) {
-          month = "0" + mon.toString();
-        }
-        // this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
-        this.dateValue = today + "/" + month + "/" + year;
-        this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+          this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
+          //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
 
-        //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
-        if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-          this.dateValue = "";
-          this.clientValue = this.ordersService.clientFantasyName; // idem
-          this.filter(this.ordersService.clientFantasyName); // idem
-          this.ordersService.clientFantasyName = ""; // idem
-          this.filterByDate("");
-        }
+          //genera el string para la fecha de HOY
+          let today = new Date().getDate().toString();
+          let mon = new Date().getMonth() +1;
+          let year = new Date().getFullYear();
+          let month = mon.toString();
+          if (mon < 10) {
+            month = "0" + mon.toString();
+          }
+          // this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
+          this.dateValue = today + "/" + month + "/" + year;
+          this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+
+          //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
+          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            this.dateValue = "";
+            this.clientValue = this.ordersService.clientFantasyName; // idem
+            this.filter(this.ordersService.clientFantasyName); // idem
+            this.ordersService.clientFantasyName = ""; // idem
+            this.filterByDate("");
+          }
+
+        });
       });
     });
     //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
@@ -316,4 +326,16 @@ export class OrdersComponent implements OnInit {
     }
   }
 
+  isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
+    console.log("entra")
+    for (let i=0;i<userClients.length;i++) {
+      if (clientFantasyName == userClients[i]) {
+        console.log("true");
+        return true;
+      }
+    }
+    return false;
+  }
 }
+
+
