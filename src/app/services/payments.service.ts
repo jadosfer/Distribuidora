@@ -65,6 +65,9 @@ export class PaymentsService {
   create(payment: any) {
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
+    if (payment.date == null) {
+      payment.date = new Date().getTime();
+    }
     //el cobro no es para una factura en particular
     if (!payment.orderNumber) {
       payment.orderNumber = 0;

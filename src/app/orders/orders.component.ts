@@ -84,7 +84,6 @@ export class OrdersComponent implements OnInit {
           this.userOrders = [];
           for (let i=0;i<this.orders.length;i++) {
             if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name || this.isClientInUserClients(this.orders[i].payload.val().clientFantasyName, this.userClients))) {
-              console.log("entra al push")
               this.userOrders.push(this.orders[i]);
               if (this.orders[i].payload.val().aproved == false) {
                 this.notAprovedOrders.push(this.orders[i].payload.val());
@@ -184,9 +183,11 @@ export class OrdersComponent implements OnInit {
       this.filteredOrders = (range) ?
       this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
       this.filteredOrders;
+      this.query.dateRange.start = new Date(Date.parse(range.start?._d));
+      this.query.dateRange.end = new Date(Date.parse(range.end?._d));
     }
-    this.query.dateRange.start = new Date(Date.parse(range.start._d));
-    this.query.dateRange.end = new Date(Date.parse(range.end._d));
+    // this.query.dateRange.start = new Date(Date.parse(range.start?._d));
+    // this.query.dateRange.end = new Date(Date.parse(range.end?._d));
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -327,10 +328,8 @@ export class OrdersComponent implements OnInit {
   }
 
   isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
-    console.log("entra")
     for (let i=0;i<userClients.length;i++) {
       if (clientFantasyName == userClients[i]) {
-        console.log("true");
         return true;
       }
     }
