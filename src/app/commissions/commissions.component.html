@@ -1,0 +1,200 @@
+<div class="SCContainer ml-3" *ngIf="appUser && appUser.isAdmin">
+  <div *ngIf="edit" fxLayout="row" fxLayout.xs="column">
+    <form #f="ngForm" (ngSubmit)="save(f.value)">
+      <h3>Comisiones</h3>
+      <p>
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>% Minorista</mat-label>
+          <input #porcentMinorista="ngModel" matInput [(ngModel)]="commissions[0].payload.val().porcentMinorista" name="porcentMinorista" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="porcentMinorista.touched && porcentMinorista.invalid">El porcentMinorista es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>% Mayorista</mat-label>
+          <input #porcentMayorista="ngModel" matInput [(ngModel)]="commissions[0].payload.val().porcentMayorista" name="porcentMayorista" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="porcentMayorista.touched && porcentMayorista.invalid">El porcentMayorista es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Mínima Facturación Total Minorista</mat-label>
+          <input #minFactTotalMinorista="ngModel" matInput [(ngModel)]="commissions[0].payload.val().minFactTotalMinorista" name="minFactTotalMinorista" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="minFactTotalMinorista.touched && minFactTotalMinorista.invalid">El minFactTotalMinorista es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Mínima Facturación Grupo</mat-label>
+          <input #minFactGrupo="ngModel" matInput [(ngModel)]="commissions[0].payload.val().minFactGrupo" name="minFactGrupo" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="minFactGrupo.touched && minFactGrupo.invalid">El minFactGrupo es requerido</div>
+        </mat-form-field>
+      </p>
+      <h3>Premios</h3>
+
+      <p>
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Meta en barras</mat-label>
+          <input #Barras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.Barras" name="Barras" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="Barras.touched && Barras.invalid">Meta en Barras es requerida</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Meta en proteinas</mat-label>
+          <input #Proteinas="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.Proteinas" name="Proteinas" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="Proteinas.touched && Proteinas.invalid">Meta en Proteinas es requerida</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Meta en quemadores</mat-label>
+          <input #Quemadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.Quemadores" name="Quemadores" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="Quemadores.touched && Quemadores.invalid">Meta en Quemadores es requerida</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Meta en recuperadores</mat-label>
+          <input #Recuperadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.Recuperadores" name="Recuperadores" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="Recuperadores.touched && Recuperadores.invalid">Meta en Recuperadores es requerida</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Meta en otros</mat-label>
+          <input #Otros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.Otros" name="Otros" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="Otros.touched && Otros.invalid">Meta en Otros es requerida</div>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Premio Barras</mat-label>
+          <input #rewardBarras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.rewardBarras" name="rewardBarras" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="rewardBarras.touched && rewardBarras.invalid">Premio Barras es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Premio Proteinas</mat-label>
+          <input #rewardProteinas="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.rewardProteinas" name="rewardProteinas" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="rewardProteinas.touched && rewardProteinas.invalid">Premio Proteinas es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Premio Quemadores</mat-label>
+          <input #rewardQuemadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.rewardQuemadores" name="rewardQuemadores" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="rewardQuemadores.touched && rewardQuemadores.invalid">Premio Quemadores es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Premio Recuperadores</mat-label>
+          <input #rewardRecuperadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.rewardRecuperadores" name="rewardRecuperadores" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="rewardRecuperadores.touched && rewardRecuperadores.invalid">Premio Recuperadores es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy" class="m-1">
+          <mat-label>Premio otros</mat-label>
+          <input #rewardOtros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().premios.rewardOtros" name="rewardOtros" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="rewardOtros.touched && rewardOtros.invalid">Premio Otros es requerido</div>
+        </mat-form-field>
+      </p>
+
+      <button mat-raised-button type="submit" color="primary" >Guardar</button>
+      <button (click)="back()" mat-raised-button type="button" color="warn">Volver</button>
+    </form>
+  </div>
+  <div *ngIf="!edit">
+    <button  class="left-btn mb-3" (click)="this.edit = !this.edit" mat-raised-button color="primary">Editar comisiones y límites </button>
+    <h1>Comisiones</h1>
+
+    <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+      <tr>
+        <th>Vendedor</th>
+        <th>Facturación Minorista</th>
+        <th>Comisión Minorista ({{this.commissions[0].payload.val().porcentMinorista*100}}%)</th>
+        <th>Facturación Mayorista</th>
+        <th>Comisión Mayorista ({{this.commissions[0].payload.val().porcentMayorista*100}}%)</th>
+      </tr>
+      <tr *ngFor="let seller of sellers">
+        <td>{{seller.payload.val().name}}</td>
+        <td>{{this.facturaMensualMinorista(seller.payload.val().name)}}</td>
+        <td>{{this.comision(this.commissions[0].payload.val().porcentMinorista, this.facturaMensualMinorista(seller.payload.val().name))}}</td>
+        <td>{{this.facturaMensualMayorista(seller.payload.val().name)}}</td>
+        <td>{{this.comision(this.commissions[0].payload.val().porcentMayorista, this.facturaMensualMayorista(seller.payload.val().name))}}</td>
+      </tr>
+    </table>
+
+    <h1 >Premios</h1>
+
+    <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+      <tr>
+        <th>Vendedor</th>
+        <th>Fact Barras</th>
+        <th>Premio Barras</th>
+        <th>Fact Proteinas</th>
+        <th>Premio Proteinas</th>
+        <th>Fact Quemadores</th>
+        <th>Premio Quemadores</th>
+        <th>Fact Recuperadores</th>
+        <th>Premio Recuperadores</th>
+        <th>Fact Otros</th>
+        <th>Premio Otros</th>
+      </tr>
+      <tr *ngFor="let seller of sellers">
+        <td>{{seller.payload.val().name}}</td>
+        <td>{{this.productCategoryAmount("Barras", seller.payload.val().name)}}</td>
+        <td>{{this.rewardCalc("Barras", seller.payload.val().name)}}</td>
+        <td>{{this.productCategoryAmount("Proteinas", seller.payload.val().name)}}</td>
+        <td>{{this.rewardCalc("Proteinas", seller.payload.val().name)}}</td>
+        <td>{{this.productCategoryAmount("Quemadores", seller.payload.val().name)}}</td>
+        <td>{{this.rewardCalc("Quemadores", seller.payload.val().name)}}</td>
+        <td>{{this.productCategoryAmount("Recuperadores", seller.payload.val().name)}}</td>
+        <td>{{this.rewardCalc("Recuperadores", seller.payload.val().name)}}</td>
+        <td>{{this.productCategoryAmount("Otros", seller.payload.val().name)}}</td>
+        <td>{{this.rewardCalc("Otros", seller.payload.val().name)}}</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<div class="SCContainer ml-3" *ngIf="appUser && !appUser.isAdmin">
+  <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+    <tr>
+      <th>Facturación Minorista</th>
+      <th>Comisión Minorista ({{this.commissions[0].payload.val().porcentMinorista*100}}%)</th>
+      <th>Facturación Mayorista</th>
+      <th>Comisión Mayorista ({{this.commissions[0].payload.val().porcentMayorista*100}}%)</th>
+    </tr>
+    <tr>
+      <td>{{this.facturaMensualMinorista(appUser.name)}}</td>
+      <td>{{this.comision(this.commissions[0].payload.val().porcentMinorista, this.facturaMensualMinorista(appUser.name))}}</td>
+      <td>{{this.facturaMensualMayorista(appUser.name)}}</td>
+      <td>{{this.comision(this.commissions[0].payload.val().porcentMayorista, this.facturaMensualMayorista(appUser.name))}}</td>
+    </tr>
+  </table>
+
+  <h1 >Premios</h1>
+
+    <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+      <tr>
+        <th>Fact Barras</th>
+        <th>Premio Barras</th>
+        <th>Fact Proteinas</th>
+        <th>Premio Proteinas</th>
+        <th>Fact Quemadores</th>
+        <th>Premio Quemadores</th>
+        <th>Fact Recuperadores</th>
+        <th>Premio Recuperadores</th>
+        <th>Fact Otros</th>
+        <th>Premio Otros</th>
+      </tr>
+      <tr>
+        <td>{{this.productCategoryAmount("Barras", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Barras", appUser.name)}}</td>
+        <td>{{this.productCategoryAmount("Proteinas", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Proteinas", appUser.name)}}</td>
+        <td>{{this.productCategoryAmount("Quemadores", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Quemadores", appUser.name)}}</td>
+        <td>{{this.productCategoryAmount("Recuperadores", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Recuperadores", appUser.name)}}</td>
+        <td>{{this.productCategoryAmount("Otros", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Otros", appUser.name)}}</td>
+      </tr>
+    </table>
+</div>
+

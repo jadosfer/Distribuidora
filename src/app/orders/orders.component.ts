@@ -237,9 +237,11 @@ export class OrdersComponent implements OnInit {
     this.sellerValue = "";
     this.clientValue = "";
     this.dateValue = "";
-    this.filteredOrders = this.userOrders;
+    this.filterByDate( this.dateValue);
+    // this.filteredOrders = this.userOrders;
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
+
   }
 
   isOrderInDebt(order: any) {

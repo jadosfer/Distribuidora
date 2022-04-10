@@ -308,7 +308,6 @@ export class OrdersService implements OnDestroy {
   }
 
   sendNote (amount: any, clientFantasyName: string) {
-
     let result = this.db.list('/creditNotes/').push({
       "amount": amount,
       "clienteFantasyName": clientFantasyName,
