@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit,  } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { OrdersService } from '../services/orders.service';
 import { ClientsService } from '../services/clients.service';
 import { FormControl } from '@angular/forms';
@@ -29,7 +29,6 @@ export class CreditNoteComponent implements OnInit {
   noteEmpty: boolean = true;
 
   constructor(
-    public route: ActivatedRoute,
     public ordersService: OrdersService,
     public clientsService: ClientsService,
     private auth: AuthService,

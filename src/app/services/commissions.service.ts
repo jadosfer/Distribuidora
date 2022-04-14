@@ -12,13 +12,49 @@ export class CommissionsService {
 
   createCommissions() {
     let result = this.db.list('/commissions/').push({
-      "minFactTotalMinorista": 400000,
-      "minFactGrupo": 400000,
-      "porcentMinorista": 0.05,
-      "porcentMayorista": 0.01,
-      "premios": {
-        "Barras":50000,
-        "rewardBarras": 2100,
+      "minRetailTotalSells": 400000,
+      "retailCommission": 0,
+      "retailLastMonthCommission": 0,
+      "retailPercent": 0.05,
+      "wholesalerPercent": 0.01,
+      "wholesalerCommission": 0,
+      "wholesalerLastMonthCommission": 0,
+      "lastMonthTotalRewards": 0,
+      "rewards": {
+        "Barras":200000,
+        "rewardBarras": 2000,
+        "BarrasCommission": 0,
+        "Proteinas":150000,
+        "rewardProteinas": 1500,
+        "ProteinasCommission": 0,
+        "Recuperadores":150000,
+        "rewardRecuperadores": 1500,
+        "RecuperadoresCommission": 0,
+        "Quemadores":150000,
+        "rewardQuemadores": 800,
+        "QuemadoresCommission": 0,
+        "Otros":150000,
+        "rewardOtros": 1000,
+        "OtrosCommission": 0
+      },
+      "isLastMonthCommissionsSaved": false,
+      "date" : {
+        'month' : 3,
+        'year' : 2022
+      }
+    });
+  }
+
+  createCommissionsByMonth() {
+    let result = this.db.list('/commissionsByMonth/').push({
+      'month': 3,
+      'year' : 2022,
+      "minRetailTotalSells": 400000,
+      "retailPercent": 0.05,
+      "wholesalerPercent": 0.01,
+      "rewards": {
+        "Barras":200000,
+        "rewardBarras": 2000,
         "Proteinas":150000,
         "rewardProteinas": 1500,
         "Recuperadores":150000,
@@ -26,9 +62,16 @@ export class CommissionsService {
         "Quemadores":150000,
         "rewardQuemadores": 800,
         "Otros":150000,
-        "rewardOtros": 1000
+        "rewardOtros": 1000,
+      },
+      'sellerCommission' : {
+        'Pirulo':{
+          "retailCommission": 0,
+          "wholesalerCommission": 0,
+          "TotalRewards": 0
+        }
       }
-  });
+    })
   }
 
   public getCommissions() {
@@ -36,24 +79,37 @@ export class CommissionsService {
     return result;
   }
 
-  update(id: any, commissions:any) {
-    return this.db.object('/commissions/' + id).update({
-      "minFactTotalMinorista": commissions.minFactTotalMinorista,
-      "minFactGrupo": commissions.minFactGrupo,
-      "porcentMinorista": commissions.porcentMinorista,
-      "porcentMayorista": commissions.porcentMayorista,
-      "premios": {
-        "Barras":commissions.Barras,
-        "rewardBarras": commissions.rewardBarras,
-        "Proteinas":commissions.Proteinas,
-        "rewardProteinas": commissions.rewardProteinas,
-        "Recuperadores":commissions.Recuperadores,
-        "rewardRecuperadores": commissions.rewardRecuperadores,
-        "Quemadores":commissions.Quemadores,
-        "rewardQuemadores": commissions.rewardProteinas,
-        "Otros":commissions.Otros,
-        "rewardOtros": commissions.rewardOtros
+  update(commissions: any, commissionsForm: any) {
+    return this.db.object('/commissions/' + commissions.key).update({
+      "minRetailTotalSells": commissionsForm.minRetailTotalSells,
+      "retailPercent": commissionsForm.retailPercent,
+      "wholesalerPercent": commissionsForm.wholesalerPercent,
+      "rewards": {
+        "Barras":commissionsForm.Barras,
+        "rewardBarras": commissionsForm.rewardBarras,
+        "BarrasCommission": commissions.payload.val().rewards.BarrasCommission,
+        "Proteinas":commissionsForm.Proteinas,
+        "rewardProteinas": commissionsForm.rewardProteinas,
+        "ProteinasCommission": commissions.payload.val().rewards.BarrasCommission,
+        "Recuperadores":commissionsForm.Recuperadores,
+        "rewardRecuperadores": commissionsForm.rewardRecuperadores,
+        "RecuperadoresCommission": commissions.payload.val().rewards.BarrasCommission,
+        "Quemadores":commissionsForm.Quemadores,
+        "rewardQuemadores": commissionsForm.rewardQuemadores,
+        "QuemadoresCommission": commissions.payload.val().rewards.BarrasCommission,
+        "Otros":commissionsForm.Otros,
+        "rewardOtros": commissionsForm.rewardOtros,
+        "OtrosCommission": commissions.payload.val().rewards.BarrasCommission
+      },
+      "isLastMonthCommissionsSaved": commissions.payload.val().isLastMonthCommissionsSaved,
+      "date" : {
+        'month' : commissions.payload.val().date.month,
+        'year' : commissions.payload.val().date.year
       }
     });
+  }
+
+  saveCommissionsByMonth(commissionsByMonth: any) {
+    let result = this.db.list('/commissionsByMonth/').push(commissionsByMonth);
   }
 }

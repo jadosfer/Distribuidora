@@ -46,6 +46,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
+import { CommissionsDashComponent } from './commissions/commissionsDash.component';
 import { CommissionsComponent } from './commissions/commissions.component';
 
 
@@ -75,6 +76,7 @@ import { CommissionsComponent } from './commissions/commissions.component';
     PaymentsComponent,
     PaymentComponent,
     CreditNoteComponent,
+    CommissionsDashComponent,
     CommissionsComponent
   ],
   imports: [

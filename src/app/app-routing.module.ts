@@ -20,6 +20,7 @@ import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
+import { CommissionsDashComponent } from './commissions/commissionsDash.component';
 import { CommissionsComponent } from './commissions/commissions.component';
 
 const routes: Routes = [
@@ -51,8 +52,8 @@ const routes: Routes = [
   { path: "admin/sellers/new", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/sellers/:id", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/sellers", component: AdminSellersComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "commissions/commissionsDash", component: CommissionsDashComponent},
   { path: "commissions/commissions", component: CommissionsComponent},
-
 ];
 
 @NgModule({
