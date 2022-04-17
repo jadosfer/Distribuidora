@@ -1,0 +1,47 @@
+[debug] [2022-04-16T23:05:40.991Z] ----------------------------------------------------------------------
+[debug] [2022-04-16T23:05:40.994Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\usuario\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2022-04-16T23:05:40.994Z] CLI Version:   9.13.1
+[debug] [2022-04-16T23:05:40.995Z] Platform:      win32
+[debug] [2022-04-16T23:05:40.995Z] Node Version:  v16.13.1
+[debug] [2022-04-16T23:05:41.004Z] Time:          Sat Apr 16 2022 20:05:40 GMT-0300 (hora estándar de Argentina)
+[debug] [2022-04-16T23:05:41.005Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-04-16T23:05:41.009Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2022-04-16T23:05:41.043Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-04-16T23:05:41.044Z] > authorizing via signed-in user (jadosfer@gmail.com)
+[debug] [2022-04-16T23:05:41.044Z] [iam] checking project distrib-42bdb for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2022-04-16T23:05:41.046Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2022-04-16T23:05:41.047Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-04-16T23:05:41.322Z] <<< HTTP RESPONSE 200 {"date":"Sat, 16 Apr 2022 23:05:39 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","pragma":"no-cache","expires":"Mon, 01 Jan 1990 00:00:00 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-04-16T23:05:41.337Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/distrib-42bdb:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-04-16T23:05:42.556Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sat, 16 Apr 2022 23:05:40 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=757","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-04-16T23:05:42.558Z] > refreshing access token with scopes: []
+[debug] [2022-04-16T23:05:42.558Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-04-16T23:05:42.986Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","date":"Sat, 16 Apr 2022 23:05:41 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-04-16T23:05:43.000Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/distrib-42bdb [none]
+[debug] [2022-04-16T23:05:43.118Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2022-04-16T23:05:43.119Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2022-04-16T23:05:44.400Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/distrib-42bdb 200
+[debug] [2022-04-16T23:05:44.400Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/distrib-42bdb {"projectId":"distrib-42bdb","projectNumber":"1032461943463","displayName":"Distrib","name":"projects/distrib-42bdb","resources":{"hostingSite":"distrib-42bdb","realtimeDatabaseInstance":"distrib-42bdb-default-rtdb"},"state":"ACTIVE"}
+[info] 
+[info] === Deploying to 'distrib-42bdb'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2022-04-16T23:05:44.406Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2022-04-16T23:05:44.406Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-04-16T23:05:44.734Z] <<< HTTP RESPONSE 200 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","date":"Sat, 16 Apr 2022 23:05:43 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-04-16T23:05:44.746Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/distrib-42bdb/versions  
+ {"config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2022-04-16T23:05:55.962Z] Error: socket hang up
+    at connResetException (node:internal/errors:691:14)
+    at TLSSocket.socketOnEnd (node:_http_client:471:23)
+    at TLSSocket.emit (node:events:402:35)
+    at TLSSocket.emit (node:domain:475:12)
+    at endReadableNT (node:internal/streams/readable:1343:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
+[error] 
+[error] Error: Server Error. socket hang up

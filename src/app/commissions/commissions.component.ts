@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { CommissionsService } from '../services/commissions.service';
 import { OrdersService } from '../services/orders.service';
@@ -11,10 +12,20 @@ import { SellersService } from '../services/sellers.service';
 })
 export class CommissionsComponent implements OnInit {
 
+  appUser: AppUser;
+  commissionsByMonth: any[];
+  isExpanded: boolean = false;
+
   constructor(public ordersService: OrdersService, private auth: AuthService,
     private sellersService: SellersService, private commissionsService: CommissionsService ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
+      this.commissionsService.getCommissionsByMonth().subscribe(commissionsByMonth => {
+        this.commissionsByMonth = commissionsByMonth;
+        console.log(this.commissionsByMonth)
+      });
+    });
   }
-
 }

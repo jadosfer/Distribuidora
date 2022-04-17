@@ -1,5 +1,49 @@
-<!-- <div class="SCContainer ml-3" *ngIf="appUser && appUser.isAdmin">
+<div class="SCContainer ml-3" *ngIf="appUser && appUser.isAdmin">
+  <h3>Comisiones histórico</h3>
   <div fxLayout="row" fxLayout.xs="column">
-    <h3>Comisiones histórico</h3>
+
+
+    <table *ngIf="this.commissionsByMonth" class="table table-striped table-sm mat-elevation-z8">
+      <tr>
+        <th>Fecha</th>
+        <th>Mín. Fact Minorista</th>
+        <th>Com. Min.</th>
+        <th>Com. May.</th>
+
+
+      </tr>
+      <tr *ngFor="let commissionByMonth of this.commissionsByMonth">
+        <td>{{commissionByMonth.payload.val().month}}/{{commissionByMonth.payload.val().year}}</td>
+        <td>{{commissionByMonth.payload.val().minRetailTotalSales}}</td>
+        <td>{{commissionByMonth.payload.val().retailPercent}}</td>
+        <td>{{commissionByMonth.payload.val().wholesalerPercent}}</td>
+
+        <td>
+          <mat-accordion>
+            <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <strong>Información vendedores</strong>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <table>
+                <tr>
+                  <th>Vendedor</th>
+                  <th>Com. Min. ({{this.commissionsByMonth[0].payload.val().retailPercent*100}}%)</th>
+                  <th>Com. May. ({{this.commissionsByMonth[0].payload.val().wholesalerPercent*100}}%)</th>
+                  <th>Total de Premios</th>
+                </tr>
+                <tr *ngFor="let sellersCommissionInfo of this.commissionsByMonth[0].payload.val().sellersCommissionsInfo">
+                  <td>{{sellersCommissionInfo.sellerName}}</td>
+                  <td>{{this.sellersCommissionInfo.retailCommission}}</td>
+                  <td>{{this.sellersCommissionInfo.wholesalerCommission}}</td>
+                  <td>{{this.sellersCommissionInfo.TotalRewards}}</td>
+                </tr>
+              </table>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </td>
+      </tr>
+    </table>
   </div>
-</div> -->
+</div>

@@ -262,13 +262,9 @@ export class OrdersService implements OnDestroy {
     else rest = payment.amount;
     for (let i=0;i<this.orders.length;i++) {
       if (payment.payload && payment.payload.val().orderNumber > 0 && this.orders[i].payload.val().orderNumber == payment.payload.val().orderNumber) {
-        console.log("aca1")
-        console.log("resta", parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt), "pay amount", payment.payload.val().amount);
         if (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.payload.val().amount) {
-          console.log("aca2")
           rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
           this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
-          console.log("debt a guardar", this.orders[i].payload.val().amount)
           if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.payload.val().client})
           break
         }
@@ -283,9 +279,6 @@ export class OrdersService implements OnDestroy {
       if (this.orders[i].payload.val().clientFantasyName == payment.client) {
         if (parseFloat(this.orders[i].payload.val().amount) && parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
           rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
-          console.log("rest segundo for", rest);
-          console.log("debt", this.orders[i].payload.val().debt)
-          console.log("amount", this.orders[i].payload.val().amount)
           this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
           if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.client})
           break
@@ -360,10 +353,8 @@ export class OrdersService implements OnDestroy {
   isOrderInDebt(order: any) {
     let today = new Date();
     if((Date.parse(today.toString()) - order.payload.val().date > 30*24*60*60*1000) && order.payload.val().debt != 0 ) { //que pasen 30 dias
-      console.log("deudor creation:", order.payload.val().date, "orderPaid:", order.payload.val().paid)
       return true;
     }
-    console.log("NO deudor")
     return false;
   }
 
