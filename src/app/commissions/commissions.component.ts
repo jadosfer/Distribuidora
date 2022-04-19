@@ -15,6 +15,7 @@ export class CommissionsComponent implements OnInit {
   appUser: AppUser;
   commissionsByMonth: any[];
   isExpanded: boolean = false;
+  prodCatDetails: boolean = false;
 
   constructor(public ordersService: OrdersService, private auth: AuthService,
     private sellersService: SellersService, private commissionsService: CommissionsService ) { }
@@ -24,7 +25,6 @@ export class CommissionsComponent implements OnInit {
       this.appUser = appUser;
       this.commissionsService.getCommissionsByMonth().subscribe(commissionsByMonth => {
         this.commissionsByMonth = commissionsByMonth;
-        console.log(this.commissionsByMonth)
       });
     });
   }

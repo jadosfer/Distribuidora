@@ -1,6 +1,6 @@
 import { StockService } from '../services/stock.service';
 import { OrdersService } from '../services/orders.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { ProductService } from '../services/product.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -13,14 +13,12 @@ import { jsPDF } from "jspdf";
 import { ClientsService } from '../services/clients.service';
 import { MatPaginator } from '@angular/material/paginator';
 
-
 @Component({
   selector: 'orders',
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss']
 })
 export class OrdersComponent implements OnInit {
-
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl()
@@ -58,7 +56,9 @@ export class OrdersComponent implements OnInit {
   aproveFirst: boolean = false;
   isExpanded: boolean = false;
   changeCheckbox: boolean = false;
+  debtWarning: boolean = false;
   userClients: string[];
+  debtors: any[];
 
   constructor(public ordersService: OrdersService,
   private productService: ProductService,
@@ -82,6 +82,7 @@ export class OrdersComponent implements OnInit {
           }
           this.orders =  orders;
           this.userOrders = [];
+          this.debtors = [];
           for (let i=0;i<this.orders.length;i++) {
             if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name || this.isClientInUserClients(this.orders[i].payload.val().clientFantasyName, this.userClients))) {
               this.userOrders.push(this.orders[i]);
@@ -89,6 +90,20 @@ export class OrdersComponent implements OnInit {
                 this.notAprovedOrders.push(this.orders[i].payload.val());
                 this.ordersNotAproved += 1;
               }
+            }
+          }
+
+          for (let i=0;i<this.userOrders.length;i++) {
+            if (this.ordersService.isClientInDebt(this.userOrders[i].payload.val().clientFantasyName, this.userOrders)) {
+              console.log("aca2")
+              let date = new Date(this.userOrders[i].payload.val().date)
+              let debt = Math.round(this.userOrders[i].payload.val().debt * 100) / 100;
+              this.debtors.push({
+                "debtorName": this.userOrders[i].payload.val().clientFantasyName,
+                "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
+                "orderDebt": debt
+              });
+              this.debtWarning = true;
             }
           }
 

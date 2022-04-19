@@ -21,19 +21,14 @@ export class CommissionsService {
       "rewards": {
         "Barras":200000,
         "rewardBarras": 2000,
-        "BarrasCommission": 0,
         "Proteinas":150000,
         "rewardProteinas": 1500,
-        "ProteinasCommission": 0,
         "Recuperadores":150000,
         "rewardRecuperadores": 1500,
-        "RecuperadoresCommission": 0,
         "Quemadores":150000,
         "rewardQuemadores": 800,
-        "QuemadoresCommission": 0,
         "Otros":150000,
-        "rewardOtros": 1000,
-        "OtrosCommission": 0
+        "rewardOtros": 1000
       },
       "monthCommissionsSavedDate" : {
         'month' : 0,
@@ -89,19 +84,14 @@ export class CommissionsService {
       "rewards": {
         "Barras":commissionsForm.Barras,
         "rewardBarras": commissionsForm.rewardBarras,
-        "BarrasCommission": commissions[0].payload.val().rewards.BarrasCommission,
         "Proteinas":commissionsForm.Proteinas,
         "rewardProteinas": commissionsForm.rewardProteinas,
-        "ProteinasCommission": commissions[0].payload.val().rewards.ProteinasCommission,
         "Recuperadores":commissionsForm.Recuperadores,
         "rewardRecuperadores": commissionsForm.rewardRecuperadores,
-        "RecuperadoresCommission": commissions[0].payload.val().rewards.RecuperadoresCommission,
         "Quemadores":commissionsForm.Quemadores,
         "rewardQuemadores": commissionsForm.rewardQuemadores,
-        "QuemadoresCommission": commissions[0].payload.val().rewards.QuemadoresCommission,
         "Otros":commissionsForm.Otros,
         "rewardOtros": commissionsForm.rewardOtros,
-        "OtrosCommission": commissions[0].payload.val().rewards.OtrosCommission
       },
       "monthCommissionsSavedDate" : {
         'month' : commissions[0].payload.val().monthCommissionsSavedDate.month,
@@ -111,8 +101,6 @@ export class CommissionsService {
   }
 
   saveCommissionsByMonth(monthCommissions: any, commissions: any[]) {
-    // debugger;
-    console.log("saveCommissionsByMonth en service")
     let today = new Date();
     let result = this.db.object('/commissions/' + commissions[0].key).update({
       "minRetailTotalSales": commissions[0].payload.val().minRetailTotalSales,
@@ -121,19 +109,14 @@ export class CommissionsService {
       "rewards": {
         "Barras":commissions[0].payload.val().rewards.Barras,
         "rewardBarras": commissions[0].payload.val().rewards.rewardBarras,
-        "BarrasCommission": commissions[0].payload.val().rewards.BarrasCommission,
         "Proteinas":commissions[0].payload.val().rewards.Proteinas,
         "rewardProteinas": commissions[0].payload.val().rewards.rewardProteinas,
-        "ProteinasCommission": commissions[0].payload.val().rewards.ProteinasCommission,
         "Recuperadores":commissions[0].payload.val().rewards.Recuperadores,
         "rewardRecuperadores": commissions[0].payload.val().rewards.rewardRecuperadores,
-        "RecuperadoresCommission": commissions[0].payload.val().rewards.RecuperadoresCommission,
         "Quemadores":commissions[0].payload.val().rewards.Quemadores,
         "rewardQuemadores": commissions[0].payload.val().rewards.rewardQuemadores,
-        "QuemadoresCommission": commissions[0].payload.val().rewards.QuemadoresCommission,
         "Otros":commissions[0].payload.val().rewards.Otros,
         "rewardOtros": commissions[0].payload.val().rewards.rewardOtros,
-        "OtrosCommission": commissions[0].payload.val().rewards.OtrosCommission
       },
       "monthCommissionsSavedDate" : {
         'month' : today.getMonth(),

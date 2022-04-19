@@ -220,7 +220,7 @@ export class OrdersService implements OnDestroy {
     time.getHours();
     //time.getMinutes();
     let debt = false;
-    if (this.isClientInDebt(clientFantasyName)) {
+    if (this.isClientInDebt(clientFantasyName, this.orders)) {
       debt = true;
     }
     let isAproved = !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
@@ -358,10 +358,10 @@ export class OrdersService implements OnDestroy {
     return false;
   }
 
-  isClientInDebt(fantasyName: string) {
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == fantasyName &&
-      this.isOrderInDebt(this.orders[i])) return true;
+  isClientInDebt(fantasyName: string, orders: any[]) {
+    for (let i=0;i<orders.length;i++) {
+      if (orders[i].payload.val().clientFantasyName == fantasyName &&
+      this.isOrderInDebt(orders[i])) return true;
     }
     return false;
   }

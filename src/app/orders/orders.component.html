@@ -1,4 +1,4 @@
-<div class="SCContainer" *ngIf="appUser">
+<div class="SCContainer" *ngIf="appUser && (!debtWarning || appUser.isAdmin); else elseBlock">
   <div fxLayoutAlign="start center" fxLayout="row" fxLayout.lt-md="column">
     <div style="margin-top:15px; margin-left:40px; margin-right:40px"><h1 >MIS PEDIDOS</h1></div>
     <div >
@@ -14,18 +14,23 @@
                 Detalle
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <table>
-              <tr>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Vendedor</th>
-              </tr>
-              <tr *ngFor="let order of notAprovedOrders; let i = index">
-                <td>{{order.date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;</td>
-                <td>{{order.clientFantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>{{order.order.sellerName}}</td>
-              </tr>
+            <table class="table table-striped table-sm mat-elevation-z8">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Vendedor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let order of notAprovedOrders; let i = index">
+                  <td>{{order.date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;</td>
+                  <td>{{order.clientFantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                  <td>{{order.order.sellerName}}</td>
+                </tr>
+              </tbody>
             </table>
+
           </mat-expansion-panel>
         </mat-accordion>
       </div>
@@ -111,7 +116,7 @@
                     Detalle
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <table>
+                <table class="table table-striped table-sm mat-elevation-z8">
                   <tr>
                     <th>Cantidad</th>
                     <th>Producto</th>
@@ -143,7 +148,28 @@
       </tbody>
     </table>
   <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
+
 </div>
+<ng-template #elseBlock>Content to render when condition is false.
+  <div class="SCContainer">
+    <h2>Estimado vendedor: los siguientes clientes tienen deuda. Por favor regularice la situación.</h2>
+    <table class="table table-striped table-sm mat-elevation-z8">
+      <tr>
+        <th>Cliente</th>
+        <th>Fecha del pedido en deuda</th>
+        <th>Deuda del pedido</th>
+      </tr>
+      <tr *ngFor="let client of debtors">
+        <td>{{client.debtorName}}</td>
+        <td>{{client.orderDate}}</td>
+        <td class="text-danger">{{client.orderDebt}}</td>
+      </tr>
+    </table>
+    <button mat-raised-button style="margin:20px" (click)="debtWarning=!debtWarning" color="primary" >Aceptar</button>
+  </div>
+</ng-template>
+
+
 
 
 
