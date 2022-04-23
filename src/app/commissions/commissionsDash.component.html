@@ -15,6 +15,12 @@
           <div class="alert alert-danger" *ngIf="wholesalerPercent.touched && wholesalerPercent.invalid">Campo requerido</div>
         </mat-form-field>
 
+        <mat-form-field appearance="legacy">
+          <mat-label>% Mayorista</mat-label>
+          <input #monthlyRate="ngModel" matInput [(ngModel)]="commissions[0].payload.val().monthlyRate" name="monthlyRate" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="monthlyRate.touched && monthlyRate.invalid">Campo requerido</div>
+        </mat-form-field>
+
         <mat-form-field appearance="legacy" class="m-1">
           <mat-label>Mínima Facturación Total Minorista</mat-label>
           <input #minRetailTotalSales="ngModel" matInput [(ngModel)]="commissions[0].payload.val().minRetailTotalSales" name="minRetailTotalSales" placeholder="" required>
@@ -97,7 +103,7 @@
         <button  class="left-btn mb-3" (click)="this.edit = !this.edit" mat-raised-button color="primary">Editar comisiones y límites </button>
       </div>
       <div class="col">
-        <button  class="left-btn mb-3" (click)="this.router.navigate(['/commissions/commissions']);" mat-raised-button color="accent">Ver historico comisiones </button>
+        <button  class="left-btn mb-3" (click)="this.router.navigate(['/commissions/commissions']);" mat-raised-button color="accent">Ver histórico comisiones </button>
       </div>
     </div>
 
@@ -107,10 +113,10 @@
       <thead>
         <tr>
           <th>Vendedor</th>
-          <th>Facturación Minorista</th>
-          <th>Comisión Minorista ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
-          <th>Facturación Mayorista</th>
-          <th>Comisión Mayorista ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+          <th>Fact. Min.</th>
+          <th>Com. Min. ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
+          <th>Fact. May.</th>
+          <th>Com. May. ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
         </tr>
       </thead>
       <tbody>

@@ -17,6 +17,7 @@ export class CommissionsService {
       "retailCommission": 0,
       "retailPercent": 0.05,
       "wholesalerPercent": 0.01,
+      "monthlyRate": 0.04,
       "wholesalerCommission": 0,
       "rewards": {
         "Barras":200000,
@@ -37,35 +38,6 @@ export class CommissionsService {
     });
   }
 
-  // createCommissionsByMonth() {
-  //   let result = this.db.list('/commissionsByMonth/').push({
-  //     'month': 0,
-  //     'year' : 0,
-  //     "minRetailTotalSales": 400000,
-  //     "retailPercent": 0.05,
-  //     "wholesalerPercent": 0.01,
-  //     "rewards": {
-  //       "Barras":200000,
-  //       "rewardBarras": 2000,
-  //       "Proteinas":150000,
-  //       "rewardProteinas": 1500,
-  //       "Recuperadores":150000,
-  //       "rewardRecuperadores": 1500,
-  //       "Quemadores":150000,
-  //       "rewardQuemadores": 800,
-  //       "Otros":150000,
-  //       "rewardOtros": 1000,
-  //     },
-  //     'sellersCommissionsInfo' : {
-  //       'Pirulo':{
-  //         "retailCommission": 0,
-  //         "wholesalerCommission": 0,
-  //         "TotalRewards": 0
-  //       }
-  //     }
-  //   })
-  // }
-
   public getCommissions() {
     let result = this.db.list('/commissions').snapshotChanges();
     return result;
@@ -81,6 +53,7 @@ export class CommissionsService {
       "minRetailTotalSales": commissionsForm.minRetailTotalSales,
       "retailPercent": commissionsForm.retailPercent,
       "wholesalerPercent": commissionsForm.wholesalerPercent,
+      "monthlyRate": commissionsForm.monthlyRate,
       "rewards": {
         "Barras":commissionsForm.Barras,
         "rewardBarras": commissionsForm.rewardBarras,
@@ -106,6 +79,7 @@ export class CommissionsService {
       "minRetailTotalSales": commissions[0].payload.val().minRetailTotalSales,
       "retailPercent": commissions[0].payload.val().retailPercent,
       "wholesalerPercent": commissions[0].payload.val().wholesalerPercent,
+      "monthlyRate": commissions[0].payload.val().monthlyRate,
       "rewards": {
         "Barras":commissions[0].payload.val().rewards.Barras,
         "rewardBarras": commissions[0].payload.val().rewards.rewardBarras,
