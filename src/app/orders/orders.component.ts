@@ -95,7 +95,6 @@ export class OrdersComponent implements OnInit {
 
           for (let i=0;i<this.userOrders.length;i++) {
             if (this.ordersService.isClientInDebt(this.userOrders[i].payload.val().clientFantasyName, this.userOrders)) {
-              console.log("aca2")
               let date = new Date(this.userOrders[i].payload.val().date)
               let debt = Math.round(this.userOrders[i].payload.val().debt * 100) / 100;
               this.debtors.push({

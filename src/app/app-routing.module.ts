@@ -31,6 +31,7 @@ const routes: Routes = [
   { path: "orders/order", component: OrderComponent },
   { path: "payments/creditNote", component: CreditNoteComponent },
   { path: "payments/payment", component: PaymentComponent },
+  { path: "payments/payments/:id", component: PaymentComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "payments/payments", component: PaymentsComponent },
   { path: "client/client", component: ClientsComponent },
   { path: "orders/orders", component: OrdersComponent },

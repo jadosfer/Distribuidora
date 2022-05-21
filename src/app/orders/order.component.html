@@ -2,6 +2,7 @@
     <div id='productsList'>
       <h1>PEDIDO </h1><h2>IMPORTANTE: siempre antes de usar la app asegurate de actualizar la página, con F5 en la PC o presionando y deslizando el dedo hacia abajo en el celu. Gracias!</h2>
       <form class="example-form" style="margin-bottom:20px;margin-top:20px;margin-left:-10px;">
+
         <mat-form-field class="example-full-width" appearance="fill">
           <mat-label>Cliente</mat-label>
           <input type="text" placeholder="Elija uno" aria-label="Number" matInput
@@ -12,6 +13,14 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
+
+        <mat-form-field *ngIf='getClientCategory()!="" && appUser.isAdmin' appearance="fill" class="example-full-width ml-1">
+          <mat-label>Ingrese la fecha</mat-label>
+          <input matInput [(ngModel)]="date" [matDatepicker]="picker" name="date" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
       </form>
       <div>
         <product-filter></product-filter>
@@ -69,7 +78,6 @@
                 <button *ngIf="this.order.length > this.orderIndex && p.discount!=0" (click)="discount($event, p, 0)">Anular</button>
                 <span *ngIf="this.order.length > this.orderIndex && p.discount!=0">&nbsp;&nbsp;Descuento: {{p.discount}}%</span>
             </form>
-
           </td>
         </tr>
         <tr>

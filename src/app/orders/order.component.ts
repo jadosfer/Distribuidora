@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
+import { Timestamp } from 'rxjs-compat';
 
 
 
@@ -27,6 +28,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   filtrada: any[];
 
   clientFantasyName:string="";
+  date: any;
 
   clients:any[] = [];
   filteredClients:any[];
@@ -241,7 +243,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity);
+        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);

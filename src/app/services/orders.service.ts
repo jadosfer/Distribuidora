@@ -204,7 +204,7 @@ export class OrdersService implements OnDestroy {
       }
   }
 
-  createOrder(sellerName: string, clientFantasyName: string, iva: number, products: any, quantity: number) {
+  createOrder(sellerName: string, clientFantasyName: string, iva: number, products: any, quantity: number, date: any) {
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
@@ -233,6 +233,10 @@ export class OrdersService implements OnDestroy {
     }
 
     if (iva != 21) isAproved = false;
+    if (date == null) {
+      date = time.getTime();
+    }
+    else date = date.unix()*1000;
 
     let result = this.db.list('/orders/').push({
       "order": {
@@ -240,7 +244,7 @@ export class OrdersService implements OnDestroy {
         "products":prods,
         "sellerName": sellerName,
       },
-      "date": time.getTime(),
+      "date": date,
       "iva": iva,
       "clientFantasyName": clientFantasyName,
       "aproved": isAproved,
