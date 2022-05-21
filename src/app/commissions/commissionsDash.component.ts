@@ -21,13 +21,13 @@ export class CommissionsDashComponent implements OnInit {
   prodsCategories: any[];
   commissions: any;
   edit: boolean = false;
+  loading: boolean = true;
   month: number;
   year: number;
   lastFullMonthOrders: any[];
-  totalSellerDebtDelayed: number;
 
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
-    private sellersService: SellersService, private commissionsService: CommissionsService, public catService: CategoryService ) {}
+    private sellersService: SellersService, public commissionsService: CommissionsService, public catService: CategoryService ) {}
 
   ngOnInit(){
     let today = new Date();
@@ -43,21 +43,13 @@ export class CommissionsDashComponent implements OnInit {
           this.monthOrders = this.getThisMonthOrders();
           this.auth.appUser$.subscribe(appUser => {
             this.appUser = appUser;
+            //borrar
+            // appUser.name = 'Enrique Oyhamburu'
+            // appUser.isAdmin = false;
             this.sellersService.getAll().subscribe(sellers => {
               this.sellers = sellers;
-
-              //eliminar desde aca
-              // this.month = today.getMonth();
-              // this.year = today.getFullYear();
-              // this.lastFullMonthOrders = this.getLastFullMonthOrders();
-              // this.getSellerPenalty(0.03, "Enrique Oyhamburu")
-              // this.getSellerPenalty(0.03, "Gentech Nutrideportiva")
-              //eliminar hasta aca
-
-              console.log(this.month, today.getMonth(), this.year, today.getFullYear())
               if (this.month != today.getMonth() ||
               this.year != today.getFullYear()) {
-                console.log(this.commissions[0].payload.val().monthCommissionsSavedDate.month, today.getMonth(), this.commissions[0].payload.val().monthCommissionsSavedDate.year, today.getFullYear())
                 if (this.commissions[0].payload.val().monthCommissionsSavedDate.month != today.getMonth() ||
                 this.commissions[0].payload.val().monthCommissionsSavedDate.year != today.getFullYear()) {
                   this.month = today.getMonth();
@@ -66,11 +58,13 @@ export class CommissionsDashComponent implements OnInit {
                   this.saveCommissionsByMonth();
                 }
               }
+              this.loading = false;
             });
           });
         });
       });
     });
+
   }
 
   getThisMonthOrders() {
@@ -78,7 +72,8 @@ export class CommissionsDashComponent implements OnInit {
     let filteredMonthOrders = []
     for (let i=0;i<this.orders.length;i++) {
       var date = new Date(this.orders[i].payload.val().date);
-      if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()){
+      if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()
+      && parseFloat(this.orders[i].payload.val().debt) < 10){
         filteredMonthOrders.push(this.orders[i]);
       }
     }
@@ -87,12 +82,16 @@ export class CommissionsDashComponent implements OnInit {
 
   retailSalesPMonth(seller: string, orders: any[]) {
     let amount = 0;
-    for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().order.sellerName == seller
-      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor") {
-        amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
+    if (orders) {
+      for (let i=0;i<orders.length;i++) {
+        if (orders[i].payload.val().order.sellerName == seller
+        && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor"
+        && parseFloat(orders[i].payload.val().debt) < 10) {
+          amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
+        }
       }
     }
+
     if (amount) amount = Math.round(amount * 100) / 100;
     return amount;
   }
@@ -101,7 +100,8 @@ export class CommissionsDashComponent implements OnInit {
     let amount = 0;
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().order.sellerName == sellerName
-      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor") {
+      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor"
+      && parseFloat(orders[i].payload.val().debt) < 10) {
         amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
     }
@@ -179,23 +179,11 @@ export class CommissionsDashComponent implements OnInit {
       let retailSalesPMonth = this.retailSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
       let retailCommission = this.retailCommission(this.commissions[0].payload.val().retailPercent, retailSalesPMonth);
       let wholesalerSalesPMonth = this.wholesalerSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
-      let wholesalerCommission = this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent, wholesalerSalesPMonth, retailSalesPMonth)
-      let sellerPenalty = this.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, this.sellers[i].payload.val().name)
-      let totalRewards = 0;
-      let prodCategoryRewards = [];
-      for (let j=0;j<this.prodsCategories.length;j++) {
-        totalRewards += this.rewardCalc(this.prodsCategories[j].name, this.sellers[i].payload.val().name, this.lastFullMonthOrders)
-        let categoryReward = 0;
-        if (this.retailSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
-          categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].name];
-        };
-        prodCategoryRewards.push({
-          'prodCategory': this.prodsCategories[j].name,
-          'prodCategorySales': this.prodCategorySales(this.prodsCategories[j].name, this.sellers[i].payload.val().name),
-          'categoryAim': this.commissions[0].payload.val().rewards[this.prodsCategories[j].name],
-          'categoryReward': categoryReward
-        })
-      }
+      let wholesalerCommission = this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent, wholesalerSalesPMonth, retailSalesPMonth);
+      let sellerPenalty = this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, this.sellers[i].payload.val().name, this.orders);
+      let rewardsObject = this.getProdCategoryRewards(this.sellers[i].payload.val().name)
+      let prodCategoryRewards = rewardsObject.prodCategoryRewards;
+      let totalRewards = rewardsObject.totalRewards
       let totalIncome = retailCommission + wholesalerCommission + totalRewards - sellerPenalty;
       if (this.hasSellerSalesInLastMonth(this.sellers[i].payload.val().name)) {
         sellersCommissionsInfo.push({
@@ -208,7 +196,7 @@ export class CommissionsDashComponent implements OnInit {
           "TotalRewards": totalRewards,
           "sellerPenalty" : sellerPenalty,
           "totalIncome" : totalIncome,
-          "totalSellerDebtDelayed": this.totalSellerDebtDelayed
+          "totalSellerDebtDelayed": this.commissionsService.totalSellerDebtDelayed
         });
       }
     }
@@ -237,27 +225,28 @@ export class CommissionsDashComponent implements OnInit {
     }
     return false
   }
-
-  getSellerPenalty(monthlyRate: number, seller: string) {
-    let today = new Date();
-    let monthPenalty = 0;
-    this.totalSellerDebtDelayed = 0
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().order.sellerName == seller && this.orders[i].payload.val().debt > 10) {
-        let delay = (today.getTime() - this.orders[i].payload.val().date)/(1000*60*60*24);
-        if (delay > 30 && delay < 60) {
-          monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(this.orders[i].payload.val().debt) / (1 + (parseFloat(this.orders[i].payload.val().iva)/100));
-          this.totalSellerDebtDelayed += parseFloat(this.orders[i].payload.val().debt);
-        }
-        else if (delay >= 60) {
-          monthPenalty += monthlyRate * parseFloat(this.orders[i].payload.val().debt);
-          this.totalSellerDebtDelayed += parseFloat(this.orders[i].payload.val().debt);
-        }
-        console.log("delays", delay)
-      }
+  getProdCategoryRewards(sellerName: string) {
+    let prodCategoryRewards = [];
+    let totalRewards = 0;
+    for (let j=0;j<this.prodsCategories.length;j++) {
+      totalRewards += this.rewardCalc(this.prodsCategories[j].name, sellerName, this.lastFullMonthOrders);
+      let categoryReward = 0;
+      if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
+        categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].name];
+      };
+      prodCategoryRewards.push({
+        'prodCategory': this.prodsCategories[j].name,
+        'prodCategorySales': this.prodCategorySales(this.prodsCategories[j].name, sellerName),
+        'categoryAim': parseFloat(this.commissions[0].payload.val().rewards[this.prodsCategories[j].name]),
+        'categoryReward': categoryReward
+      })
     }
-    this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
-    monthPenalty = Math.round(monthPenalty * 100) / 100;
-    return monthPenalty;
+    let result = {
+      'prodCategoryRewards': prodCategoryRewards,
+      'totalRewards': totalRewards
+    }
+    return result
   }
 }
+
+

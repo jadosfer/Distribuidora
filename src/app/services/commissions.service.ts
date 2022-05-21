@@ -2,11 +2,14 @@ import { AngularFireDatabase  } from '@angular/fire/database';
 import { Injectable } from '@angular/core';
 import firebase from 'firebase';
 import { Observable } from 'rxjs';
+import { OrdersService } from './orders.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommissionsService {
+
+  totalSellerDebtDelayed: number;
 
   constructor(private db: AngularFireDatabase) { }
 
@@ -98,5 +101,27 @@ export class CommissionsService {
       }
     });
     this.db.list('/commissionsByMonth/').push(monthCommissions);
+  }
+
+  getSellerPenalty(monthlyRate: number, seller: string, orders: any[]) {
+    let today = new Date();
+    let monthPenalty = 0;
+    this.totalSellerDebtDelayed = 0
+    for (let i=0;i<orders.length;i++) {
+      if (orders[i].payload.val().order.sellerName == seller && orders[i].payload.val().debt > 10) {
+        let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
+        if (delay > 30 && delay < 60) {
+          monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(orders[i].payload.val().debt) / (1 + (parseFloat(orders[i].payload.val().iva)/100));
+          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().debt);
+        }
+        else if (delay >= 60) {
+          monthPenalty += monthlyRate * parseFloat(orders[i].payload.val().debt);
+          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().debt);
+        }
+      }
+    }
+    this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
+    monthPenalty = Math.round(monthPenalty * 100) / 100;
+    return monthPenalty;
   }
 }

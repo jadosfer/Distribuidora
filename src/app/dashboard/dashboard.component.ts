@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit {
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
   showGraph: boolean = false;
+  loading: boolean = true;
   dashData: any = {};
 
   pieChartLabels: Array<string> =[]
@@ -80,6 +81,7 @@ export class DashboardComponent implements OnInit {
         this.filteredOrders = this.userOrders;
         this.dataSource = new MatTableDataSource<any>(this.dashData);
         this.dataSource.paginator = this.paginator;
+        this.loading = false;
       });
     });
   }

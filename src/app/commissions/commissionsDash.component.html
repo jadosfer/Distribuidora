@@ -1,4 +1,8 @@
-<div class="SCContainer ml-3" *ngIf="appUser && appUser.isAdmin">
+<div *ngIf="loading" class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div>
+
+<div class="SCContainer ml-3" *ngIf="!loading && appUser && appUser.isAdmin">
   <div *ngIf="edit" fxLayout="row" fxLayout.xs="column">
     <form #f="ngForm" (ngSubmit)="save(f.value)">
       <h3>Comisiones</h3>
@@ -117,6 +121,9 @@
           <th>Com. Min. ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
           <th>Fact. May.</th>
           <th>Com. May. ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+          <th>Cobranza</th>
+          <th>Comisión final</th>
+          <th>Deuda en mora</th>
         </tr>
       </thead>
       <tbody>
@@ -128,6 +135,13 @@
           <td>{{this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders)}}</td>
           <td>{{this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
             this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))}}</td>
+          <td>{{this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, seller.payload.val().name, this.orders)}}</td>
+          <td>{{this.retailCommission(this.commissions[0].payload.val().retailPercent,
+            this.retailSalesPMonth(seller.payload.val().name, this.monthOrders)) + this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
+            this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))
+             + this.getProdCategoryRewards(seller.payload.val().name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate,
+             seller.payload.val().name, this.orders)}}  </td>
+          <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
         </tr>
       </tbody>
     </table>
@@ -174,19 +188,30 @@
   <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
     <thead>
       <tr>
-        <th>Facturación Minorista</th>
-        <th>Comisión Minorista ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
-        <th>Facturación Mayorista</th>
-        <th>Comisión Mayorista ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+        <th>Objetivo Minorista</th>
+        <th>Fact. Minorista</th>
+        <th>Com. Minorista ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
+        <th>Fact. Mayorista</th>
+        <th>Com. Mayorista ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+        <th>Cobranza</th>
+        <th>Comisión final</th>
+        <th>Deuda en mora</th>
       </tr>
     </thead>
     <tbody>
       <tr>
+        <td>{{this.commissions[0].payload.val().minRetailTotalSales}}</td>
         <td>{{this.retailSalesPMonth(appUser.name, this.monthOrders)}}</td>
         <td>{{this.retailCommission(this.commissions[0].payload.val().retailPercent, this.retailSalesPMonth(appUser.name, this.monthOrders))}}</td>
         <td>{{this.wholesalerSalesPMonth(appUser.name, this.monthOrders)}}</td>
         <td>{{this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
           this.wholesalerSalesPMonth(appUser.name, this.monthOrders), this.retailSalesPMonth(appUser.name, this.monthOrders))}}</td>
+        <td>{{this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.orders)}}</td>
+        <td>{{this.retailCommission(this.commissions[0].payload.val().retailPercent,
+          this.retailSalesPMonth(appUser.name, this.monthOrders)) + this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
+          this.wholesalerSalesPMonth(appUser.name, this.monthOrders), this.retailSalesPMonth(appUser.name, this.monthOrders))
+           + this.getProdCategoryRewards(appUser.name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.orders)}}  </td>
+        <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
       </tr>
     </tbody>
   </table>
@@ -194,31 +219,65 @@
     <table *ngIf="this.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
       <thead>
         <tr>
-          <th>Fact Barras</th>
+          <th>Objetivo Barras</th>
           <th>Premio Barras</th>
-          <th>Fact Proteinas</th>
+          <th>Fact Barras</th>
+          <th>Monto Obtenido</th>
+          <th>Objetivo Proteinas</th>
           <th>Premio Proteinas</th>
-          <th>Fact Quemadores</th>
-          <th>Premio Quemadores</th>
-          <th>Fact Recuperadores</th>
-          <th>Premio Recuperadores</th>
-          <th>Fact Otros</th>
-          <th>Premio Otros</th>
+          <th>Fact Proteinas</th>
+          <th>Monto Obtenido</th>
         </tr>
       </thead>
       <tbody>
         <tr>
+          <td>{{this.commissions[0].payload.val().rewards.Barras}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
           <td>{{this.prodCategorySales("Barras", appUser.name)}}</td>
           <td>{{this.rewardCalc("Barras", appUser.name, this.monthOrders)}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.Proteinas}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.rewardProteinas}}</td>
           <td>{{this.prodCategorySales("Proteinas", appUser.name)}}</td>
           <td>{{this.rewardCalc("Proteinas", appUser.name, this.monthOrders)}}</td>
+        </tr>
+      </tbody>
+      <thead>
+        <tr>
+          <th>Objetivo Quemadores</th>
+          <th>Premio Quemadores</th>
+          <th>Fact Quemadores</th>
+          <th>Monto Obtenido</th>
+          <th>Objetivo Recuperadores</th>
+          <th>Premio Recuperadores</th>
+          <th>Fact Recuperadores</th>
+          <th>Monto Obtenido</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{this.commissions[0].payload.val().rewards.Quemadores}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.rewardQuemadores}}</td>
           <td>{{this.prodCategorySales("Quemadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Quemadores", appUser.name, this.monthOrders)}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.Recuperadores}}</td>
+          <td>{{this.commissions[0].payload.val().rewards.rewardRecuperadores}}</td>
           <td>{{this.prodCategorySales("Recuperadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Recuperadores", appUser.name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales("Otros", appUser.name)}}</td>
-          <td>{{this.rewardCalc("Otros", appUser.name, this.monthOrders)}}</td>
         </tr>
+      </tbody>
+      <thead>
+        <tr>
+          <th>Objetivo Otros</th>
+          <th>Premio Otros</th>
+          <th>Fact Otros</th>
+          <th>Monto Obtenido</th>
+        </tr>
+      </thead>
+      <tbody>
+        <td>{{this.commissions[0].payload.val().rewards.Otros}}</td>
+        <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
+        <td>{{this.prodCategorySales("Otros", appUser.name)}}</td>
+        <td>{{this.rewardCalc("Otros", appUser.name, this.monthOrders)}}</td>
       </tbody>
     </table>
 </div>

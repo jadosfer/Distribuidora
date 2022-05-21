@@ -130,7 +130,6 @@ export class OrdersComponent implements OnInit {
             this.ordersService.clientFantasyName = ""; // idem
             this.filterByDate("");
           }
-
         });
       });
     });

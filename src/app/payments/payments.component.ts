@@ -49,6 +49,7 @@ export class PaymentsComponent implements OnInit {
   selected: string = "NO";
 
   aproveFirst:boolean = false;
+  loading: boolean = true;
 
   constructor(public paymentsService: PaymentsService,  private productService: ProductService,
   private route: ActivatedRoute,  private auth: AuthService, public datepipe: DatePipe,
@@ -75,6 +76,7 @@ export class PaymentsComponent implements OnInit {
           this.clientValue = this.paymentsService.clientFantasyName; // idem
           this.paymentsService.clientFantasyName = ""; // idem
         }
+        this.loading = false;
       });
     });
   }
