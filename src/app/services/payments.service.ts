@@ -65,9 +65,12 @@ export class PaymentsService {
   create(payment: any) {
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
-    if (payment.date == null) {
-      payment.date = new Date().getTime();
-    }
+    //antes le ponia la fecha del dia, ahora puede elegirla, por eso comento lo de abajo
+    // console.log("del form", payment.date.unix()*1000)
+    // console.log("de hoy", new Date().getTime())
+
+    payment.date = payment.date.unix()*1000;
+
     //el cobro no es para una factura en particular
     if (!payment.orderNumber) {
       payment.orderNumber = 0;

@@ -1,17 +1,15 @@
-<div fxLayout="row" fxLayout.xs="column">
-  <div class="container-form" fxFlex="40%;" fxFlex.xs="80%">
-    <h2>Nuevo Cobro (El Nº de factura asociado es opcional)</h2>
-    <form #f="ngForm" (ngSubmit)="save(f.value)">
-      <p>
-        <mat-form-field appearance="legacy" style="margin-right: 5px;">
+<div fxLayout.xs-sm="column" >
+  <div id='productsList'>
+    <h1>Nuevo Cobro (El Nº de factura asociado es opcional)</h1>
+    <form #f="ngForm" (ngSubmit)="save(f.value)" class="example-form" style="margin-top:20px;margin-left:0px;">
+      <div class="row">
+        <mat-form-field appearance="fill" class="example-full-width mr-1">
           <mat-label>Monto</mat-label>
-          <input #amount="ngModel" matInput [(ngModel)]="payment.amount" name="amount" placeholder="" [min]="0" required>
-
-          <mat-hint>Monto</mat-hint>
+          <input #amount="ngModel" matInput [(ngModel)]="payment.amount" name="amount" placeholder="Monto" [min]="0" required>
           <div class="alert alert-danger" *ngIf="amount.touched && amount.invalid">El monto es obligatorio, use punto en vez de coma</div>
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" class="example-full-width mr-1">
           <mat-label>Cliente</mat-label>
           <mat-select #client="ngModel" [(ngModel)]="payment.client" name="client" (ngModelChange)="onChooseClient()" required>
             <mat-option *ngFor="let c of this.filteredClients" [value]="c.payload.val().fantasyName">
@@ -21,9 +19,8 @@
           <mat-hint>Seleccione el cliente</mat-hint>
           <div class="alert alert-danger" *ngIf="client.touched && client.invalid">El cliente es obligatorio</div>
         </mat-form-field>
-      </p>
-      <p>
-        <mat-form-field appearance="fill" style="margin-right: 5px;">
+
+        <mat-form-field appearance="fill" class="example-full-width mr-1">
           <mat-label>Nº de factura asociado</mat-label>
           <mat-select #orderNumber="ngModel" [(ngModel)]="payment.orderNumber" name="orderNumber">
             <mat-option *ngFor="let order of filteredOrders" [value]="order.payload.val().orderNumber">
@@ -34,7 +31,7 @@
           <!-- <div class="alert alert-danger" *ngIf="orderNumber.touched && orderNumber.invalid">El Modo de pago es obligatorio</div> -->
         </mat-form-field>
 
-        <mat-form-field appearance="fill">
+        <mat-form-field appearance="fill" class="example-full-width mr-1">
           <mat-label>Modo de Pago</mat-label>
           <mat-select #payWay="ngModel" [(ngModel)]="payment.payWay" name="payWay" required>
             <mat-option *ngFor="let p of payWays" [value]="p.name">
@@ -44,10 +41,19 @@
           <mat-hint>Seleccione el modo de pago</mat-hint>
           <div class="alert alert-danger" *ngIf="client.touched && client.invalid">El Modo de pago es obligatorio</div>
         </mat-form-field>
-      </p>
 
-      <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
-      <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
+        <mat-form-field appearance="fill" class="example-full-width mr-1">
+          <mat-label>Ingrese la fecha</mat-label>
+          <input #date="ngModel" matInput [(ngModel)]="payment.date" [matDatepicker]="picker" name="date" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <div class="alert alert-danger" *ngIf="date.touched && date.invalid">La fecha es obligatoria</div>
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
+        <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
+      </div>
     </form>
   </div>
 </div>
