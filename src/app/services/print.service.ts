@@ -78,6 +78,9 @@ export class PrintService {
             if (this.payments[i].payload.val().client == client.fantasyName) payments.push(this.payments[i].payload.val())
           }
 
+          orders = this.sortArrayByDate(orders);
+          payments = this.sortArrayByDate(payments);
+
           let y = 0;
           let k = 0;
           let balance = 0;
@@ -85,7 +88,8 @@ export class PrintService {
 
           for (let i=0;i<loopSize;i++) {
             pageHeight = doc.internal.pageSize.height
-            if (y >= pageHeight -50 ) {
+            if (y >= pageHeight -70 ) {
+
               doc.addPage();
               k = i;
             }
@@ -110,9 +114,24 @@ export class PrintService {
 
             if (this.orderOrPayment && orders.length > 0) {
               balance +=  parseFloat(orders[pos1].amount)
-              let dateObject = new Date(orders[pos1].date);
-              let humanDateFormat = dateObject.toLocaleString();
-              doc.text(humanDateFormat, col1, line3 + y);
+              let humanDateFormat = new Date(orders[pos1].date);
+              let dd = humanDateFormat.getDate();
+              let mm = humanDateFormat.getMonth() + 1;
+              let day;
+              let month;
+              let yyyy = humanDateFormat.getFullYear().toString();
+              console.log('d/m/y1: ', dd, mm, yyyy);
+              if (dd < 10) {
+                day = '0' + dd.toString();
+              }
+              else day = dd.toString();
+              if (mm < 10) {
+                  month = '0' + mm.toString();
+              }
+              else month = mm.toString();
+              let stringDate = day + '/' + month + '/' + yyyy;
+
+              doc.text(stringDate, col1, line3 + y);
               doc.text("FACTURA", col2, line3 + y);
               doc.text(parseInt(orders[pos1].orderNumber).toString(), col3, line3 + y);
               doc.text(parseFloat(orders[pos1].amount).toFixed(2).toString(), col5, line3 + y);
@@ -121,18 +140,33 @@ export class PrintService {
               doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
             }
             else if (!this.orderOrPayment && payments.length > 0) {
-                balance -=  parseFloat(payments[pos2].amount)
-                let dateObject = new Date(payments[pos2].date);
-                let humanDateFormat = dateObject.toLocaleString();
-                doc.text(humanDateFormat, col1, line3 + y);
-                doc.text(parseInt(payments[pos2].orderNumber).toString(), col3, line3 + y);
-                doc.text(parseFloat(payments[pos2].amount).toFixed(2).toString(), col4, line3 + y);
-                doc.text(balance.toFixed(2).toString(), col6, line3 + y);
-                doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
-                if (payments[pos2].payWay == "Nota de Crédito") doc.text("NOTA CRED.", col2, line3 + y);
-                else doc.text("RECIBO", col2, line3 + y);
-                payments = this.splice2(payments, pos2);
+              balance -=  parseFloat(payments[pos2].amount)
+              let humanDateFormat = new Date(payments[pos2].date);
+              let dd = humanDateFormat.getDate();
+              let mm = humanDateFormat.getMonth() + 1;
+              let day;
+              let month;
+              let yyyy = humanDateFormat.getFullYear().toString();
+              console.log('d/m/y2: ', dd, mm, yyyy);
+              if (dd < 10) {
+                  day = '0' + dd.toString();
               }
+              else day = dd.toString();
+              if (mm < 10) {
+                  month = '0' + mm.toString();
+              }
+              else month = mm.toString();
+              let stringDate = day + '/' + month + '/' + yyyy;
+
+              doc.text(stringDate, col1, line3 + y);
+              doc.text(parseInt(payments[pos2].orderNumber).toString(), col3, line3 + y);
+              doc.text(parseFloat(payments[pos2].amount).toFixed(2).toString(), col4, line3 + y);
+              doc.text(balance.toFixed(2).toString(), col6, line3 + y);
+              doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
+              if (payments[pos2].payWay == "Nota de Crédito") doc.text("NOTA CRED.", col2, line3 + y);
+              else doc.text("RECIBO", col2, line3 + y);
+              payments = this.splice2(payments, pos2);
+            }
           }
 
           doc.setFontSize(8);
@@ -141,8 +175,6 @@ export class PrintService {
           doc.save('Resumen.pdf');
         });
       });
-      // while (!this.orders && !this.payments) {
-      // }
     }
   }
 
@@ -212,5 +244,15 @@ export class PrintService {
       // Save the PDF
       doc.save('ClientesGentech.pdf');
     }
+  }
+
+  sortArrayByDate(array: any) {
+    array.sort((a: any, b: any) => {
+      console.log('a', a);
+      if (b.date > a.date) return 1;
+      if (b.date < a.date) return -1;
+      return 0;
+    });
+    return array;
   }
 }

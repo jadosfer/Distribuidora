@@ -70,6 +70,11 @@ export class OrdersComponent implements OnInit {
   }
 
   ngOnInit(){
+    // const ages = [32, 33, 16, 40];
+    // const result = ages.filter((age: number) => {
+    //   return age >= 35
+    // });
+
     this.filter("");
     this.subscription = this.ordersService.getAll().subscribe(orders => {
       this.auth.appUser$.subscribe(appUser => {

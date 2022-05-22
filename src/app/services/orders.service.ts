@@ -297,11 +297,11 @@ export class OrdersService implements OnDestroy {
   }
 
   getClientDebt(clientFantasyName: string) {
-    let debt = 0;
-    for (let i=0;i<this.clients.length;i++) {
-      if (this.clients[i].payload.val().fantasyName == clientFantasyName) debt = parseFloat(this.clients[i].payload.val().debt)
-    }
-    return debt
+    let client = this.clients.filter((cli: any) => {
+      return cli.payload.val().fantasyName == clientFantasyName
+    });
+    if (client) return parseFloat(client[0].payload.val().debt);
+    return 0;
   }
 
   sendNote (amount: any, clientFantasyName: string) {
