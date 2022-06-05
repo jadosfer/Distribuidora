@@ -30,7 +30,9 @@
 
       <mat-form-field appearance="fill" style="margin:10px;">
         <mat-label>Ingrese la fecha</mat-label>
-        <input matInput [matDatepicker]="picker" name="date" [(ngModel)]="note.date" required>
+        <input #date="ngModel" matInput [matDatepicker]="picker" name="date" [(ngModel)]="note.date" required>
+        <!-- <input #date="ngModel" matInput [(ngModel)]="payment.date" [matDatepicker]="picker" name="date" required> -->
+
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>

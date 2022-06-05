@@ -44,9 +44,9 @@ export class AdminClientsComponent implements OnInit {
       this.dataSource.paginator = this.paginator
       }
     });
-    this.ordersService.getAll().subscribe(orders => {
-      this.orders = orders;
-    });
+    // this.ordersService.getAll().subscribe(orders => {
+    //   this.orders = orders;
+    // });
     this.paymentsService.getAll().subscribe(payments => {
       this.payments = payments;
     });

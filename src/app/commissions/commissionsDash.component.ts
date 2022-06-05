@@ -39,7 +39,8 @@ export class CommissionsDashComponent implements OnInit {
           this.commissionsService.createCommissions();
         }
         this.ordersService.getAll().subscribe(orders => {
-          this.orders =  orders;
+          this.ordersService.orders = orders;
+
           this.monthOrders = this.getThisMonthOrders();
           this.auth.appUser$.subscribe(appUser => {
             this.appUser = appUser;
@@ -70,11 +71,11 @@ export class CommissionsDashComponent implements OnInit {
   getThisMonthOrders() {
     let today = new Date();
     let filteredMonthOrders = []
-    for (let i=0;i<this.orders.length;i++) {
-      var date = new Date(this.orders[i].payload.val().date);
+    for (let i=0;i<this.ordersService.orders.length;i++) {
+      var date = new Date(this.ordersService.orders[i].payload.val().date);
       if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()
-      && parseFloat(this.orders[i].payload.val().debt) < 10){
-        filteredMonthOrders.push(this.orders[i]);
+      && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10){
+        filteredMonthOrders.push(this.ordersService.orders[i]);
       }
     }
     return filteredMonthOrders
@@ -180,7 +181,7 @@ export class CommissionsDashComponent implements OnInit {
       let retailCommission = this.retailCommission(this.commissions[0].payload.val().retailPercent, retailSalesPMonth);
       let wholesalerSalesPMonth = this.wholesalerSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
       let wholesalerCommission = this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent, wholesalerSalesPMonth, retailSalesPMonth);
-      let sellerPenalty = this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, this.sellers[i].payload.val().name, this.orders);
+      let sellerPenalty = this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, this.sellers[i].payload.val().name, this.ordersService.orders);
       let rewardsObject = this.getProdCategoryRewards(this.sellers[i].payload.val().name)
       let prodCategoryRewards = rewardsObject.prodCategoryRewards;
       let totalRewards = rewardsObject.totalRewards
@@ -207,12 +208,12 @@ export class CommissionsDashComponent implements OnInit {
   getLastFullMonthOrders() {
     let lastFullMonthOrders = [];
     let today = new Date();
-    for (let i=0;i<this.orders.length;i++) {
-      var date = new Date(this.orders[i].payload.val().date);
+    for (let i=0;i<this.ordersService.orders.length;i++) {
+      var date = new Date(this.ordersService.orders[i].payload.val().date);
       //miro el mes anterior, today.getMonth() me da el mes anterior porque me da el mes -1
       if (date.getMonth() == today.getMonth() -1 && date.getFullYear() == today.getFullYear()
-      && parseFloat(this.orders[i].payload.val().debt) < 10 ){
-        lastFullMonthOrders.push(this.orders[i]);
+      && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10 ){
+        lastFullMonthOrders.push(this.ordersService.orders[i]);
       }
     }
     return lastFullMonthOrders

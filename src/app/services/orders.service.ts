@@ -388,6 +388,6 @@ export class OrdersService implements OnDestroy {
   }
 
   updateSendedStatus(order: any) {
-    return this.db.object('/orders/' + order.key).update({"sended": !order.payload.val().sended});
+    this.db.object('/orders/' + order.key).update({"sended": !order.payload.val().sended});
   }
 }
