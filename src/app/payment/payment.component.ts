@@ -41,7 +41,7 @@ export class PaymentComponent implements OnInit {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser
         ordersService.getAll().subscribe(orders => {
-          this.orders = this.filteredOrders = orders;
+          this.ordersService.orders = this.filteredOrders = orders;
         })
         clientsService.getAll().subscribe(clients =>{
           this.clients = clients;
@@ -74,8 +74,8 @@ export class PaymentComponent implements OnInit {
 
   onChooseClient() {
     this.filteredOrders = [];
-      for (let i=0;i<this.orders.length;i++) {
-        if (this.orders[i].payload.val().clientFantasyName == this.payment.client) this.filteredOrders.push(this.orders[i])
+      for (let i=0;i<this.ordersService.orders.length;i++) {
+        if (this.ordersService.orders[i].payload.val().clientFantasyName == this.payment.client) this.filteredOrders.push(this.ordersService.orders[i])
     }
   }
 

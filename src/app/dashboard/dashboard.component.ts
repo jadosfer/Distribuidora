@@ -70,11 +70,11 @@ export class DashboardComponent implements OnInit {
     this.ordersService.getAll().subscribe(orders => {
       this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-        this.orders =  orders;
+        this.ordersService.orders = orders;
         this.userOrders = [];
-        for (let i=0;i<this.orders.length;i++) {
-          if (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name) {
-            this.userOrders.push(this.orders[i]);
+        for (let i=0;i<this.ordersService.orders.length;i++) {
+          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name) {
+            this.userOrders.push(this.ordersService.orders[i]);
           }
         }
         this.produceDashData(this.userOrders);

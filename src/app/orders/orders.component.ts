@@ -29,8 +29,9 @@ export class OrdersComponent implements OnInit {
   appUser: AppUser;
 
   order: any;
-  orders: any[];
+  // orders: any[];
   clients: any;
+  recentUserOrders: any[] = [];
   userOrders: any[] = [];
   titles: string[]=[];
   subscription: Subscription;
@@ -85,25 +86,32 @@ export class OrdersComponent implements OnInit {
           for (let i=0;i<this.clients.length;i++) {
             if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
-          this.orders =  orders;
+          this.ordersService.orders =  orders;
+          this.recentUserOrders = [];
           this.userOrders = [];
           this.debtors = [];
-          for (let i=0;i<this.orders.length;i++) {
-            if (this.appUser && (this.appUser.isAdmin || this.orders[i].payload.val().order.sellerName == this.appUser.name || this.isClientInUserClients(this.orders[i].payload.val().clientFantasyName, this.userClients))) {
-              this.userOrders.push(this.orders[i]);
-              if (this.orders[i].payload.val().aproved == false) {
-                this.notAprovedOrders.push(this.orders[i].payload.val());
+          for (let i=0;i<this.ordersService.orders.length;i++) {
+            let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
+            let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
+            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 7*24*60*60*1000; //7 dias
+            if (this.appUser && (this.appUser.isAdmin || isUserOrder || isUserClient)) {
+              this.userOrders.push(this.ordersService.orders[i]);
+              if (this.ordersService.orders[i].payload.val().aproved == false) {
+                this.notAprovedOrders.push(this.ordersService.orders[i].payload.val());
                 this.ordersNotAproved += 1;
               }
             }
+            if (this.appUser && (this.appUser.isAdmin || isUserOrder || isUserClient) && isRecentOrder) {
+              this.recentUserOrders.push(this.ordersService.orders[i]);
+            }
           }
 
-          for (let i=0;i<this.userOrders.length;i++) {
-            if (this.ordersService.isClientInDebt(this.userOrders[i].payload.val().clientFantasyName, this.userOrders)) {
-              let date = new Date(this.userOrders[i].payload.val().date)
-              let debt = Math.round(this.userOrders[i].payload.val().debt * 100) / 100;
+          for (let i=0;i<this.recentUserOrders.length;i++) {
+            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().clientFantasyName, this.userOrders)) {
+              let date = new Date(this.recentUserOrders[i].payload.val().date)
+              let debt = Math.round(this.recentUserOrders[i].payload.val().debt * 100) / 100;
               this.debtors.push({
-                "debtorName": this.userOrders[i].payload.val().clientFantasyName,
+                "debtorName": this.recentUserOrders[i].payload.val().clientFantasyName,
                 "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
                 "orderDebt": debt
               });
@@ -111,7 +119,7 @@ export class OrdersComponent implements OnInit {
             }
           }
 
-          this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.userOrders;
+          this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.recentUserOrders; //ver que hace??
           //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
 
           //genera el string para la fecha de HOY
@@ -123,17 +131,18 @@ export class OrdersComponent implements OnInit {
             month = "0" + mon.toString();
           }
           // this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
-          this.dateValue = today + "/" + month + "/" + year;
-          this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+          //this.dateValue = today + "/" + month + "/" + year;
+          //this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
           //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
-          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-            this.dateValue = "";
-            this.clientValue = this.ordersService.clientFantasyName; // idem
-            this.filter(this.ordersService.clientFantasyName); // idem
-            this.ordersService.clientFantasyName = ""; // idem
-            this.filterByDate("");
-          }
+          // if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          //   this.dateValue = "";
+          //   this.clientValue = this.ordersService.clientFantasyName; // idem
+          //   this.filter(this.ordersService.clientFantasyName); // idem
+          //   this.ordersService.clientFantasyName = ""; // idem
+          //   this.filterByDate("");
+          // }
+          this.currentItemsToShow = this.dateRangefilteredOrders;
         });
       });
     });
@@ -150,7 +159,7 @@ export class OrdersComponent implements OnInit {
       if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())
       && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
-      this.filteredOrders.push(this.orders[i]);
+      this.filteredOrders.push(this.ordersService.orders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});

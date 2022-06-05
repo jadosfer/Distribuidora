@@ -6,7 +6,8 @@
       <a  mat-icon-button routerLink="/orders/order"><mat-icon>control_point</mat-icon></a><span>Crear Pedido</span>
     </div>
     <div  *ngIf="ordersNotAproved > 0" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
-      <div  style="display: inline; margin:10px;">PEDIDOS SIN APROBAR: &nbsp;&nbsp;&nbsp;&nbsp;<span matBadge="{{this.ordersNotAproved}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      <div  style="display: inline; margin:10px;">PEDIDOS RECIENTES SIN APROBAR: &nbsp;&nbsp;&nbsp;&nbsp;
+        <span matBadge="{{this.ordersNotAproved}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
       <div style="margin-right:50px;">
         <mat-accordion>
           <mat-expansion-panel hideToggle>

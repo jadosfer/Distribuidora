@@ -29,7 +29,7 @@ export class PrintService {
         // }
       });
       this.ordersService.getAll().subscribe(orders => {
-        this.orders = orders;
+        this.ordersService.orders = orders;
       });
       this.paymentsService.getAll().subscribe(payments => {
         this.payments = payments;
@@ -66,13 +66,13 @@ export class PrintService {
       doc.setFontSize(7);
 
       this.ordersService.getAll().subscribe(orders => {
-        this.orders = orders;
+        this.ordersService.orders = orders;
         this.paymentsService.getAll().subscribe(paymnts => {
           this.payments = paymnts;
           let orders = [];
           let payments = [];
-          for (let i=0;i<this.orders.length;i++) {
-            if (this.orders[i].payload.val().clientFantasyName == client.fantasyName) orders.push(this.orders[i].payload.val())
+          for (let i=0;i<this.ordersService.orders.length;i++) {
+            if (this.ordersService.orders[i].payload.val().clientFantasyName == client.fantasyName) orders.push(this.ordersService.orders[i].payload.val())
           }
           for (let i=0;i<this.payments.length;i++) {
             if (this.payments[i].payload.val().client == client.fantasyName) payments.push(this.payments[i].payload.val())

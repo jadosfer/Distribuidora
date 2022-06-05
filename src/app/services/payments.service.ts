@@ -32,7 +32,7 @@ export class PaymentsService {
 
 
     this.auth.appUser$.subscribe(appUser => {
-      this.ordersService.getAll().subscribe(orders => {this.orders = orders})
+      this.ordersService.getAll().subscribe(orders => {this.ordersService.orders = orders})
       this.appUser = appUser;
       this.filteredProducts = [];
       this.productService.getAll().subscribe(products => {
@@ -86,15 +86,15 @@ export class PaymentsService {
 
   clearDebts(clientFantasyName: string, amount: number) {
     let rest = amount
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        if (parseFloat(this.orders[i].payload.val().debt) && parseFloat(this.orders[i].payload.val().debt) <= rest) {
-          rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": 0}) //con este
+    for (let i=0;i<this.ordersService.orders.length;i++) {
+      if (this.ordersService.orders[i].payload.val().clientFantasyName == clientFantasyName) {
+        if (parseFloat(this.ordersService.orders[i].payload.val().debt) && parseFloat(this.ordersService.orders[i].payload.val().debt) <= rest) {
+          rest = rest - parseFloat(this.ordersService.orders[i].payload.val().debt);//cambie orden de este
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": 0}) //con este
           if (rest < 10) break
         }
-        else if (this.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseFloat(this.orders[i].payload.val().debt) - rest})
+        else if (this.ordersService.orders[i].payload.val().debt) {
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": parseFloat(this.ordersService.orders[i].payload.val().debt) - rest})
           break
         }
       }
@@ -103,16 +103,16 @@ export class PaymentsService {
 
   clearOrderDebt(payment: any) {
     let rest = payment.amount
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().orderNumber == payment.orderNumber) {
-        if (parseFloat(this.orders[i].payload.val().debt) && parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
-          rest = rest - parseFloat(this.orders[i].payload.val().debt);
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": 0})
+    for (let i=0;i<this.ordersService.orders.length;i++) {
+      if (this.ordersService.orders[i].payload.val().orderNumber == payment.orderNumber) {
+        if (parseFloat(this.ordersService.orders[i].payload.val().debt) && parseFloat(this.ordersService.orders[i].payload.val().debt) <= payment.amount) {
+          rest = rest - parseFloat(this.ordersService.orders[i].payload.val().debt);
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": 0})
           this.clearDebts(payment.client, rest);
           break
         }
-        else if (this.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.orders[i].key, {"debt": parseFloat(this.orders[i].payload.val().debt) - rest})
+        else if (this.ordersService.orders[i].payload.val().debt) {
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": parseFloat(this.ordersService.orders[i].payload.val().debt) - rest})
           break
         }
       }
