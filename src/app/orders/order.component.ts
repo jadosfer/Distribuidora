@@ -11,8 +11,6 @@ import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { Timestamp } from 'rxjs-compat';
 
-
-
 @Component({
   selector: 'order',
   templateUrl: './order.component.html',
@@ -57,6 +55,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   aproved: boolean = true;
   negative: boolean = false;
   noStock: boolean = false;
+  showOrder: boolean = false;
 
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
@@ -131,8 +130,6 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.filter(this.prodQuery);
           if (!this.prodsCategory) this.showedProducts = this.orderProducts;
         });
-
-
       });
     });
   }
@@ -212,7 +209,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.quantity += change;
   }
 
-  createOrder() {
+  beforeShowOrder() {
     if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
       this.noStock = true;
       setTimeout(()=> {
@@ -236,6 +233,11 @@ export class OrderComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.showOrder= !this.showOrder;
+  }
+
+
+  createOrder() {
     let clientOk = false;
     for (let i=0;i<this.clients.length;i++) {
       if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)

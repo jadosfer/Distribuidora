@@ -90,13 +90,19 @@ export class OrdersComponent implements OnInit {
           this.recentUserOrders = [];
           this.userOrders = [];
           this.debtors = [];
+          this.dateRangefilteredOrders = [];
+          this.currentItemsToShow = [];
+          this.notAprovedOrders = [];
+          this.ordersNotAproved = 0;
+          console.log('vuelve1');
           for (let i=0;i<this.ordersService.orders.length;i++) {
             let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
             let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
-            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 7*24*60*60*1000; //7 dias
+            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 30*24*60*60*1000; //7 dias
             if (this.appUser && (this.appUser.isAdmin || isUserOrder || isUserClient)) {
               this.userOrders.push(this.ordersService.orders[i]);
               if (this.ordersService.orders[i].payload.val().aproved == false) {
+                console.log('pushea');
                 this.notAprovedOrders.push(this.ordersService.orders[i].payload.val());
                 this.ordersNotAproved += 1;
               }
@@ -107,7 +113,8 @@ export class OrdersComponent implements OnInit {
           }
 
           for (let i=0;i<this.recentUserOrders.length;i++) {
-            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().clientFantasyName, this.userOrders)) {
+            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().clientFantasyName, this.recentUserOrders)) {
+              this.debtors = [];
               let date = new Date(this.recentUserOrders[i].payload.val().date)
               let debt = Math.round(this.recentUserOrders[i].payload.val().debt * 100) / 100;
               this.debtors.push({
@@ -130,19 +137,20 @@ export class OrdersComponent implements OnInit {
           if (mon < 10) {
             month = "0" + mon.toString();
           }
-          // this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
-          //this.dateValue = today + "/" + month + "/" + year;
-          //this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+          this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
+          this.dateValue = today + "/" + month + "/" + year;
+          this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
-          //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
-          // if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-          //   this.dateValue = "";
-          //   this.clientValue = this.ordersService.clientFantasyName; // idem
-          //   this.filter(this.ordersService.clientFantasyName); // idem
-          //   this.ordersService.clientFantasyName = ""; // idem
-          //   this.filterByDate("");
-          // }
-          this.currentItemsToShow = this.dateRangefilteredOrders;
+          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
+          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            this.dateValue = "";
+            this.clientValue = this.ordersService.clientFantasyName; // idem
+            this.filter(this.ordersService.clientFantasyName); // idem
+            this.ordersService.clientFantasyName = ""; // idem
+            this.filterByDate("");
+          }
+          //this.currentItemsToShow = this.dateRangefilteredOrders;
+          this.currentItemsToShow = this.filteredOrders;
         });
       });
     });

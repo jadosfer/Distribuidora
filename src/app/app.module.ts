@@ -50,8 +50,6 @@ import { CommissionsDashComponent } from './commissions/commissionsDash.componen
 import { CommissionsComponent } from './commissions/commissions.component';
 
 
-
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -77,7 +75,7 @@ import { CommissionsComponent } from './commissions/commissions.component';
     PaymentComponent,
     CreditNoteComponent,
     CommissionsDashComponent,
-    CommissionsComponent
+    CommissionsComponent,
   ],
   imports: [
     BrowserAnimationsModule,

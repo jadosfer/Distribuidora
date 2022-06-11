@@ -1,6 +1,6 @@
 <div fxLayout.xs-sm="column" >
-    <div id='productsList'>
-      <h1>PEDIDO </h1><h2>IMPORTANTE: siempre antes de usar la app asegurate de actualizar la página, con F5 en la PC o presionando y deslizando el dedo hacia abajo en el celu. Gracias!</h2>
+    <div *ngIf="!showOrder" id='productsList'>
+      <h1>PEDIDO </h1>
       <form class="example-form" style="margin-bottom:20px;margin-top:20px;margin-left:-10px;">
 
         <mat-form-field class="example-full-width" appearance="fill">
@@ -22,10 +22,10 @@
         </mat-form-field>
 
       </form>
-      <div>
+      <div *ngIf='getClientCategory()!=""'>
         <product-filter></product-filter>
       </div>
-      <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
+      <div *ngIf='getClientCategory()!=""' fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
         <div fxLayout="row">
           <div><mat-icon matSuffix>search</mat-icon></div>
           <div>
@@ -33,7 +33,7 @@
           </div>
         </div>
         <div>
-          <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+          <button class="left-btn" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
           <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
         </div>
         <div>
@@ -87,15 +87,33 @@
           <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.orderProducts)*(1+this.iva/100) | number:'1.1-1'}}</th>
         </tr>
       </table>
-      <div style="margin-bottom:20px;margin-top:20px;">
-        <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+      <div *ngIf='getClientCategory()!=""' style="margin-bottom:20px;margin-top:20px;">
+        <button class="left-btn" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
         <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
         <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
         <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Pvp 0% IVA</span>
       </div>
     </div>
+
+    <div *ngIf="showOrder" id='productsList'>
+      <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+      <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+      <br>
+      <br>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+      </tr>
+      <tr *ngFor="let p of orderProducts; let i = index">
+        <td *ngIf="p.quantity!=0">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td *ngIf="p.quantity!=0">{{p.quantity}}</td>
+      </tr>
+      <br>
+      <br>
+      <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+      <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+    </div>
 </div>
-
-

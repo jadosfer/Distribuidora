@@ -232,7 +232,7 @@ export class OrdersService implements OnDestroy {
       else updatedDebt = amount + this.getClientDebt(clientFantasyName);
     }
 
-    if (iva != 21) isAproved = false;
+    if (iva != 21 && clientCategory!="Gimnasio") isAproved = false;
     if (date == null) {
       date = time.getTime();
     }
