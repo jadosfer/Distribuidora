@@ -121,7 +121,7 @@ export class CommissionsService {
       }
     }
     this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
-    monthPenalty = Math.round(monthPenalty * 100) / 100;
+    monthPenalty = Math.round(monthPenalty * 10) / 10;
     return monthPenalty;
   }
 }

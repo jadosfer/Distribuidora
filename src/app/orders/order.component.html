@@ -1,106 +1,110 @@
-<div fxLayout.xs-sm="column" >
-    <div *ngIf="!showOrder" id='productsList'>
-      <h1>PEDIDO </h1>
-      <form class="example-form" style="margin-bottom:20px;margin-top:20px;margin-left:-10px;">
+<div class="SCContainer">
+  <div class="row">
+    <div class="col-1"><h1>PEDIDO</h1></div>
+    <div class="col ms-1" *ngIf="!this.utilityService.isMobile()"><mat-icon class="cart">shopping_cart</mat-icon></div>
+  </div>
+  <hr>
+  <div *ngIf="!showOrder" id='productsList'>
+    <form style="margin-top:-70px;margin-bottom:20px;margin-left:-10px;">
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Cliente</mat-label>
+        <input type="text" placeholder="Elija uno" aria-label="Number" matInput
+          [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName" (ngModelChange)="updatePrices()">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
+            {{client.payload.val().fantasyName}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-        <mat-form-field class="example-full-width" appearance="fill">
-          <mat-label>Cliente</mat-label>
-          <input type="text" placeholder="Elija uno" aria-label="Number" matInput
-            [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName" (ngModelChange)="updatePrices()">
-          <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
-              {{client.payload.val().fantasyName}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
+      <mat-form-field *ngIf='getClientCategory()!="" && appUser.isAdmin' appearance="fill" class="example-full-width ml-1">
+        <mat-label>Ingrese la fecha</mat-label>
+        <input matInput [(ngModel)]="date" [matDatepicker]="picker" name="date" required>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
 
-        <mat-form-field *ngIf='getClientCategory()!="" && appUser.isAdmin' appearance="fill" class="example-full-width ml-1">
-          <mat-label>Ingrese la fecha</mat-label>
-          <input matInput [(ngModel)]="date" [matDatepicker]="picker" name="date" required>
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
-      </form>
-      <div *ngIf='getClientCategory()!=""'>
-        <product-filter></product-filter>
-      </div>
-      <div *ngIf='getClientCategory()!=""' fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
-        <div fxLayout="row">
-          <div><mat-icon matSuffix>search</mat-icon></div>
-          <div>
-            <input matInput #prodQuery (keyup)="filter(prodQuery.value)" type="text" placeholder="Buscar producto...">
-          </div>
-        </div>
+    </form>
+    <div *ngIf='getClientCategory()!=""'>
+      <product-filter></product-filter>
+    </div>
+    <div *ngIf='getClientCategory()!=""' fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
+      <div fxLayout="row">
+        <div><mat-icon matSuffix>search</mat-icon></div>
         <div>
-          <button class="left-btn" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
-          <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+          <input matInput class="border-end-0 border rounded-pill" #prodQuery (keyup)="filter(prodQuery.value)" type="text" placeholder="   Buscar producto...">
         </div>
-        <div>
-          <label style="margin:5px" id="example-radio-group-label"><b>IVA:</b></label>
-          <mat-radio-group *ngIf="getClientCategory()!='Gimnasio' && getClientCategory()!='Pvp'" aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="this.iva">
-            <mat-radio-button style="margin:5px" class="example-radio-button" *ngFor="let iva of ivas" [value]="iva">
-              {{iva}}%
-            </mat-radio-button>
-          </mat-radio-group>
-          <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Pvp'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y VP 0%</span>
-          <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
-          <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
-          <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
-        </div>
-
       </div>
-      <span *ngIf='getClientCategory()==""'>----------PRIMERO SELECCIONE EL CLIENTE PARA COMENZAR A OPERAR----------</span>
-      <table *ngIf='getClientCategory()!=""' matSort (matSortChange)="sortData($event)">
-        <tr>
-          <th mat-sort-header="title">Producto</th>
-          <th id="quantity" mat-sort-header="quantity">Cantidad</th>
-          <th mat-sort-header="stock">Stock</th>
-          <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;s/iva</th>
-          <th mat-sort-header="totalPriceProduct">Subtotal</th>
-          <th mat-sort-header="quit">&nbsp;&nbsp;&nbsp;Quitar</th>
-          <th mat-sort-header="add">&nbsp;Agregar</th>
-          <th mat-sort-header="discount">&nbsp;Descuento(%)</th>
-        </tr>
-
-        <tr *ngFor="let p of showedProducts; let i = index">
-          <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-          <td>{{p.quantity}}</td>
-          <td>{{getStock(p)}}</td>
-          <td>${{p.discountPrice | number : '1.1-1'}}</td>
-          <td>${{p.discountPrice*p.quantity | number:'1.1-1'}}</td>
-          <td><button class="left-btn" (click)="updateOrderItemQuantity(p, -1, i)" mat-raised-button color="basic">-</button></td>
-          <td><button class="left-btn" (click)="updateOrderItemQuantity(p, 1, i)" mat-raised-button color="basic">+</button></td>
-          <td>
-            <form id="form" (submit)="discount($event, p, +disc.value)">
-                <input type="number" #disc value={{p.value}}>
-                <button *ngIf="this.order.length > this.orderIndex && p.discount==0" type="submit">Aplicar</button>
-                <button *ngIf="this.order.length > this.orderIndex && p.discount!=0" (click)="discount($event, p, 0)">Anular</button>
-                <span *ngIf="this.order.length > this.orderIndex && p.discount!=0">&nbsp;&nbsp;Descuento: {{p.discount}}%</span>
-            </form>
-          </td>
-        </tr>
-        <tr>
-          <th mat-sort-header="total">UNIDADES TOTALES</th>
-          <th mat-sort-header="showTotalQuantity">{{this.quantity}}&nbsp; Unidades</th>
-          <th mat-sort-header="totalPrice">IMPORTE TOTAL(incluye el IVA)</th>
-          <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.orderProducts)*(1+this.iva/100) | number:'1.1-1'}}</th>
-        </tr>
-      </table>
-      <div *ngIf='getClientCategory()!=""' style="margin-bottom:20px;margin-top:20px;">
-        <button class="left-btn" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
-        <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
-
-        <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
+      <div>
+        <button class="left-btn ms-2" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
+        <button class="left-btn ms-2" (click)="reset()" mat-raised-button color="warn">Anular </button>
+      </div>
+      <div>
+        <label style="margin:5px" id="example-radio-group-label"><b>IVA:</b></label>
+        <mat-radio-group *ngIf="getClientCategory()!='Gimnasio' && getClientCategory()!='Pvp'" aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="this.iva">
+          <mat-radio-button style="margin:5px" class="example-radio-button" *ngFor="let iva of ivas" [value]="iva">
+            {{iva}}%
+          </mat-radio-button>
+        </mat-radio-group>
+        <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Pvp'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y VP 0%</span>
+        <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
         <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
-        <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Pvp 0% IVA</span>
       </div>
-    </div>
 
-    <div *ngIf="showOrder" id='productsList'>
-      <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+    </div>
+    <span *ngIf='getClientCategory()==""'>----------PRIMERO SELECCIONE EL CLIENTE PARA COMENZAR A OPERAR----------</span>
+    <table *ngIf='getClientCategory()!=""' matSort (matSortChange)="sortData($event)">
+      <tr>
+        <th mat-sort-header="title">Producto</th>
+        <th id="quantity" mat-sort-header="quantity">Cantidad</th>
+        <th mat-sort-header="stock">Stock</th>
+        <th mat-sort-header="unitPrice">Precio unitario {{getClientCategory()}}&nbsp;s/iva</th>
+        <th mat-sort-header="totalPriceProduct">Subtotal</th>
+        <th mat-sort-header="quit">&nbsp;&nbsp;&nbsp;Quitar</th>
+        <th mat-sort-header="add">&nbsp;Agregar</th>
+        <th mat-sort-header="discount">&nbsp;Descuento(%)</th>
+      </tr>
+
+      <tr *ngFor="let p of showedProducts; let i = index">
+        <td>{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>{{p.quantity}}</td>
+        <td>{{getStock(p)}}</td>
+        <td>${{p.discountPrice | number : '1.1-1'}}</td>
+        <td>${{p.discountPrice*p.quantity | number:'1.1-1'}}</td>
+        <td><button class="left-btn" (click)="updateOrderItemQuantity(p, -1, i)" mat-raised-button color="basic">-</button></td>
+        <td><button class="left-btn" (click)="updateOrderItemQuantity(p, 1, i)" mat-raised-button color="basic">+</button></td>
+        <td>
+          <form id="form" (submit)="discount($event, p, +disc.value)">
+              <input type="number" #disc value={{p.value}}>
+              <button *ngIf="this.order.length > this.orderIndex && p.discount==0" type="submit">Aplicar</button>
+              <button *ngIf="this.order.length > this.orderIndex && p.discount!=0" (click)="discount($event, p, 0)">Anular</button>
+              <span *ngIf="this.order.length > this.orderIndex && p.discount!=0">&nbsp;&nbsp;Descuento: {{p.discount}}%</span>
+          </form>
+        </td>
+      </tr>
+      <tr>
+        <th mat-sort-header="total">UNIDADES TOTALES</th>
+        <th mat-sort-header="showTotalQuantity">{{this.quantity}}&nbsp; Unidades</th>
+        <th mat-sort-header="totalPrice">IMPORTE TOTAL(incluye el IVA)</th>
+        <th mat-sort-header="showTotal">${{this.ordersService.getTotalAmount(this.orderProducts)*(1+this.iva/100) | number:'1.1-1'}}</th>
+      </tr>
+    </table>
+    <div *ngIf='getClientCategory()!=""' style="margin-bottom:20px;margin-top:20px;">
+      <button class="left-btn" (click)="beforeShowOrder()" mat-raised-button color="basic">Crear Pedido</button>
       <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+
+      <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
+      <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+      <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
+      <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Pvp 0% IVA</span>
+    </div>
+  </div>
+
+  <div *ngIf="showOrder" id='productsList' class="row">
+    <div>
+      <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+      <button class="left-btn" (click)="this.showOrder= !this.showOrder;" mat-raised-button color="warn">Volver </button>
       <br>
       <br>
       <tr>
@@ -113,7 +117,8 @@
       </tr>
       <br>
       <br>
-      <button class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
-      <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
+      <button *ngIf="orderProductsLength() > 10" class="left-btn" (click)="createOrder()" mat-raised-button color="basic">Crear Pedido</button>
+      <button *ngIf="orderProductsLength() > 10" class="left-btn" (click)="this.showOrder= !this.showOrder;" mat-raised-button color="warn">Volver </button>
     </div>
+  </div>
 </div>

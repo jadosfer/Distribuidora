@@ -1,85 +1,133 @@
-<div class="container-edit">
-  <p>
-    <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
-    <button mat-raised-button style="margin-left: 5px;" type="submit" color="primary" (click)=printService.exportClients(this.clients)>Descargar PDF</button>
-  </p>
+<div class="SCContainer">
+  <div><h1 style="display: inline; margin:10px;">ADMINISTRAR CLIENTES</h1></div>
+  <hr>
+  <div class="row">
+    <div class="col-5">
+      <p>
+        <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
+      </p>
+    </div>
+    <div class="col-7">
+      <div class="row">
+      <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
+        <div style="display: inline; margin:10px;">CLIENTES EN MORA: &nbsp;&nbsp;&nbsp;&nbsp;
+          <span *ngIf="clientsInDebt" matBadge="{{clientsInDebt.length}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        <div class="col-8">
+          <mat-accordion>
+            <mat-expansion-panel hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  Ver lista
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <table class="table table-striped table-sm mat-elevation-z8">
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Deuda</th>
+                    <th>Último Pago</th>
+                    <th>Vendedor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let client of clientsInDebt; let i = index">
+                    <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
+                    <!-- <td>{{getClientLastPayment(client.payload.val().fantasyName).payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;</td> -->
+                    <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
+                    <td>{{client.payload.val().designatedSeller}}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
+  <h3>Buscar cliente:</h3>
   <div>
     <table><tr>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Nombre de Fantasía...">
+        <input class="border-end-0 border rounded-pill" #query (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
+      </td>
+      <td>
+        <input class="border-end-0 border rounded-pill" #querySeller (keyup)="filterBySeller(querySeller.value)" type="text" placeholder="   Vendedor...">
       </td>
     </tr></table>
   </div>
 
-    <table class="table table-striped mat-elevation-z8" mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
+  <table *ngIf="this.filteredClients != this.clients" class="table table-striped mat-elevation-z8" mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
 
-      <!-- businessName Column -->
-      <ng-container matColumnDef="businessName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h3> Razon Social </h3></th>
-        <td mat-cell *matCellDef="let c"> {{c.payload.val().businessName}} &nbsp;&nbsp;</td>
+    <!-- businessName Column -->
+    <ng-container matColumnDef="businessName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h3> Razon Social </h3></th>
+      <td mat-cell *matCellDef="let c"> {{c.payload.val().businessName}} &nbsp;&nbsp;</td>
+    </ng-container>
+
+    <!-- fantasyName Column -->
+    <ng-container matColumnDef="fantasyName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h3> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h3></th>
+      <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
+    </ng-container>
+
+    <!-- debt Column -->
+    <!-- <ng-container matColumnDef="debt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda*&nbsp;&nbsp;&nbsp;</h2></th>
+      <td mat-cell *matCellDef="let c">{{c.payload.val().debt | number:'1.1-1'}}</td>
+    </ng-container> -->
+
+      <!-- debt sum-rest -->
+      <ng-container matColumnDef="debt2">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h3> Deuda sum-rest* </h3></th>
+      <td mat-cell *matCellDef="let c">{{calcDebt(c) | number:'1.1-1'}}</td>
+    </ng-container>
+
+      <!-- seller -->
+      <ng-container matColumnDef="seller">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h3>Vendedor</h3></th>
+      <td mat-cell *matCellDef="let c">{{c.payload.val().designatedSeller}}&nbsp;</td>
+    </ng-container>
+
+    <!-- IVA Condition -->
+    <ng-container matColumnDef="IVACond">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="IVACond"><h3>Condición IVA</h3></th>
+      <td mat-cell *matCellDef="let c">{{c.payload.val().IVACondition}}&nbsp;</td>
+    </ng-container>
+
+      <!-- Resume -->
+      <ng-container matColumnDef="resume">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="resume"><h3>Resumen</h3></th>
+      <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="this.printService.exportResume(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+    </ng-container>
+
+      <!-- Edit Column -->
+      <ng-container matColumnDef="edit">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
+        <td mat-cell *matCellDef="let c"><a (click)="getPagination()" [routerLink]="['/admin/clients', c.key]">Editar</a></td>
       </ng-container>
 
-      <!-- fantasyName Column -->
-      <ng-container matColumnDef="fantasyName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h3> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h3></th>
-        <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
+      <!-- Payments Column -->
+      <ng-container matColumnDef="payments">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="payments"></th>
+        <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
       </ng-container>
 
-      <!-- debt Column -->
-      <!-- <ng-container matColumnDef="debt">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda*&nbsp;&nbsp;&nbsp;</h2></th>
-        <td mat-cell *matCellDef="let c">{{c.payload.val().debt | number:'1.1-1'}}</td>
-      </ng-container> -->
-
-       <!-- debt sum-rest -->
-       <ng-container matColumnDef="debt2">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h3> Deuda sum-rest* </h3></th>
-        <td mat-cell *matCellDef="let c">{{calcDebt(c) | number:'1.1-1'}}</td>
+      <!-- Orders Column -->
+      <ng-container matColumnDef="orders">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="orders"></th>
+        <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver pedidos del cliente</span></td>
       </ng-container>
 
-       <!-- seller -->
-       <ng-container matColumnDef="seller">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h3>Vendedor</h3></th>
-        <td mat-cell *matCellDef="let c">{{c.payload.val().designatedSeller}}&nbsp;</td>
-      </ng-container>
-
-      <!-- IVA Condition -->
-      <ng-container matColumnDef="IVACond">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="IVACond"><h3>Condición IVA</h3></th>
-        <td mat-cell *matCellDef="let c">{{c.payload.val().IVACondition}}&nbsp;</td>
-      </ng-container>
-
-       <!-- Resume -->
-       <ng-container matColumnDef="resume">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="resume"><h3>Resumen</h3></th>
-        <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="this.printService.exportResume(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-      </ng-container>
-
-        <!-- Edit Column -->
-        <ng-container matColumnDef="edit">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
-          <td mat-cell *matCellDef="let c"><a (click)="getPagination()" [routerLink]="['/admin/clients', c.key]">Editar</a></td>
-        </ng-container>
-
-        <!-- Payments Column -->
-        <ng-container matColumnDef="payments">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="payments"></th>
-          <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
-        </ng-container>
-
-        <!-- Orders Column -->
-        <ng-container matColumnDef="orders">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="orders"></th>
-          <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver pedidos del cliente</span></td>
-        </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <mat-paginator *ngIf="this.filteredClients != this.clients" [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
  </div>

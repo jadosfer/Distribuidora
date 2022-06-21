@@ -231,6 +231,7 @@ export class OrdersService implements OnDestroy {
       }
       else updatedDebt = amount + this.getClientDebt(clientFantasyName);
     }
+    updatedDebt = Math.round(updatedDebt * 10) / 10
 
     if (iva != 21 && clientCategory!="Gimnasio") isAproved = false;
     if (date == null) {
@@ -268,12 +269,14 @@ export class OrdersService implements OnDestroy {
       if (payment.payload && payment.payload.val().orderNumber > 0 && this.orders[i].payload.val().orderNumber == payment.payload.val().orderNumber) {
         if (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.payload.val().amount) {
           rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
-          this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
+          let debt = Math.round((parseFloat(this.orders[i].payload.val().amount)) * 10) / 10
+          this.updateOrder(this.orders[i].key, {"debt": debt})
           if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.payload.val().client})
           break
         }
         else if (parseFloat(this.orders[i].payload.val().debt)) {
           let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
+          debt = Math.round(debt * 10) / 10
           this.updateOrder(this.orders[i].key, {"debt": debt});
           break
         }
@@ -283,12 +286,14 @@ export class OrdersService implements OnDestroy {
       if (this.orders[i].payload.val().clientFantasyName == payment.client) {
         if (parseFloat(this.orders[i].payload.val().amount) && parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
           rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
-          this.updateOrder(this.orders[i].key, {"debt": this.orders[i].payload.val().amount})
+          let amount = Math.round(this.orders[i].payload.val().amount * 10) / 10
+          this.updateOrder(this.orders[i].key, {"debt": amount})
           if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.client})
           break
         }
         else if (parseFloat(this.orders[i].payload.val().debt)) {
           let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
+          debt = Math.round(debt * 10) / 10
           this.updateOrder(this.orders[i].key, {"debt": debt});
           break
         }

@@ -34,23 +34,21 @@
   </div>
   <hr>
 
-  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center" style="margin:15px">
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <div fxLayout="row" style="margin:20px;">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div fxLayout="row">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
       </div>
-      <div fxLayout="row" style="min-width:130px;">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
+      <div fxLayout="row" *ngIf="appUser.isAdmin">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
       </div>
       <div fxLayout="row">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha..."></div>
       </div>
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="space-evenly center">
+    <div fxLayout="row" fxLayoutAlign="space-evenly center" class="ms-4">
       <form #f="ngForm" style="margin-right:0px" (ngSubmit)="searchDateRange(range.value)">
         <mat-form-field appearance="fill">
           <mat-label>Ingrese un rango de fechas</mat-label>

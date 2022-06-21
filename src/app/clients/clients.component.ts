@@ -36,7 +36,7 @@ export class ClientsComponent implements OnInit {
         this.clients = clients;
 
         for (let i=0;i<this.clients.length;i++) {
-          if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i]);
+          if (this.clients[i].payload.val().designatedSeller == this.appUser.name || this.appUser.isSalesManager ) this.userClients.push(this.clients[i]);
           }
       });
     });

@@ -10,6 +10,7 @@ import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { Timestamp } from 'rxjs-compat';
+import { UtilityService } from '../services/utility.service';
 
 @Component({
   selector: 'order',
@@ -66,7 +67,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     public ordersService: OrdersService,
     public clientsService: ClientsService,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    public utilityService: UtilityService
   ) {
 
     //this.order = this.ordersService.getOrder();
@@ -127,7 +129,6 @@ export class OrderComponent implements OnInit, OnDestroy {
             }
           }
           this.showedProducts = this.filteredOrder;
-          this.filter(this.prodQuery);
           if (!this.prodsCategory) this.showedProducts = this.orderProducts;
         });
       });
@@ -184,7 +185,8 @@ export class OrderComponent implements OnInit, OnDestroy {
   filter(prodQuery: string) {
     this.prodQuery = prodQuery;
     if (prodQuery=='') {
-      this.showedProducts = this.filteredOrder;
+      // this.showedProducts = this.filteredOrder;
+      this.showedProducts = this.orderProducts;
       return
     }
     this.showedProducts = (prodQuery) ?
@@ -207,6 +209,16 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     this.quantity += change;
+  }
+
+  orderProductsLength() {
+    let result = 0;
+    for (let i=0;i<this.orderProducts.length;i++) {
+      if (this.orderProducts[i].quantity > 0) {
+        result++;
+      }
+    }
+    return result
   }
 
   beforeShowOrder() {
@@ -260,7 +272,9 @@ export class OrderComponent implements OnInit, OnDestroy {
       for (let i=0;i<this.orderProducts.length;i++) {
         this.orderProducts[i].quantity = 0;
       }
+      this.showOrder=false;
       this.ordersService.resetOrder(this.orderIndex);
+
     }
   }
 

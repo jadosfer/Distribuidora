@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
-import { MatPaginator } from '@angular/material/paginator';
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +45,41 @@ export class ClientsService {
         break
       }
     }
+  }
+
+  getClientsInDebt(clients: any[], orders: any[]) {
+    let result = [];
+    for (let i=0;i<clients.length;i++) {
+      if (this.isClientInDebt(clients[i].payload.val().fantasyName, orders))
+      result.push(clients[i])
+    }
+    return result;
+  }
+
+  isOrderInDebt(order: any) {
+    let today = new Date();
+    if((Date.parse(today.toString()) - order.payload.val().date > 30*24*60*60*1000)
+    && parseFloat(order.payload.val().debt) > 100 ) { //que pasen 30 dias
+      return true;
+    }
+    return false;
+  }
+
+  isClientInDebt(fantasyName: string, orders: any[]) {
+    for (let i=0;i<orders.length;i++) {
+      if (orders[i].payload.val().clientFantasyName == fantasyName &&
+      this.isOrderInDebt(orders[i])) return true;
+    }
+    return false;
+  }
+
+  getClientLastPayment(fantasyName: string, payments: any[]) {
+    let payment = payments[0];
+    payment.payload.val().date = 1
+    for (let i=0;i<payments.length;i++) {
+      if (payments[i].payload.val().client == fantasyName && payments[i].payload.val().date > payment.payload.val().date)
+      payment = payments[i];
+    }
+    return payment;
   }
 }

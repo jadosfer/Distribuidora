@@ -1,12 +1,14 @@
 <div class="SCContainer" *ngIf="appUser">
+  <div><h1 style="display: inline; margin:10px;">STOCK</h1></div>
+  <hr>
   <div fxLayout="row" style="margin-bottom:20px;margin-top:20px;margin-left:30px;">
     <div>
-      <a *ngIf="appUser.isAdmin" mat-raised-button color="accent" routerLink="/stock/buy">Nueva compra</a>
-      <a *ngIf="appUser.isAdmin" mat-raised-button color="accent" routerLink="/buys">Ver compras</a>
+      <a *ngIf="appUser.isAdmin" mat-raised-button color="primary" routerLink="/stock/buy">Nueva compra</a>
+      <a *ngIf="appUser.isAdmin" class="ms-2" mat-raised-button color="accent" routerLink="/buys">Ver compras</a>
     </div>
     <div fxLayout="row" style="margin-top:10px;margin-left:30px;">
       <div><mat-icon matSuffix>search</mat-icon></div>
-      <div><input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar producto..."></div>
+      <div><input class="border-end-0 border rounded-pill" #query (keyup)="filter(query.value)" type="text" placeholder="   Buscar producto..."></div>
     </div>
   </div>
 
@@ -34,7 +36,7 @@
 
     <div>&nbsp;</div>
     <div style="margin-top:10px;margin-left:30px;">
-      <h1>STOCK</h1>
+      <h2>Existencias:</h2>
       <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
         <thead>
           <tr>

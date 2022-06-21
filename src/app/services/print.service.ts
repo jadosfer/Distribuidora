@@ -120,7 +120,6 @@ export class PrintService {
               let day;
               let month;
               let yyyy = humanDateFormat.getFullYear().toString();
-              console.log('d/m/y1: ', dd, mm, yyyy);
               if (dd < 10) {
                 day = '0' + dd.toString();
               }
@@ -147,7 +146,6 @@ export class PrintService {
               let day;
               let month;
               let yyyy = humanDateFormat.getFullYear().toString();
-              console.log('d/m/y2: ', dd, mm, yyyy);
               if (dd < 10) {
                   day = '0' + dd.toString();
               }
@@ -248,7 +246,6 @@ export class PrintService {
 
   sortArrayByDate(array: any) {
     array.sort((a: any, b: any) => {
-      console.log('a', a);
       if (b.date > a.date) return 1;
       if (b.date < a.date) return -1;
       return 0;

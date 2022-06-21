@@ -1,5 +1,5 @@
-<div class="SCContainer" style="margin-left: 15px;" *ngIf="appUser">
-  <h1>MIS CLIENTES</h1>
+<div class="SCContainer" *ngIf="appUser">
+  <div><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
   <hr>
   <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
   <div>
@@ -8,7 +8,7 @@
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="buscar por cliente...">
+        <input class="border-end-0 border rounded-pill" #query (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
       </td>
     </tr></table>
   </div>

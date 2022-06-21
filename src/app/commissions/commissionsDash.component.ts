@@ -27,7 +27,7 @@ export class CommissionsDashComponent implements OnInit {
   lastFullMonthOrders: any[];
 
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
-    private sellersService: SellersService, public commissionsService: CommissionsService, public catService: CategoryService ) {}
+    public sellersService: SellersService, public commissionsService: CommissionsService, public catService: CategoryService ) {}
 
   ngOnInit(){
     let today = new Date();
@@ -59,6 +59,7 @@ export class CommissionsDashComponent implements OnInit {
                   this.saveCommissionsByMonth();
                 }
               }
+              this.getActiveSellers();
               this.loading = false;
             });
           });
@@ -81,6 +82,30 @@ export class CommissionsDashComponent implements OnInit {
     return filteredMonthOrders
   }
 
+  getActiveSellers() {
+    let activeSellers = [];
+    for (let i=0;i<this.sellers.length;i++) {
+      if (this.isSellerActive(this.sellers[i].payload.val().name)) {
+        activeSellers.push(this.sellers[i]);
+      }
+
+    }
+    this.sellers = activeSellers;
+  }
+
+  isSellerActive(name: String) {
+    for (let i=this.ordersService.orders.length - 1;i>0;i--) {
+      let orderDate = this.ordersService.orders[i].payload.val().date;
+      let timeAfterOrder = (Date.now() - orderDate)/(1000*3600*24);
+      const d = new Date(Date.now());
+      let day = d.getDate()
+      if(this.ordersService.orders[i].payload.val().order.sellerName == name && timeAfterOrder <= day + 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   retailSalesPMonth(seller: string, orders: any[]) {
     let amount = 0;
     if (orders) {
@@ -93,7 +118,7 @@ export class CommissionsDashComponent implements OnInit {
       }
     }
 
-    if (amount) amount = Math.round(amount * 100) / 100;
+    if (amount) amount = Math.round(amount * 10) / 10;
     return amount;
   }
 
@@ -106,7 +131,7 @@ export class CommissionsDashComponent implements OnInit {
         amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
     }
-    if (amount) amount = Math.round(amount * 100) / 100;
+    if (amount) amount = Math.round(amount * 10) / 10;
     return amount;
   }
 
@@ -120,19 +145,19 @@ export class CommissionsDashComponent implements OnInit {
         }
       }
     }
-    if (sales) sales = Math.round(sales * 100) / 100;
+    if (sales) sales = Math.round(sales * 10) / 10;
     return sales
   }
 
   retailCommission(retailPercent: number, retailSalesPMonth: number) {
     if (retailSalesPMonth >= this.commissions[0].payload.val().minRetailTotalSales)
-    return Math.round((retailSalesPMonth - this.commissions[0].payload.val().minRetailTotalSales)*retailPercent * 100) / 100;
+    return Math.round((retailSalesPMonth - this.commissions[0].payload.val().minRetailTotalSales)*retailPercent * 10) / 10;
     return 0;
   }
 
   wholesalerCommission(wholesalerPercent: number, wholesalerSalesPMonth: number, retailSalesPMonth: number) {
     if (retailSalesPMonth >= this.commissions[0].payload.val().minRetailTotalSales)
-    return Math.round(wholesalerSalesPMonth*wholesalerPercent * 100) / 100;
+    return Math.round(wholesalerSalesPMonth*wholesalerPercent * 10) / 10;
     return 0;
   }
 

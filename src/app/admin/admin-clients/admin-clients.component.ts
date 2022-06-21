@@ -3,7 +3,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
 import { ClientsService } from 'src/app/services/clients.service';
 import { OrdersService } from 'src/app/services/orders.service';
 import { PaymentsService } from 'src/app/services/payments.service';
@@ -23,9 +22,11 @@ export class AdminClientsComponent implements OnInit {
   filteredClients:any[];
   orders: any[];
   payments: any[];
-  subscription: Subscription;
   orderOrPayment: boolean;
   pos: number;
+  query: {client: string, seller: string} = {client: "", seller: ""}
+  //ordersInDebt: any[];
+  clientsInDebt: any[];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -34,7 +35,7 @@ export class AdminClientsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.subscription = this.clientsService.getAll().subscribe(clients => {
+    this.clientsService.getAll().subscribe(clients => {
       this.filteredClients = this.clients = clients;
       this.dataSource = new MatTableDataSource<any>(this.filteredClients);
       this.dataSource.paginator = this.paginator;
@@ -43,22 +44,44 @@ export class AdminClientsComponent implements OnInit {
       this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
       this.dataSource.paginator = this.paginator
       }
-    });
-    // this.ordersService.getAll().subscribe(orders => {
-    //   this.orders = orders;
-    // });
-    this.paymentsService.getAll().subscribe(payments => {
-      this.payments = payments;
+      this.paymentsService.getAll().subscribe(payments => {
+        this.payments = payments;
+        this.ordersService.getAll().subscribe(orders => {
+          this.orders = orders;
+          this.clientsInDebt = this.clientsService.getClientsInDebt(this.clients, this.orders);
+          for (let i=0;i<this.clientsInDebt.length;i++) {
+            this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
+          }
+        });
+      });
     });
   }
 
   filter(query: string) {
-    this.filteredClients = (query) ?
-      this.clients.filter(c => c.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())) :
-      this.clients;
+    this.query.client = query;
+    this.filteredClients = [];
+    for (let i=0;i<this.clients.length;i++) {
+      if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.clients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase())
+      )
+      this.filteredClients.push(this.clients[i]);
+    }
     this.dataSource = new MatTableDataSource<any>(this.filteredClients);
     this.dataSource.paginator = this.paginator;
+  }
 
+  filterBySeller(query: string) {
+    this.query.seller = query;
+    this.filteredClients = [];
+    for (let i=0;i<this.clients.length;i++) {
+      if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.clients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())
+      )
+      this.filteredClients.push(this.clients[i]);
+    }
+
+    this.dataSource = new MatTableDataSource<any>(this.filteredClients);
+    this.dataSource.paginator = this.paginator;
   }
 
   sortData(sort: Sort) {
@@ -100,6 +123,11 @@ export class AdminClientsComponent implements OnInit {
     let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
     let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
     return ordersAmount - paymentsAmount
+  }
+
+  getClientLastPayment(fantasyName: string) {
+    let payment = this.clientsService.getClientLastPayment(fantasyName, this.payments);
+    return payment;
   }
 }
 

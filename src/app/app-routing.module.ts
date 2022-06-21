@@ -1,3 +1,4 @@
+import { ReplacesComponent } from './replaces/replaces.component';
 import { CheckOutComponent } from './check-out/check-out.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { OrdersComponent } from './orders/orders.component';
@@ -53,6 +54,7 @@ const routes: Routes = [
   { path: "admin/sellers/new", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/sellers/:id", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/sellers", component: AdminSellersComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "replaces/replaces", component: ReplacesComponent, canActivate: [AuthGuard, AdminAuthGuard]},
   { path: "commissions/commissionsDash", component: CommissionsDashComponent},
   { path: "commissions/commissions", component: CommissionsComponent},
 ];

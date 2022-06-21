@@ -1,4 +1,6 @@
-<div class="container-edit">
+<div class="SCContainer">
+  <div><h1 style="display: inline; margin:10px;">ADMINISTRAR VENDEDORES</h1></div>
+  <hr>
   <p>
     <a mat-raised-button color="accent" routerLink="/admin/sellers/new">Nuevo Vendedor</a>
   </p>
@@ -8,7 +10,7 @@
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="Buscar por Nombre...">
+        <input matInput #query (keyup)="filter(query.value)" type="text" placeholder="   Buscar por Nombre...">
       </td>
     </tr></table>
   </div>

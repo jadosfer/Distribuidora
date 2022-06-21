@@ -48,6 +48,8 @@ import { PaymentComponent } from './payment/payment.component';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
 import { CommissionsDashComponent } from './commissions/commissionsDash.component';
 import { CommissionsComponent } from './commissions/commissions.component';
+import { UtilityService } from './services/utility.service';
+import { ReplacesComponent } from './replaces/replaces.component';
 
 
 @NgModule({
@@ -76,6 +78,7 @@ import { CommissionsComponent } from './commissions/commissions.component';
     CreditNoteComponent,
     CommissionsDashComponent,
     CommissionsComponent,
+    ReplacesComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -91,8 +94,8 @@ import { CommissionsComponent } from './commissions/commissions.component';
     ReactiveFormsModule,
     ChartsModule
   ],
-  providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService,
-    ProductService, AuthService, OrdersService, DatePipe, PieChartComponent, PaymentsComponent, {
+  providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService, ProductService, AuthService, OrdersService,
+    DatePipe, PieChartComponent, PaymentsComponent, UtilityService, {
       provide: MAT_RADIO_DEFAULT_OPTIONS,
       useValue: { color: 'primary' },
   }],

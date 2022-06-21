@@ -66,9 +66,6 @@ export class PaymentsService {
     payment.aproved = false;
     this.clientsService.addPaymentAmount(payment.client, payment.amount)
     //antes le ponia la fecha del dia, ahora puede elegirla, por eso comento lo de abajo
-    console.log("payment.date", payment.date)
-    console.log("del form", payment.date.unix()*1000)
-    // console.log("de hoy", new Date().getTime())
 
     payment.date = payment.date.unix()*1000;
 
@@ -94,7 +91,8 @@ export class PaymentsService {
           if (rest < 10) break
         }
         else if (this.ordersService.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": parseFloat(this.ordersService.orders[i].payload.val().debt) - rest})
+          let debt = Math.round((parseFloat(this.ordersService.orders[i].payload.val().debt) - rest) * 10) / 10
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": debt})
           break
         }
       }
@@ -112,7 +110,8 @@ export class PaymentsService {
           break
         }
         else if (this.ordersService.orders[i].payload.val().debt) {
-          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": parseFloat(this.ordersService.orders[i].payload.val().debt) - rest})
+          let debt = Math.round((parseFloat(this.ordersService.orders[i].payload.val().debt) - rest) * 10) / 10
+          this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": debt})
           break
         }
       }

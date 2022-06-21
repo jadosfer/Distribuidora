@@ -90,6 +90,10 @@ export class CreditNoteComponent implements OnInit {
     return;
   }
 
+  cancel() {
+    this.router.navigate(['/payments/payments']);
+  }
+
   ngOnDestroy() {
   }
 }

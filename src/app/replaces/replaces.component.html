@@ -1,0 +1,24 @@
+<div fxLayout="row" fxLayout.xs="column">
+  <div class="container-form" fxFlex="40%;" fxFlex.xs="80%">
+    <form #f="ngForm" (ngSubmit)="replaceSeller(f.value)">
+      <p>
+        <mat-form-field appearance="legacy">
+          <mat-label>Vendedor Actual</mat-label>
+          <input #oldSeller="ngModel" [(ngModel)]="form.oldSeller" matInput name="oldSeller" placeholder="" required>
+          <mat-hint>Campo requerido</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Nuevo Vendedor</mat-label>
+          <input #newSeller="ngModel" [(ngModel)]="form.newSeller" matInput name="newSeller" placeholder="" required>
+          <mat-hint>Campo requerido</mat-hint>
+        </mat-form-field>
+      </p>
+
+      <button mat-raised-button type="submit" color="primary" >Reemplazar</button>
+      <span *ngIf="finishShow" class="ms-3">***Reemplazo terminado***</span>
+      <span *ngIf="noMatch" class="ms-3">***No hubo coincidencias***</span>
+
+    </form>
+  </div>
+ </div>

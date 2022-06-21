@@ -4,7 +4,7 @@
 
 <div class="SCContainer" *ngIf="!loading && appUser">
   <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="start center" style="margin:10px">
-    <div><h1 style="display: inline; margin:10px;">MIS COBROS</h1></div>
+    <div><h1 style="display: inline; margin:10px;">COBROS</h1></div>
     <div>
       <a style="margin-left:0px;" mat-icon-button routerLink="/payments/payment"><mat-icon>control_point</mat-icon></a><span>Cargar Cobro</span>
     </div>
@@ -14,20 +14,17 @@
   </div>
   <hr>
 
-  <div fxLayout.gt-sm="row" fxLayout.xs-sm="column" fxLayoutAlign.gt-sm="start center">
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <div fxLayout="row" style="margin:20px;">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="clientValue" matInput #query (keyup)="filter(query.value)" type="text" placeholder="por cliente..."></div>
-
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div fxLayout="row">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
       </div>
-      <div fxLayout="row" *ngIf="appUser.isAdmin" style="min-width:130px;">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="sellerValue" matInput #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="por vendedor..."></div>
+      <div fxLayout="row" *ngIf="appUser.isAdmin">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
       </div>
       <div fxLayout="row">
-        <div><mat-icon matSuffix>search</mat-icon></div>
-        <div><input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha..."></div>
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha..."></div>
       </div>
     </div>
 
@@ -66,24 +63,23 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let pay of filteredPayments; let i = index" >
+      <tr *ngFor="let pay of currentItemsToShow; let i = index" >
 
         <td>{{pay.payload.val().client}}&nbsp;&nbsp;</td>
         <td>{{pay.payload.val().amount}}&nbsp;&nbsp;</td>
         <td>{{pay.payload.val().payWay}}&nbsp;&nbsp;</td>
         <td>{{pay.payload.val().sellerName}}&nbsp;&nbsp;</td>
-        <!-- <td>{{pay.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;<a [routerLink]="['/payments/payments', pay.key]">Edit</a></td> -->
         <td>{{pay.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td>{{pay.payload.val().orderNumber}}&nbsp;&nbsp;</td>
         <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(pay)" color="accent"><mat-icon>delete</mat-icon></button></td>
     </tr>
+    <tr *ngIf="this.filteredPayments != this.userPayments">
+      <th ms-3>TOTAL</th>
+      <th>${{getTotal() | number:'1.1-1'}}</th>
+    </tr>
     </tbody>
   </table>
-
-
-
-
-
+  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredPayments.length" [pageSize]="20" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 </div>
 
 

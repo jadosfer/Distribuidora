@@ -1,15 +1,15 @@
-<div class="SCContainer ml-3" *ngIf="appUser && appUser.isAdmin">
+<div class="SCContainer ml-3" *ngIf="appUser && (appUser.isAdmin || appUser.isSalesManager)">
   <div class="row">
     <div class="col">
-      <h3>Comisiones histórico</h3>
+      <div><h1 style="display: inline; margin:10px;">COMISIONES HISTÓRICO</h1></div>
     </div>
     <div class="col">
       <button mat-raised-button  routerLink="/commissions/commissionsDash" color="accent" >Volver a comisiones</button>
     </div>
   </div>
+  <hr>
+
   <div fxLayout="row" fxLayout.xs="column">
-
-
     <table *ngIf="this.commissionsByMonth" class="table table-sm mat-elevation-z8">
       <thead>
         <tr>

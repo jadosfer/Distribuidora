@@ -1,6 +1,7 @@
 <div fxLayout.xs-sm="column" >
   <div id='productsList'>
-    <h1>Nota de Crédito</h1>
+    <h1>NOTA DE CRÉDITO</h1>
+    <hr>
     <form #f="ngForm" (ngSubmit)="sendNote(f.value)" class="example-form" style="margin-top:20px;margin-left:0px;">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Cliente</mat-label>
@@ -37,12 +38,18 @@
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
-      <button class="left-btn" type="submit" mat-raised-button color="primary">Crear Nota</button>
+      <div class="row">
+        <div class="col-1">
+          <button class="left-btn" type="submit" mat-raised-button color="primary">Guardar</button>
+        </div>
+        <div class="col">
+          <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
+        </div>
+      </div>
     </form>
     <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
       <div>
         <span *ngIf="!noteEmpty">Debe ingresar un valor!</span>
-        <!-- <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button> -->
       </div>
     </div>
 

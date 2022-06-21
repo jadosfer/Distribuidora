@@ -2,16 +2,16 @@ import { OrdersService } from 'src/app/services/orders.service';
 import { ClientsService } from './../services/clients.service';
 import { StockService } from '../services/stock.service';
 import { PaymentsService } from '../services/payments.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-payments',
@@ -25,22 +25,26 @@ export class PaymentsComponent implements OnInit {
     end: new FormControl()
   });
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   appUser: AppUser;
 
   payment: any;
   payments: any[];
   userPayments: any[] = [];
+  clients: any;
+  userClients: string[];
   titles: string[]=[];
-  subscription: Subscription;
-  filteredProduct:any[];
-  filteredPayments:any[];
-  dateRangefilteredPayments:any[];
-  datefilteredPayments:any[];
+  query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
+  filteredPayments: any[];
+  dateRangefilteredPayments: any[];
+  datefilteredPayments: any[];
   products:any[];
   date: any;
   dateValue: string;
   clientValue: string;
   sellerValue: string;
+  currentItemsToShow: any[];
 
   title: string;
   quantity: number;
@@ -61,51 +65,125 @@ export class PaymentsComponent implements OnInit {
   ngOnInit(){
     this.filter("");
     this.auth.appUser$.subscribe(appUser => {
-      this.subscription = this.paymentsService.getAll().subscribe(payments => {
+      this.paymentsService.getAll().subscribe(payments => {
         this.appUser = appUser;
-        this.payments = payments;
-        this.userPayments = [];
-        for (let i=0;i<this.payments.length;i++) {
-          if (this.appUser && (this.appUser.isAdmin || this.payments[i].payload.val().sellerName == this.appUser.name)) {
-            this.userPayments.push(this.payments[i]);
+        this.clientsService.getAll().subscribe(clients => {
+          this.clients = clients;
+          this.userClients = [];
+          for (let i=0;i<this.clients.length;i++) {
+            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
-        }
-        this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments;
-        if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-          this.filter(this.paymentsService.clientFantasyName); // idem
-          this.clientValue = this.paymentsService.clientFantasyName; // idem
-          this.paymentsService.clientFantasyName = ""; // idem
-        }
-        this.loading = false;
+          this.payments = payments;
+          this.userPayments = [];
+          this.dateRangefilteredPayments = [];
+          this.currentItemsToShow = [];
+
+          for (let i=0;i<this.payments.length;i++) {
+            let isUserPayment = this.payments[i].payload.val().sellerName == this.appUser.name;
+            let isUserClient = this.isClientInUserClients(this.payments[i].payload.val().client, this.userClients);
+            if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserPayment || isUserClient)) {
+              this.userPayments.push(this.payments[i]);
+            }
+          }
+
+          this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments; //ver que hace??
+
+          if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            this.filter(this.paymentsService.clientFantasyName); // idem
+            this.clientValue = this.paymentsService.clientFantasyName; // idem
+            this.paymentsService.clientFantasyName = ""; // idem
+          }
+
+          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length})
+          if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            // this.dateValue = "";
+            this.clientValue = this.paymentsService.clientFantasyName; // idem
+            this.filter(this.paymentsService.clientFantasyName); // idem
+            this.paymentsService.clientFantasyName = ""; // idem
+            this.filterByDate("");
+          }
+          this.currentItemsToShow = this.filteredPayments;
+          this.loading = false;
+          console.log('entro');
+          this.clearRange()
+
+        });
       });
     });
   }
 
   filter(query: string) {
-    if (query && query != "") {
-      this.filteredPayments = (query) ?
-      this.userPayments.filter(p => p.payload.val().client.toLowerCase().includes(query.toLowerCase())) :
-      [];
+    this.query.client = query;
+    this.filteredPayments = [];
+    for (let i=0;i<this.userPayments.length;i++) {
+      if (this.userPayments[i].payload.val().client.toLowerCase().includes(query.toLowerCase())
+      && this.userPayments[i].payload.val().sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      && this.datepipe.transform(this.userPayments[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
+      this.filteredPayments.push(this.userPayments[i]);
     }
-    else this.filteredPayments = this.userPayments;
+    this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterBySeller(query: string) {
-    if (query != "") {
-      this.filteredPayments = (query) ?
-      this.userPayments.filter(p => p.payload.val().sellerName.toLowerCase().includes(query.toLowerCase())) :
-      [];
+    this.query.seller = query;
+    this.filteredPayments = [];
+    for (let i=0;i<this.userPayments.length;i++) {
+      if (this.userPayments[i].payload.val().client.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userPayments[i].payload.val().sellerName.toLowerCase().includes(query.toLowerCase())
+      && this.datepipe.transform(this.userPayments[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) ) {
+        this.filteredPayments.push(this.userPayments[i])
+      }
     }
-    else this.filteredPayments = this.userPayments;
+    this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterByDate(query: string) {
-    if (query != "") {
-      this.filteredPayments = (query) ?
-      this.userPayments.filter(p => this.datepipe.transform(p.payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query)):
-      [];
+    this.query.date = query;
+    this.filteredPayments = [];
+    for (let i=0;i<this.userPayments.length;i++) {
+      if (this.userPayments[i].payload.val().client.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userPayments[i].payload.val().sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      && this.datepipe.transform(this.userPayments[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query) )
+      this.filteredPayments.push(this.userPayments[i]);
     }
-    else this.filteredPayments = this.userPayments;
+    this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+  }
+
+  searchDateRange(range: any) {
+    if (range.start) {
+      this.filteredPayments = [];
+      for (let i=0;i<this.userPayments.length;i++) {
+        console.log('aca', this.userPayments[i].payload.val().client);
+        if (this.userPayments[i].payload.val().client.toLowerCase().includes(this.query.client.toLowerCase())
+        && this.userPayments[i].payload.val().sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+        && this.datepipe.transform(this.userPayments[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
+        this.filteredPayments.push(this.userPayments[i]);
+      }
+      this.filteredPayments = (range) ?
+      this.filteredPayments.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
+      this.filteredPayments;
+      this.query.dateRange.start = new Date(Date.parse(range.start?._d));
+      this.query.dateRange.end = new Date(Date.parse(range.end?._d));
+    }
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+  }
+
+  isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
+    for (let i=0;i<userClients.length;i++) {
+      if (clientFantasyName == userClients[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   sortData(sort: Sort) {
@@ -128,24 +206,31 @@ export class PaymentsComponent implements OnInit {
     });
   }
 
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredPayments.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
+  }
+
   getTitle(item: any) {
     return item.title;
   }
-
 
   compare(a: number | string, b: number | string, isAsc: boolean) {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  // getTotal() {
-  //   let total = 0;
-  //   if (this.filteredPayments) {
-  //     this.filteredPayments.forEach(payment => {
-  //       total += this.paymentsService.getTotalCost(payment);
-  //     });
-  //   }
-  //   return total;
-  // }
+  getTotal() {
+    let total = 0;
+    if (this.filteredPayments) {
+
+      this.filteredPayments.forEach(payment => {
+        total += parseFloat(payment.payload.val().amount);
+      });
+    }
+    return total;
+  }
 
   removePayment(paymentId: any) {
     this.paymentsService.removePayment(paymentId);
@@ -158,23 +243,19 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
-  searchDateRange(range: any) {
-    if (range.start) {
-      this.filteredPayments = (range) ?
-      this.filteredPayments.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
-      this.filteredPayments;
-    }
-    else this.filteredPayments = this.userPayments;
-  }
-
   clearRange() {
     this.range.setValue({
       start: null,
       end: null
     });
+    this.sellerValue = "";
     this.clientValue = "";
-    this.dateValue = "";
-    this.filteredPayments = this.userPayments;
+    // this.dateValue = "";
+    // this.filterByDate( this.dateValue);
+    // this.filteredOrders = this.userOrders;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+
   }
 
   remove(pay: any) {

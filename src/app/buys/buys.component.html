@@ -5,12 +5,12 @@
 
   <div>
     <table><tr>
-      <h2 style="display: inline;">Mis compras&nbsp;&nbsp;</h2>
+      <h2 style="display: inline;">Compras&nbsp;&nbsp;</h2>
       <td>
         <mat-icon matSuffix>search</mat-icon>
       </td>
       <td>
-        <input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="por fecha...">
+        <input [(ngModel)]="dateValue" matInput #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   fecha...">
       </td>
       <td>
         <form #f="ngForm" (ngSubmit)="searchDateRange(range.value)">
