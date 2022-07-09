@@ -1,3 +1,5 @@
+import { OrdersService } from 'src/app/services/orders.service';
+import { PaymentsService } from 'src/app/services/payments.service';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 
@@ -9,7 +11,8 @@ export class ClientsService {
   clientsPaginator: {"pageIndex": number, "pageSize": number} = {"pageIndex": 0, "pageSize": 10};
 
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(private db: AngularFireDatabase, private paymentsService: PaymentsService,
+    private ordersService: OrdersService) {
     this.getAll().subscribe(clients => { this.clients = clients})
    }
 
@@ -81,5 +84,35 @@ export class ClientsService {
       payment = payments[i];
     }
     return payment;
+  }
+
+  getAddress(fantasyName: string, clients: any[]) {
+    for (let i=0;i<clients.length;i++) {
+      //console.log('fantasyName: ', fantasyName, "this.clients[i].payload.val().designatedSeller: ", this.clients[i].payload.val().fantasyName);
+      if (this.clients[i].payload.val().fantasyName == fantasyName) {
+        console.log('address: ', this.clients[i].payload.val().address);
+        return this.clients[i].payload.val().address;
+      }
+    }
+    return null;
+  }
+
+  getClientCategory(clientFantasyName: any) {
+    let clientCategory = "";
+    if (this.clients) {
+      for (let i = 0;i < this.clients.length;i++) {
+        if (this.clients[i].payload.val().fantasyName == clientFantasyName) {
+          clientCategory = this.clients[i].payload.val().clientCategory;
+          return clientCategory
+        }
+      }
+    }
+    return clientCategory
+  }
+
+  calcDebt(client: any) {
+    let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
+    let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
+    return ordersAmount - paymentsAmount
   }
 }

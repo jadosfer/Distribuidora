@@ -257,7 +257,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date);
+        let debt = this.clientsService.calcDebt(this.clientFantasyName);
+        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName,
+          this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
         this.clientFantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);

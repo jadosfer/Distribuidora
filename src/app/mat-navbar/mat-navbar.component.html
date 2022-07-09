@@ -15,10 +15,10 @@
 
   <button mat-button *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser.name}}<mat-icon>expand_more</mat-icon></button>
   <mat-menu #appMenu="matMenu" >
-    <ng-container *ngIf="appUser!=undefined && appUser.isAdmin">
-      <a mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>
-      <a mat-menu-item routerLink="/admin/prods">Administrar Productos</a>
-      <a mat-menu-item routerLink="/admin/sellers">Administrar Vendedores</a>
+    <ng-container *ngIf="appUser!=undefined && (appUser.isAdmin || appUser.isSalesManager)">
+      <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>
+      <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="/admin/prods">Administrar Productos</a>
+      <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="/admin/sellers">Administrar Vendedores</a>
     </ng-container>
     <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="replaces/replaces">Reemplazos</a>
     <a mat-menu-item routerLink="commissions/commissionsDash">Comisiones</a>

@@ -1,3 +1,4 @@
+import { SellersService } from 'src/app/services/sellers.service';
 import { OrdersService } from './orders.service';
 import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
@@ -15,6 +16,7 @@ import { ProductService } from './product.service';
 })
 export class PaymentsService {
 
+  DEBT_TOLERATED = 100;
   clients: any;
   payment: any;
   payments: any;
@@ -27,8 +29,9 @@ export class PaymentsService {
   orders: any;
   clientFantasyName: string;
 
-  constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
-    private auth: AuthService, private route: ActivatedRoute, private router: Router, private ordersService: OrdersService) {
+  constructor(private db: AngularFireDatabase, private productService: ProductService,
+    public clientsService: ClientsService, private auth: AuthService, private route: ActivatedRoute,
+    private router: Router, private ordersService: OrdersService, private sellersService: SellersService) {
 
 
     this.auth.appUser$.subscribe(appUser => {
@@ -85,10 +88,13 @@ export class PaymentsService {
     let rest = amount
     for (let i=0;i<this.ordersService.orders.length;i++) {
       if (this.ordersService.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        if (parseFloat(this.ordersService.orders[i].payload.val().debt) && parseFloat(this.ordersService.orders[i].payload.val().debt) <= rest) {
+        if (parseFloat(this.ordersService.orders[i].payload.val().debt)
+        && parseFloat(this.ordersService.orders[i].payload.val().debt) <= rest) {
+          this.sellersService.addSaleToSeller(this.ordersService.orders[i],
+          this.ordersService.orders[i].payload.val().amount, this.ordersService.orders[i].payload.val().clientFantasyName);
           rest = rest - parseFloat(this.ordersService.orders[i].payload.val().debt);//cambie orden de este
           this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": 0}) //con este
-          if (rest < 10) break
+          if (rest < this.DEBT_TOLERATED) break
         }
         else if (this.ordersService.orders[i].payload.val().debt) {
           let debt = Math.round((parseFloat(this.ordersService.orders[i].payload.val().debt) - rest) * 10) / 10
@@ -103,8 +109,11 @@ export class PaymentsService {
     let rest = payment.amount
     for (let i=0;i<this.ordersService.orders.length;i++) {
       if (this.ordersService.orders[i].payload.val().orderNumber == payment.orderNumber) {
-        if (parseFloat(this.ordersService.orders[i].payload.val().debt) && parseFloat(this.ordersService.orders[i].payload.val().debt) <= payment.amount) {
+        if (parseFloat(this.ordersService.orders[i].payload.val().debt)
+        && parseFloat(this.ordersService.orders[i].payload.val().debt) <= payment.amount) {
           rest = rest - parseFloat(this.ordersService.orders[i].payload.val().debt);
+          this.sellersService.addSaleToSeller(this.ordersService.orders[i].payload.val().order.sellerName, this.ordersService.orders[i].payload.val().amount,
+          this.ordersService.orders[i].payload.val().clientFantasyName);
           this.ordersService.updateOrder(this.ordersService.orders[i].key, {"debt": 0})
           this.clearDebts(payment.client, rest);
           break

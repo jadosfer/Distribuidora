@@ -6,6 +6,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ClientsService } from 'src/app/services/clients.service';
 import { OrdersService } from 'src/app/services/orders.service';
 import { PaymentsService } from 'src/app/services/payments.service';
+import { AppUser } from 'src/app/models/app-user';
+import { AuthService } from 'src/app/services/auth.service';
+import { UtilityService } from 'src/app/services/utility.service';
 
 
 @Component({
@@ -15,6 +18,7 @@ import { PaymentsService } from 'src/app/services/payments.service';
 })
 export class AdminClientsComponent implements OnInit {
 
+  appUser: AppUser;
   displayedColumns: string[] = ['businessName', 'fantasyName', 'debt2', 'seller', 'IVACond', 'resume', 'edit', 'payments', 'orders'];
   dataSource: any;
   clients:any[];
@@ -31,27 +35,31 @@ export class AdminClientsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private clientsService: ClientsService, private paymentsService: PaymentsService,
-    private ordersService: OrdersService, public printService: PrintService) {
+    private ordersService: OrdersService, private auth: AuthService, public printService: PrintService,
+    public utilityService: UtilityService) {
   }
 
   ngOnInit() {
-    this.clientsService.getAll().subscribe(clients => {
-      this.filteredClients = this.clients = clients;
-      this.dataSource = new MatTableDataSource<any>(this.filteredClients);
-      this.dataSource.paginator = this.paginator;
-      if (this.clientsService.clientsPaginator.pageIndex > 0 || this.clientsService.clientsPaginator.pageSize != 10) {
-      this.paginator.pageIndex = this.clientsService.clientsPaginator.pageIndex;
-      this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
-      this.dataSource.paginator = this.paginator
-      }
-      this.paymentsService.getAll().subscribe(payments => {
-        this.payments = payments;
-        this.ordersService.getAll().subscribe(orders => {
-          this.orders = orders;
-          this.clientsInDebt = this.clientsService.getClientsInDebt(this.clients, this.orders);
-          for (let i=0;i<this.clientsInDebt.length;i++) {
-            this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
-          }
+    this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
+      this.clientsService.getAll().subscribe(clients => {
+        this.filteredClients = this.clients = clients;
+        this.dataSource = new MatTableDataSource<any>(this.filteredClients);
+        this.dataSource.paginator = this.paginator;
+        if (this.clientsService.clientsPaginator.pageIndex > 0 || this.clientsService.clientsPaginator.pageSize != 10) {
+        this.paginator.pageIndex = this.clientsService.clientsPaginator.pageIndex;
+        this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
+        this.dataSource.paginator = this.paginator
+        }
+        this.paymentsService.getAll().subscribe(payments => {
+          this.payments = payments;
+          this.ordersService.getAll().subscribe(orders => {
+            this.orders = orders;
+            this.clientsInDebt = this.clientsService.getClientsInDebt(this.clients, this.orders);
+            for (let i=0;i<this.clientsInDebt.length;i++) {
+              this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
+            }
+          });
         });
       });
     });

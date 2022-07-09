@@ -1,16 +1,22 @@
 <div class="SCContainer" *ngIf="appUser">
-  <div><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
+  <div class="row">
+    <div [ngClass]="{'col-1': !this.utilityService.isMobile(), 'col-4': this.utilityService.isMobile()}"><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
+    <div [ngClass]="{'col-1': !this.utilityService.isMobile(), 'col-2': this.utilityService.isMobile()}"><button mat-icon-button (click)="this.printService.exportClients(this.clients)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></div>
+  </div>
+
   <hr>
   <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
-  <div>
-    <table><tr>
-      <td>
-        <mat-icon matSuffix>search</mat-icon>
-      </td>
-      <td>
-        <input class="border-end-0 border rounded-pill" #query (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
-      </td>
-    </tr></table>
+
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div fxLayout="row">   
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
+      </div>
+      <div fxLayout="row" *ngIf="appUser.isAdmin || appUser.isSalesManager">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
+      </div>
+    </div>
   </div>
 
   <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
@@ -18,6 +24,7 @@
       <tr>
         <th mat-sort-header="businessName">Razón social</th>
         <th mat-sort-header="fantasyName">Nombre de Fantasía</th>
+        <th mat-sort-header="seller">Vendedor</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
         <th mat-sort-header="debt">Deuda*</th>
@@ -25,12 +32,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let client of filteredClients; let i = index">
+      <tr *ngFor="let client of currentItemsToShow; let i = index">
         <td>{{client.payload.val().businessName}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;</td>
+        <td>{{client.payload.val().designatedSeller}}</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <!-- <td>{{client.payload.val().debt | number:'1.1-1'}}</td> -->
         <td>{{calcDebt(client) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
@@ -38,6 +45,7 @@
       </tr>
     </tbody>
   </table>
+  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredClients.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
 </div>
 
 

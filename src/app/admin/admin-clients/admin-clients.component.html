@@ -1,16 +1,16 @@
 <div class="SCContainer">
   <div><h1 style="display: inline; margin:10px;">ADMINISTRAR CLIENTES</h1></div>
   <hr>
-  <div class="row">
-    <div class="col-5">
+  <div [ngClass]="{'row': !this.utilityService.isMobile()}">
+    <div *ngIf="appUser.isAdmin" [ngClass]="{'col-5': !this.utilityService.isMobile(), 'col-12': this.utilityService.isMobile()}">
       <p>
         <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
       </p>
     </div>
-    <div class="col-7">
+    <div [ngClass]="{'col-7': !this.utilityService.isMobile()}">
       <div class="row">
       <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
-        <div style="display: inline; margin:10px;">CLIENTES EN MORA: &nbsp;&nbsp;&nbsp;&nbsp;
+        <div style="display: inline; margin:10px;">CLIENTES EN MORA: &nbsp;&nbsp;
           <span *ngIf="clientsInDebt" matBadge="{{clientsInDebt.length}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
         <div class="col-8">
           <mat-accordion>
@@ -24,18 +24,19 @@
                 <thead>
                   <tr>
                     <th>Cliente</th>
+                    <th>Vendedor</th>
                     <th>Deuda</th>
                     <th>Último Pago</th>
-                    <th>Vendedor</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let client of clientsInDebt; let i = index">
                     <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>{{client.payload.val().designatedSeller}}</td>
                     <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
                     <!-- <td>{{getClientLastPayment(client.payload.val().fantasyName).payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;</td> -->
                     <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
-                    <td>{{client.payload.val().designatedSeller}}</td>
+
                   </tr>
                 </tbody>
               </table>
@@ -48,9 +49,9 @@
     </div>
   </div>
 
-  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
-  <h3>Buscar cliente:</h3>
-  <div>
+  <h3 *ngIf="appUser.isAdmin">*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
+  <h3 *ngIf="appUser.isAdmin">Buscar cliente:</h3>
+  <div *ngIf="appUser.isAdmin">
     <table><tr>
       <td>
         <mat-icon matSuffix>search</mat-icon>

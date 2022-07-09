@@ -278,14 +278,16 @@ export class OrdersComponent implements OnInit {
       const line1 = 30
       const line2 = line1 + 10
       const line3 = line2 + 10
+      let address = this.clientsService.getAddress(order.payload.val().clientFantasyName, this.clients);
 
       var doc = new jsPDF();
       doc.setFontSize(10);
       doc.text('GENTECH MAR DEL PLATA', 10, 20);
-      doc.text('FECHA DEL PEDIDO: ' + date, 80, 20);
-      doc.text('FACT Nº: ' +  order.payload.val().orderNumber, 170, 20);
+      doc.text('FECHA DEL PEDIDO: ' + date, 70, 20);
+      doc.text('FACT Nº: ' +  order.payload.val().orderNumber, 140, 20);
       doc.text('CLIENTE: ' + order.payload.val().clientFantasyName, 10, line1);
-      doc.text('VENDEDOR: ' + order.payload.val().order.sellerName, 80, line1);
+      doc.text('VENDEDOR: ' + order.payload.val().order.sellerName, 70, line1);
+      doc.text('DIRECCIÓN: ' +  address, 140, line1);
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, line1+5);
       doc.text('Cantidad', 10, line2);
       doc.text('Producto', 30, line2);

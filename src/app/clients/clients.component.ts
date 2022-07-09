@@ -1,6 +1,6 @@
 import { PrintService } from './../services/print.service';
 import { PaymentsComponent } from './../payments/payments.component';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { Observable, Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
@@ -8,6 +8,8 @@ import { AuthService } from '../services/auth.service';
 import { ClientsService } from '../services/clients.service';
 import { PaymentsService } from '../services/payments.service';
 import { OrdersService } from '../services/orders.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { UtilityService } from '../services/utility.service';
 
 @Component({
   selector: 'clients',
@@ -16,37 +18,87 @@ import { OrdersService } from '../services/orders.service';
 })
 export class ClientsComponent implements OnInit {
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   appUser: AppUser;
   clients$: Observable<any>;
   clients: any;
-  userClients: any = [];
   filteredClients: any;
   subscription: Subscription;
   sortedData: any[];
+  includedClients: any[] = [];
 
-  constructor(private clientsService: ClientsService, private auth: AuthService, public printService: PrintService,
-    private paymentsService: PaymentsService, private ordersService: OrdersService) {
-   }
+  clientValue: string;
+  sellerValue: string;
+  currentItemsToShow: any[];
+  query: {client: string, seller: string} = {client: "", seller: ""}
+
+  constructor(private clientsService: ClientsService, private auth: AuthService,
+    public printService: PrintService, private paymentsService: PaymentsService,
+    private ordersService: OrdersService, public utilityService: UtilityService) {
+  }
 
   ngOnInit() {
     this.filter("");
-    this.subscription = this.clientsService.getAll().subscribe(clients => {
-      this.auth.appUser$.subscribe(appUser => {
-        this.appUser = appUser;
+    this.auth.appUser$.subscribe(appUser => {
+
+      this.appUser = appUser;
+      this.clientsService.getAll().subscribe(clients => {
         this.clients = clients;
+        this.includedClients = [];
+        this.currentItemsToShow = [];
 
         for (let i=0;i<this.clients.length;i++) {
-          if (this.clients[i].payload.val().designatedSeller == this.appUser.name || this.appUser.isSalesManager ) this.userClients.push(this.clients[i]);
+          //let isUserClient = this.clients[i].payload.val().designatedSeller == this.appUser.name;
+          let isUserClient = true;
+          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserClient)) {
+            this.includedClients.push(this.clients[i]);
           }
+        }
+
+        this.filteredClients = this.includedClients;
+        this.currentItemsToShow = this.filteredClients;
+
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+        if (this.paginator) this.paginator.pageIndex = 0;
+
       });
+
     });
+
   }
 
 
+  // filter(query: string) {
+  //   this.filteredClients = (query) ?
+  //   this.userClients.filter((c: { payload: { val: () => { (): any; new(): any; fantasyName: string; }; }; }) => c.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())) :
+  //   this.userClients;
+  // }
+
   filter(query: string) {
-    this.filteredClients = (query) ?
-    this.userClients.filter((c: { payload: { val: () => { (): any; new(): any; fantasyName: string; }; }; }) => c.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())) :
-    this.userClients;
+    this.query.client = query;
+    this.filteredClients = [];
+    for (let i=0;i<this.includedClients.length;i++) {
+      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+      this.filteredClients.push(this.includedClients[i]);
+    }
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
+  }
+
+  filterBySeller(query: string) {
+    this.query.seller = query;
+    this.filteredClients = [];
+    for (let i=0;i<this.includedClients.length;i++) {
+      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
+        this.filteredClients.push(this.includedClients[i])
+      }
+    }
+
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   sortData(sort: Sort) {
@@ -77,8 +129,13 @@ export class ClientsComponent implements OnInit {
   }
 
   calcDebt(client: any) {
-    let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
-    let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
-    return ordersAmount - paymentsAmount
+    return this.clientsService.calcDebt(client)
+  }
+
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredClients.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
   }
 }

@@ -1,8 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ignoreElements } from 'rxjs-compat/operator/ignoreElements';
 import 'rxjs/add/operator/take';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
@@ -29,8 +27,9 @@ export class OrdersService implements OnDestroy {
   hasDiscount: boolean = false;
   orderNumber: any = [];
 
-  constructor(private db: AngularFireDatabase, private productService: ProductService, public clientsService: ClientsService,
-    private auth: AuthService, private route: ActivatedRoute, private router: Router,  private stockService: StockService) {
+  constructor(private db: AngularFireDatabase, private productService: ProductService, private auth: AuthService,
+    public clientsService: ClientsService, private route: ActivatedRoute, private router: Router,
+    private stockService: StockService) {
 
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
@@ -204,16 +203,16 @@ export class OrdersService implements OnDestroy {
       }
   }
 
-  createOrder(sellerName: string, clientFantasyName: string, iva: number, products: any, quantity: number, date: any) {
+  createOrder(sellerName: string, clientFantasyName: string, iva: number, products: any, quantity: number, date: any, clientDebt: number) {
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
     for (let i=0;i<products.length;i++) {
-      if (products[i].discount != 0) this.hasDiscount = true;
-      if (products[i].quantity != 0) { //solo guardo los prod con quant > 0
+      if (parseFloat(products[i].discount) != 0) this.hasDiscount = true;
+      if (parseInt(products[i].quantity) != 0) { //solo guardo los prod con quant > 0
         prods.push({"discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
         "product": {"title": products[i].product.title, "prodsCategory": products[i].product.prodsCategory}});
-        amount += products[i].quantity * products[i].discountPrice * (1 + iva/100)
+        amount += parseInt(products[i].quantity) * parseFloat(products[i].discountPrice) * (1 + iva/100)
       }
     }
     let time = new Date();
@@ -224,12 +223,13 @@ export class OrdersService implements OnDestroy {
       debt = true;
     }
     let isAproved = !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
-    let updatedDebt = amount
-    if (this.getClientDebt(clientFantasyName) < 0) {
-      if (amount + this.getClientDebt(clientFantasyName) <=0) {
-        updatedDebt = 0
+    let updatedDebt = amount;
+    console.log('amount: ', amount, "clientFantasyName: ", clientFantasyName);
+    if (clientDebt < 0) {
+      if (amount + clientDebt <=0) {
+        updatedDebt = 0;
       }
-      else updatedDebt = amount + this.getClientDebt(clientFantasyName);
+      else updatedDebt = amount + clientDebt;
     }
     updatedDebt = Math.round(updatedDebt * 10) / 10
 
@@ -238,7 +238,9 @@ export class OrdersService implements OnDestroy {
       date = time.getTime();
     }
     else date = date.unix()*1000;
+    if (amount) amount = Math.round(amount * 10) / 10;
 
+    console.log('debt: ', updatedDebt);
     let result = this.db.list('/orders/').push({
       "order": {
         "orderItemsCount": quantity,
@@ -301,15 +303,8 @@ export class OrdersService implements OnDestroy {
     }
   }
 
-  getClientDebt(clientFantasyName: string) {
-    let client = this.clients.filter((cli: any) => {
-      return cli.payload.val().fantasyName == clientFantasyName
-    });
-    if (client) return parseFloat(client[0].payload.val().debt);
-    return 0;
-  }
-
   sendNote (amount: any, clientFantasyName: string) {
+    amount = Math.round(amount * 10) / 10;
     let result = this.db.list('/creditNotes/').push({
       "amount": amount,
       "clienteFantasyName": clientFantasyName,

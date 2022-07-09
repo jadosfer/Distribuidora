@@ -116,10 +116,14 @@ export class CommissionsDashComponent implements OnInit {
           amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
         }
       }
+      amount += this.getSellerRetailSalesAdded(seller)
     }
 
     if (amount) amount = Math.round(amount * 10) / 10;
     return amount;
+  }
+  getSellerRetailSalesAdded(seller: string) {
+    return this.sellersService.getSellerRetailSalesAdded(seller);
   }
 
   wholesalerSalesPMonth(sellerName: string, orders: any[]) {

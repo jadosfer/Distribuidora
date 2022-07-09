@@ -45,7 +45,7 @@ const routes: Routes = [
 
   { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/clients", component: AdminClientsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "admin/clients", component: AdminClientsComponent },
 
   { path: "admin/prods/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/prods/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },

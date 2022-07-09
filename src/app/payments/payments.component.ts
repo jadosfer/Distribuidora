@@ -94,7 +94,7 @@ export class PaymentsComponent implements OnInit {
             this.paymentsService.clientFantasyName = ""; // idem
           }
 
-          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length})
+          //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length})
           if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
             // this.dateValue = "";
             this.clientValue = this.paymentsService.clientFantasyName; // idem
@@ -103,10 +103,10 @@ export class PaymentsComponent implements OnInit {
             this.filterByDate("");
           }
           this.currentItemsToShow = this.filteredPayments;
+          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length})
+          if (this.paginator) this.paginator.pageIndex = 0;
           this.loading = false;
-          console.log('entro');
-          this.clearRange()
-
+          //this.clearRange();
         });
       });
     });
@@ -122,7 +122,7 @@ export class PaymentsComponent implements OnInit {
       this.filteredPayments.push(this.userPayments[i]);
     }
     this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -138,7 +138,7 @@ export class PaymentsComponent implements OnInit {
     }
     this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -153,7 +153,7 @@ export class PaymentsComponent implements OnInit {
     }
     this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -173,7 +173,7 @@ export class PaymentsComponent implements OnInit {
       this.query.dateRange.start = new Date(Date.parse(range.start?._d));
       this.query.dateRange.end = new Date(Date.parse(range.end?._d));
     }
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -250,10 +250,7 @@ export class PaymentsComponent implements OnInit {
     });
     this.sellerValue = "";
     this.clientValue = "";
-    // this.dateValue = "";
-    // this.filterByDate( this.dateValue);
-    // this.filteredOrders = this.userOrders;
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredPayments.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
 
   }
