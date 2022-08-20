@@ -9,8 +9,8 @@ import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
-import { ClientsService } from '../services/clients.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'orders',
@@ -59,10 +59,11 @@ export class OrdersComponent implements OnInit {
   userClients: string[];
   debtors: any[];
 
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+
   constructor(public ordersService: OrdersService,
-  private productService: ProductService,
-  private route: ActivatedRoute,
-  private clientsService: ClientsService,
   private auth: AuthService, public datepipe: DatePipe,
   public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
@@ -71,10 +72,10 @@ export class OrdersComponent implements OnInit {
   ngOnInit(){
 
     this.filter("");
-    this.ordersService.getAll().subscribe(orders => {
-      this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.ordersService.getAllOrders().subscribe(orders => {
+      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-        this.clientsService.getAll().subscribe(clients => {
+        this.subscription3 =  this.ordersService.getAllClients().subscribe(clients => {
           this.clients = clients;
           this.userClients = [];
           for (let i=0;i<this.clients.length;i++) {
@@ -145,7 +146,7 @@ export class OrdersComponent implements OnInit {
       });
     });
     //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
-    // this.clientsService.getAll().subscribe(clients => {
+    // this.ordersService.getAll().subscribe(clients => {
     //   this.clients = clients;
     // });
   }
@@ -234,9 +235,9 @@ export class OrdersComponent implements OnInit {
   getTotal() {
     let total = 0;
     if (this.filteredOrders) {
-
       this.filteredOrders.forEach(order => {
-        total += this.ordersService.getTotalAmount(order.payload.val().order.products);
+        //total += this.ordersService.getTotalAmount(order.payload.val().order.products);
+        total += parseFloat(order.payload.val().amount);
       });
     }
     return total;
@@ -245,7 +246,7 @@ export class OrdersComponent implements OnInit {
   aprove(order: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
       this.stockService.aprove(order);
-      this.ordersService.aprove(order);
+      this.ordersService.aproveOrder(order);
     }
   }
 
@@ -278,7 +279,7 @@ export class OrdersComponent implements OnInit {
       const line1 = 30
       const line2 = line1 + 10
       const line3 = line2 + 10
-      let address = this.clientsService.getAddress(order.payload.val().clientFantasyName, this.clients);
+      let address = this.ordersService.getAddress(order.payload.val().clientFantasyName, this.clients);
 
       var doc = new jsPDF();
       doc.setFontSize(10);
@@ -356,6 +357,12 @@ export class OrdersComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
   }
 }
 

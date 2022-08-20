@@ -108,17 +108,18 @@ export class CommissionsService {
     let monthPenalty = 0;
     this.totalSellerDebtDelayed = 0
     for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().order.sellerName == seller && orders[i].payload.val().debt > 10) {
+      if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
         let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
         if (delay > 30 && delay < 60) {
           monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(orders[i].payload.val().debt) / (1 + (parseFloat(orders[i].payload.val().iva)/100));
-          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().debt);
+          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);
         }
         else if (delay >= 60) {
-          monthPenalty += monthlyRate * parseFloat(orders[i].payload.val().debt);
-          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().debt);
+          monthPenalty += monthlyRate * parseFloat(orders[i].payload.val().amount);
+          this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);
         }
       }
+      //if (orders[i].payload.val().order.sellerName == "Enrique Oyhamburu") console.log('totalSellerDebtDelayed ', this.totalSellerDebtDelayed);
     }
     this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
     monthPenalty = Math.round(monthPenalty * 10) / 10;

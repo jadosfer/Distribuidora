@@ -10,3 +10,5 @@ let day = d.getDate() //20
 let month = d.getMonth() //5 (va del 0 al 11)
 
 let enDias = (enTimestamp)/(1000*3600*24);
+
+(Date.now() - date)/(1000*3600*24) dias desde "date" a hoy

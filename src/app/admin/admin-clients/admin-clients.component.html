@@ -33,7 +33,7 @@
                   <tr *ngFor="let client of clientsInDebt; let i = index">
                     <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
                     <td>{{client.payload.val().designatedSeller}}</td>
-                    <td>{{client.payload.val().debt | number:'1.1-1'}}</td>
+                    <td>{{this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
                     <!-- <td>{{getClientLastPayment(client.payload.val().fantasyName).payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;</td> -->
                     <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
 
@@ -88,7 +88,13 @@
       <!-- debt sum-rest -->
       <ng-container matColumnDef="debt2">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h3> Deuda sum-rest* </h3></th>
-      <td mat-cell *matCellDef="let c">{{calcDebt(c) | number:'1.1-1'}}</td>
+      <td mat-cell *matCellDef="let c">{{this.ordersService.calcDebt(c.payload.val().fantasyName) | number:'1.1-1'}}</td>
+    </ng-container>
+
+     <!-- debt sum greather 30 -->
+     <ng-container matColumnDef="debt3">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt3"><h3> Deuda > 30 </h3></th>
+      <td mat-cell *matCellDef="let c">{{this.ordersService.calcDebtGreatherThan30(c.payload.val().fantasyName) | number:'1.1-1'}}</td>
     </ng-container>
 
       <!-- seller -->

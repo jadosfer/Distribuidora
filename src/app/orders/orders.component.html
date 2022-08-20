@@ -80,6 +80,7 @@
         <th>Cliente</th>
         <th>Vendedor</th>
         <th *ngIf="!isExpanded">Fecha</th>
+        <th>Pago Completo</th>
         <th> Importe c/iva</th>
         <th >IVA</th>
         <th *ngIf="!isExpanded">¿aprobado?</th>
@@ -98,7 +99,9 @@
       <tr *ngFor="let order of currentItemsToShow; let i = index" >
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <!-- formato para fecha con horas y minutos "dd/MM/yyyy HH:mm" -->
+        <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().fullPaymentDate | date:"dd/MM/yyyy"}}</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>

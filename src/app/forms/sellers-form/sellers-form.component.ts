@@ -1,38 +1,37 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { SellersService } from 'src/app/services/sellers.service';
+import { Observable, Subscription } from 'rxjs';
+import { OrdersService } from 'src/app/services/orders.service';
 
 @Component({
   selector: 'app-sellers-form',
   templateUrl: './sellers-form.component.html',
   styleUrls: ['./sellers-form.component.scss']
 })
-export class SellersFormComponent implements OnInit {
+export class SellersFormComponent {
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
   seller:any = {};
   id:any;
+  subscription: Subscription;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private sellersService: SellersService) {
-
-
-    this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id) this.sellersService.get(this.id).take(1).subscribe(p => {
-      this.seller = p.payload.val();
-    });
-   }
+    private ordersService: OrdersService) {
+      this.id = this.route.snapshot.paramMap.get('id');
+      if (this.id) this.subscription = this.ordersService.getSeller(this.id).take(1).subscribe(p => {
+        this.seller = p.payload.val();
+      });
+    }
 
   save(seller: any) {
     if (confirm('Está segur@ que quiere guardar/crear este vendedor?')) {
       if (this.id) {
-        this.sellersService.update(this.id, seller);
+        this.ordersService.updateSeller(this.id, seller);
       }
       else {
-        this.sellersService.create(seller);
+        this.ordersService.createSeller(seller);
       }
       this.router.navigate(['/admin/sellers']);
     }
@@ -40,12 +39,12 @@ export class SellersFormComponent implements OnInit {
 
   delete() {
     if (confirm('Está segur@ que quiere borrar este vendedor? No podrá recuperarlo')) {
-      this.sellersService.delete(this.id);
+      this.ordersService.deleteSeller(this.id);
       this.router.navigate(['/admin/sellers']);
     }
   }
 
-  ngOnInit(): void {
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
-
 }

@@ -10,6 +10,7 @@ import { DateAdapter } from '@angular/material/core';
 import { ChartOptions, ChartType } from 'chart.js';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -56,9 +57,10 @@ export class DashboardComponent implements OnInit {
   ];
 
   aproveFirst:boolean = false;
-
   color: string[] = ['rgba(255,64,129)', 'rgba(63,81,181)', 'rgba(101,115,193)', 'rgba(244,146,199)', 'rgba(196,202,233)'];
 
+  subscription: Subscription;
+  subscription2: Subscription;
 
   constructor(public ordersService: OrdersService,
     private auth: AuthService, public datepipe: DatePipe,
@@ -67,8 +69,8 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(){
-    this.ordersService.getAll().subscribe(orders => {
-      this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.ordersService.getAllOrders().subscribe(orders => {
+      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
         this.ordersService.orders = orders;
         this.userOrders = [];
@@ -322,6 +324,11 @@ export class DashboardComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();    
   }
 }
 

@@ -1,11 +1,10 @@
 import { CategoryService } from '../services/category.service';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
 import { ProductService } from 'src/app/services/product.service';
 import {MatPaginator} from '@angular/material/paginator';
 import { Observable, Subscription } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { jsPDF } from 'jspdf';
 
 
@@ -35,6 +34,8 @@ export class AdminProdsComponent implements OnInit {
   filteredProducts:any[] = [];
   prodsCategories$: Observable<any>;
   subscription: Subscription;
+  subscription2: Subscription
+  subscription3: Subscription
 
   recharged: boolean;
   mobile:boolean = false;
@@ -45,15 +46,15 @@ export class AdminProdsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
+    this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
       this.clientCategories = clientCategories;
     })
-    this.productService.getAll().subscribe(products => {
+    this.subscription2 = this.productService.getAll().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.onPageChange({previousPageIndex: 0, pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.filteredProducts.length})
       //this.createStockValue(this.products);
     });
-    this.productService.getAllRecharges().subscribe(recharges => {
+    this.subscription3 = this.productService.getAllRecharges().subscribe(recharges => {
       this.recharges = recharges;
       if (!recharges) {
         this.productService.createRecharge();
@@ -200,6 +201,12 @@ export class AdminProdsComponent implements OnInit {
       // Save the PDF
       doc.save('ListaDePreciosGentech.pdf');
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
   }
 }
 

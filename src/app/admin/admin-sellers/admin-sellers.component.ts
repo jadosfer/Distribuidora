@@ -3,7 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { SellersService } from 'src/app/services/sellers.service';
+import { OrdersService } from 'src/app/services/orders.service';
 
 @Component({
   selector: 'admin-sellers',
@@ -21,11 +21,11 @@ export class AdminSellersComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private sellersService: SellersService) {
+  constructor(private ordersService: OrdersService) {
   }
 
   ngOnInit() {
-     this.subscription = this.sellersService.getAll().subscribe(sellers => {
+     this.subscription = this.ordersService.getAllSellers().subscribe(sellers => {
        this.filteredSellers = this.sellers = sellers;
        this.dataSource = new MatTableDataSource<any>(this.filteredSellers);
        this.dataSource.paginator = this.paginator;
@@ -60,7 +60,7 @@ export class AdminSellersComponent implements OnInit {
 
 
   ngOnDestroy() {
-  //   this.subscription.unsubscribe();
+    this.subscription.unsubscribe();
   }
 
 }

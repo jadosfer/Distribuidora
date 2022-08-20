@@ -1,7 +1,5 @@
 import { OrdersService } from 'src/app/services/orders.service';
-import { ClientsService } from './../services/clients.service';
 import { StockService } from '../services/stock.service';
-import { PaymentsService } from '../services/payments.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ProductService } from '../services/product.service';
@@ -12,6 +10,7 @@ import { DatePipe } from '@angular/common'
 import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-payments',
@@ -45,29 +44,30 @@ export class PaymentsComponent implements OnInit {
   clientValue: string;
   sellerValue: string;
   currentItemsToShow: any[];
-
   title: string;
   quantity: number;
   sortedData: any[];
   aproved: string[] = ["NO", "SI"];
   selected: string = "NO";
-
   aproveFirst:boolean = false;
   loading: boolean = true;
 
-  constructor(public paymentsService: PaymentsService,  private productService: ProductService,
-  private route: ActivatedRoute,  private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService, private dateAdapter: DateAdapter<Date>, private clientsService: ClientsService,
-  private ordersService: OrdersService) {
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+
+  constructor(private productService: ProductService, private route: ActivatedRoute,
+    private auth: AuthService, public datepipe: DatePipe, public stockService: StockService,
+    private dateAdapter: DateAdapter<Date>, private ordersService: OrdersService) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
   ngOnInit(){
     this.filter("");
-    this.auth.appUser$.subscribe(appUser => {
-      this.paymentsService.getAll().subscribe(payments => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
+      this.subscription2 = this.ordersService.getAllPayments().subscribe(payments => {
         this.appUser = appUser;
-        this.clientsService.getAll().subscribe(clients => {
+        this.subscription3 = this.ordersService.getAllClients().subscribe(clients => {
           this.clients = clients;
           this.userClients = [];
           for (let i=0;i<this.clients.length;i++) {
@@ -88,18 +88,18 @@ export class PaymentsComponent implements OnInit {
 
           this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments; //ver que hace??
 
-          if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-            this.filter(this.paymentsService.clientFantasyName); // idem
-            this.clientValue = this.paymentsService.clientFantasyName; // idem
-            this.paymentsService.clientFantasyName = ""; // idem
+          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            this.filter(this.ordersService.clientFantasyName); // idem
+            this.clientValue = this.ordersService.clientFantasyName; // idem
+            this.ordersService.clientFantasyName = ""; // idem
           }
 
           //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length})
-          if (this.paymentsService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
             // this.dateValue = "";
-            this.clientValue = this.paymentsService.clientFantasyName; // idem
-            this.filter(this.paymentsService.clientFantasyName); // idem
-            this.paymentsService.clientFantasyName = ""; // idem
+            this.clientValue = this.ordersService.clientFantasyName; // idem
+            this.filter(this.ordersService.clientFantasyName); // idem
+            this.ordersService.clientFantasyName = ""; // idem
             this.filterByDate("");
           }
           this.currentItemsToShow = this.filteredPayments;
@@ -152,7 +152,6 @@ export class PaymentsComponent implements OnInit {
       this.filteredPayments.push(this.userPayments[i]);
     }
     this.filteredPayments.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
-
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -161,7 +160,6 @@ export class PaymentsComponent implements OnInit {
     if (range.start) {
       this.filteredPayments = [];
       for (let i=0;i<this.userPayments.length;i++) {
-        console.log('aca', this.userPayments[i].payload.val().client);
         if (this.userPayments[i].payload.val().client.toLowerCase().includes(this.query.client.toLowerCase())
         && this.userPayments[i].payload.val().sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
         && this.datepipe.transform(this.userPayments[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
@@ -233,13 +231,13 @@ export class PaymentsComponent implements OnInit {
   }
 
   removePayment(paymentId: any) {
-    this.paymentsService.removePayment(paymentId);
+    this.ordersService.removePayment(paymentId);
   }
 
   aprove(payment: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
       this.stockService.aprove(payment);
-      this.paymentsService.aprove(payment);
+      this.ordersService.aprovePayment(payment);
     }
   }
 
@@ -258,8 +256,14 @@ export class PaymentsComponent implements OnInit {
   remove(pay: any) {
     if (confirm('Está segur@ que quiere eliminar este cobro?')) {
       if (pay.payload.val().orderNumber > 0) this.ordersService.restoreOrderAmount(pay);
-      this.paymentsService.removePayment(pay.key);
-      this.clientsService.addPaymentAmount(pay.payload.val().client, -1*pay.payload.val().amount)
+      this.ordersService.removePayment(pay.key);
+      //this.ordersService.addPaymentAmount(pay.payload.val().client, -1*pay.payload.val().amount, this.clients)
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
   }
 }

@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/database';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import 'rxjs/add/operator/take';
-import { ClientsService } from '../services/clients.service';
-import { PaymentsService } from '../services/payments.service';
 import { CategoryService } from '../services/category.service';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
@@ -31,23 +28,25 @@ export class PaymentComponent implements OnInit {
   myControl = new FormControl();
   clientFantasyName:string="";
 
+
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+  subscription4: Subscription;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private auth: AuthService,
-    private paymentsService: PaymentsService,
     private categoryService: CategoryService,
-    private clientsService: ClientsService,
     private ordersService: OrdersService)
     {
-
-
-      this.auth.appUser$.subscribe(appUser => {
+      this.subscription = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser
-        ordersService.getAll().subscribe(orders => {
+        this.subscription2 = ordersService.getAllOrders().subscribe(orders => {
           this.ordersService.orders = this.filteredOrders = orders;
         })
-        clientsService.getAll().subscribe(clients =>{
+        this.subscription3 = ordersService.getAllClients().subscribe(clients =>{
           this.clients = clients;
           this.filteredClients = [];
           for (let i=0;i<this.clients.length;i++) {
@@ -59,7 +58,7 @@ export class PaymentComponent implements OnInit {
         this.filteredOptions = this.myControl.valueChanges.pipe(startWith(''),
         map(value =>  value? this._filter(value) : this._filter(""))
         )
-        categoryService.getAllPaysCategories().subscribe(payWays =>{
+        this.subscription4 = categoryService.getAllPaysCategories().subscribe(payWays =>{
           this.payWays = payWays;
         });
       });
@@ -69,7 +68,7 @@ export class PaymentComponent implements OnInit {
     if (confirm('Está segur@ que quiere guardar este cobro?')) {
       payment.sellerName = this.appUser.name;
       payment.client = this.clientFantasyName;
-      this.paymentsService.create(payment);
+      this.ordersService.createPayment(payment, this.clients);
       this.router.navigate(['/payments/payments']);
     }
   }
@@ -95,4 +94,10 @@ export class PaymentComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
+  }
 }

@@ -10,7 +10,7 @@
   <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
     <div fxLayout="row" fxLayoutAlign="space-around center">
       <div><mat-icon matSuffix>search</mat-icon></div>
-      <div fxLayout="row">   
+      <div fxLayout="row">
         <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
       </div>
       <div fxLayout="row" *ngIf="appUser.isAdmin || appUser.isSalesManager">
@@ -38,7 +38,7 @@
         <td>{{client.payload.val().designatedSeller}}</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <td>{{calcDebt(client) | number:'1.1-1'}}</td>
+        <td>{{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>

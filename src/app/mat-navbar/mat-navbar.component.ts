@@ -1,9 +1,9 @@
-import { SellersService } from './../services/sellers.service';
 import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'mat-navbar',
@@ -16,8 +16,10 @@ export class MatNavbarComponent implements OnInit{
   sellers: any;
   production = true;
 
-  constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router,
-    private sellersService: SellersService) {
+  subscription: Subscription;
+  subscription2: Subscription;
+
+  constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router) {
   }
 
   logout() {
@@ -33,18 +35,18 @@ export class MatNavbarComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       if (appUser) {
         this.ordersService.appUser = this.appUser;
-        this.sellersService.getAll().subscribe(sellers => {
+        this.subscription2 = this.ordersService.getAllSellers().subscribe(sellers => {
           this.sellers = sellers;
           let create = true;
           for (let i=0;i<this.sellers.length;i++) {
             if (this.sellers[i].payload.val().name == this.appUser.name) create = false;
           }
           if (create) {
-            this.sellersService.create({
+            this.ordersService.createSeller({
               "address": "",
               "cuil": "",
               "name": appUser.name,
@@ -55,6 +57,10 @@ export class MatNavbarComponent implements OnInit{
         });
       }
     });
+  }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
   }
 }

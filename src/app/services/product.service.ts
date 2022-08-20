@@ -1,6 +1,7 @@
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Injectable, OnInit } from '@angular/core';
 import { OrdersService } from './orders.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,15 +10,18 @@ export class ProductService implements OnInit{
   recharges: any;
   rechargeKey: string;
   products: any;
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
 
   constructor(private db: AngularFireDatabase) {
   }
 
   ngOnInit() {
-    this.getAll().subscribe(products => {
+    this.subscription = this.getAll().subscribe(products => {
       this.products = products;
     });
-    this.getAllRecharges().subscribe(recharges => {
+    this.subscription2 = this.getAllRecharges().subscribe(recharges => {
       this.recharges = recharges;
     });
   }
@@ -151,7 +155,7 @@ export class ProductService implements OnInit{
   }
 
   applyDiscountToAll() {
-    this.getAll().subscribe(products=> {
+    this.subscription3 = this.getAll().subscribe(products=> {
       this.products = products;
       for (let i=0;i<this.products.length;i++) {
         let product = this.products[i].payload.val();
@@ -189,6 +193,12 @@ export class ProductService implements OnInit{
         });
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();   
   }
 }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
@@ -18,18 +19,22 @@ export class StockService {
   filteredProducts:any;
   products:any;
   prodsCategory: string | null;
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+  subscription4: Subscription;
 
   constructor(private db: AngularFireDatabase, private productService: ProductService,
     private auth: AuthService, private route: ActivatedRoute, private router: Router) {
 
-      this.auth.appUser$.subscribe(appUser => {
+      this.subscription = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
       });
 
       this.filteredProducts = [];
-      this.productService.getAll().subscribe(products => {
+      this.subscription2 = this.productService.getAll().subscribe(products => {
         this.filteredProducts = this.products = products;
-        this.route.queryParamMap.subscribe(params => {
+        this.subscription3 = this.route.queryParamMap.subscribe(params => {
           this.prodsCategory = params.get('prodsCategory');
           if (this.products) {
             this.filteredProducts = (this.prodsCategory) ?
@@ -45,7 +50,7 @@ export class StockService {
           // });
         });
       });
-      this.getBuy().subscribe(buy => {
+      this.subscription4 = this.getBuy().subscribe(buy => {
         this.buy = buy;
         if (this.buy.length == 0) {
           this.createBuy();
@@ -227,7 +232,6 @@ export class StockService {
     //     }
     //   }
     // }
-
   }
 
   getTotalCost(buy: any) {
@@ -236,5 +240,12 @@ export class StockService {
       totalCost += buy.payload.val().buy[i].quantity * buy.payload.val().buy[i].price;
     }
    return totalCost;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
   }
 }

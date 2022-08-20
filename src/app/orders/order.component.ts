@@ -4,12 +4,10 @@ import { Observable, Subscription } from 'rxjs';
 import { ProductService } from '../services/product.service';
 import { Sort } from '@angular/material/sort';
 import { OrdersService } from '../services/orders.service';
-import { ClientsService } from '../services/clients.service';
 import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { Timestamp } from 'rxjs-compat';
 import { UtilityService } from '../services/utility.service';
 
 @Component({
@@ -57,15 +55,18 @@ export class OrderComponent implements OnInit, OnDestroy {
   negative: boolean = false;
   noStock: boolean = false;
   showOrder: boolean = false;
-
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+  subscription4: Subscription;
+  subscription5: Subscription;
 
 
   constructor(
     public productService: ProductService,
     public route: ActivatedRoute,
     public ordersService: OrdersService,
-    public clientsService: ClientsService,
     private auth: AuthService,
     private router: Router,
     public utilityService: UtilityService
@@ -75,15 +76,15 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(){
-    this.ordersService.getOrderNumber().subscribe(orderNumber => {
+    this.subscription = this.ordersService.getOrderNumber().subscribe(orderNumber => {
       if (!orderNumber) this.ordersService.createOrderNumber();
       this.ordersService.orderNumber = orderNumber;
     });
 
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription2 = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       this.orderIndex = 0;
-      this.ordersService.getOrder().subscribe(order => {
+      this.subscription3 = this.ordersService.getOrder().subscribe(order => {
         this.order = order;
         if (this.order.length == 0) this.ordersService.createOrderEmpty();
 
@@ -99,7 +100,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.ordersService.createOrderEmpty();
         }
 
-        this.clientsService.getAll().subscribe(clients => {
+        this.subscription4 = this.ordersService.getAllClients().subscribe(clients => {
           this.filteredClients = clients;
           this.clients = [];
           for (let i=0;i<this.filteredClients.length;i++) {
@@ -112,7 +113,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           )
         });
 
-        this.route.queryParamMap.subscribe(params => {
+        this.subscription5 = this.route.queryParamMap.subscribe(params => {
           this.prodsCategory = params.get('prodsCategory');
           this.filteredOrder = [];
           if (this.orderIndex>=0 && this.order[0]) {
@@ -257,7 +258,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        let debt = this.clientsService.calcDebt(this.clientFantasyName);
+        let debt = this.ordersService.calcDebt(this.clientFantasyName);
         this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName,
           this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
         this.clientFantasyName = "";
@@ -326,10 +327,6 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.clientFantasyName != "") this.router.navigateByUrl('/orders/order');
   }
 
-  ngOnDestroy() {
-    this.ordersService.clearOrder();
-  }
-
   getStock(product: any) {
     return this.ordersService.getStock(product);
   }
@@ -337,5 +334,14 @@ export class OrderComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler(event: Event) {
     this.ordersService.clearOrder();
+  }
+
+  ngOnDestroy() {
+    this.ordersService.clearOrder();
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
+    this.subscription5.unsubscribe();
   }
 }

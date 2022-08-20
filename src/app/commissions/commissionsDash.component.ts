@@ -3,9 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
-import { SellersService } from '../services/sellers.service';
 import { Router} from '@angular/router';
 import { CategoryService } from '../services/category.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-commissions',
@@ -26,31 +26,86 @@ export class CommissionsDashComponent implements OnInit {
   year: number;
   lastFullMonthOrders: any[];
 
+  //ordersBorrar: any[] = [];
+
+  subscription: Subscription;
+  subscription2: Subscription
+  subscription3: Subscription
+  subscription4: Subscription
+
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
-    public sellersService: SellersService, public commissionsService: CommissionsService, public catService: CategoryService ) {}
+    public commissionsService: CommissionsService, public catService: CategoryService ) {}
 
   ngOnInit(){
     let today = new Date();
-    this.catService.getAllProdsCategories().subscribe(prodsCategories => {
+    this.subscription = this.catService.getAllProdsCategories().subscribe(prodsCategories => {
       this.prodsCategories = prodsCategories;
-      this.commissionsService.getCommissions().subscribe(commissions => {
+      this.subscription2 = this.commissionsService.getCommissions().subscribe(commissions => {
         this.commissions = commissions;
         if (this.commissions.length == 0) {
           this.commissionsService.createCommissions();
         }
-        this.ordersService.getAll().subscribe(orders => {
+        this.subscription3 = this.ordersService.getAllOrders().subscribe(orders => {
           this.ordersService.orders = orders;
 
+
+          //permite ver las comisiones de un vendedor en particular
+          // let mySeller = "Enrique Oyhamburu"
+          // for (let i=0;i<this.ordersService.orders.length;i++) {
+          //   let date = new Date(this.ordersService.orders[i].payload.val().date)
+          //     if (date.getMonth() + 1 == 3 && date.getFullYear() == 2022
+          //     && this.ordersService.orders[i].payload.val().order.sellerName == mySeller)
+          //     this.ordersBorrar.push(this.ordersService.orders[i])
+          // }
+
+          // let retailSalesPMonth = this.retailSalesPMonth(mySeller, this.ordersBorrar)
+          // let retailCommission = this.retailCommission(this.commissions[0].payload.val().retailPercent, retailSalesPMonth);
+          // let wholesalerSalesPMonth = this.wholesalerSalesPMonth(mySeller, this.ordersBorrar)
+          // let wholesalerCommission = this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent, wholesalerSalesPMonth, retailSalesPMonth);
+          // let sellerPenalty = this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, mySeller, this.ordersService.orders);
+          // let rewardsObject = this.getProdCategoryRewards(mySeller)
+          // let prodCategoryRewards = rewardsObject.prodCategoryRewards;
+          // let totalRewards = rewardsObject.totalRewards
+          // let totalIncome = retailCommission + wholesalerCommission + totalRewards - sellerPenalty;
+
+          // console.log('factu minor: ', retailSalesPMonth);
+          // console.log('retailCommission: ', retailCommission);
+          // console.log('factu mayor: ', wholesalerSalesPMonth);
+          // console.log('wholesalerCommission: ', wholesalerCommission);
+          // console.log('sellerPenalty: ', sellerPenalty);
+          // console.log('rewardsObject: ', this.getProdCategoryRewards(mySeller));
+          // console.log('totalRewards: ', rewardsObject.totalRewards);
+          // console.log('totalIncome: ', totalIncome);
+          // console.log('this.commissionsService.totalSellerDebtDelayed: ',  this.commissionsService.totalSellerDebtDelayed);
+
+
+
+
+
+          //Me permite calcular y setear fecha de pago completo de pedidos de un vendedor!!!-------------------------
+          //this.calculateFullPaymentDates();
+
           this.monthOrders = this.getThisMonthOrders();
-          this.auth.appUser$.subscribe(appUser => {
+          //borrar este for:
+          this.monthOrders.forEach(element => {
+            if (element.payload.val().order.sellerName == "Yanina Asselborn")
+            console.log('element.payload.val().amount ' + element.payload.val().amount);
+          });
+          console.log('this.monthOrders: ', this.monthOrders);
+          this.subscription4 = this.auth.appUser$.subscribe(appUser => {
             this.appUser = appUser;
+            //this.appUser.name = "Enrique Oyhamburu" //borrar
             //borrar
             // appUser.name = 'Enrique Oyhamburu'
             // appUser.isAdmin = false;
-            this.sellersService.getAll().subscribe(sellers => {
+            this.ordersService.getAllSellers().subscribe(sellers => {
               this.sellers = sellers;
               if (this.month != today.getMonth() ||
               this.year != today.getFullYear()) {
+                // console.log('monthCommissionsSavedDate.month ' + this.commissions[0].payload.val().monthCommissionsSavedDate.month);
+                // console.log('today.getMonth().month ' + today.getMonth());
+                // console.log('monthCommissionsSavedDate.year ' + this.commissions[0].payload.val().monthCommissionsSavedDate.year);
+                // console.log('today.getFullYear() ' + today.getFullYear());
                 if (this.commissions[0].payload.val().monthCommissionsSavedDate.month != today.getMonth() ||
                 this.commissions[0].payload.val().monthCommissionsSavedDate.year != today.getFullYear()) {
                   this.month = today.getMonth();
@@ -73,9 +128,12 @@ export class CommissionsDashComponent implements OnInit {
     let today = new Date();
     let filteredMonthOrders = []
     for (let i=0;i<this.ordersService.orders.length;i++) {
-      var date = new Date(this.ordersService.orders[i].payload.val().date);
-      if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()
-      && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10){
+      //var date = new Date(this.ordersService.orders[i].payload.val().date); cambio por las cobradas en este mes
+      var date = new Date(this.ordersService.orders[i].payload.val().fullPaymentDate);
+      // if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()
+      // && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10){
+      //cambiando lo anterior no necesito corroborar la deuda
+      if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()){
         filteredMonthOrders.push(this.ordersService.orders[i]);
       }
     }
@@ -111,8 +169,7 @@ export class CommissionsDashComponent implements OnInit {
     if (orders) {
       for (let i=0;i<orders.length;i++) {
         if (orders[i].payload.val().order.sellerName == seller
-        && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor"
-        && parseFloat(orders[i].payload.val().debt) < 10) {
+        && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor") {
           amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
         }
       }
@@ -123,15 +180,14 @@ export class CommissionsDashComponent implements OnInit {
     return amount;
   }
   getSellerRetailSalesAdded(seller: string) {
-    return this.sellersService.getSellerRetailSalesAdded(seller);
+    return this.ordersService.getSellerRetailSalesAdded(seller);
   }
 
   wholesalerSalesPMonth(sellerName: string, orders: any[]) {
     let amount = 0;
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().order.sellerName == sellerName
-      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor"
-      && parseFloat(orders[i].payload.val().debt) < 10) {
+      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor") {
         amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
     }
@@ -204,6 +260,8 @@ export class CommissionsDashComponent implements OnInit {
   }
 
   getSellersCommissionsInfo() {
+    // this.lastFullMonthOrders = this.ordersBorrar //borrar esta linea
+    console.log('this.lastFullMonthOrders ', this.lastFullMonthOrders);
     let sellersCommissionsInfo = [];
     for (let i=0;i<this.sellers.length;i++) {
       let retailSalesPMonth = this.retailSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
@@ -238,10 +296,12 @@ export class CommissionsDashComponent implements OnInit {
     let lastFullMonthOrders = [];
     let today = new Date();
     for (let i=0;i<this.ordersService.orders.length;i++) {
-      var date = new Date(this.ordersService.orders[i].payload.val().date);
+      // var date = new Date(this.ordersService.orders[i].payload.val().date); cambio por ordenes completadas el mes anterior
+      var date = new Date(this.ordersService.orders[i].payload.val().fullPaymentDate);
       //miro el mes anterior, today.getMonth() me da el mes anterior porque me da el mes -1
-      if (date.getMonth() == today.getMonth() -1 && date.getFullYear() == today.getFullYear()
-      && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10 ){
+      // if (date.getMonth() == today.getMonth() -1 && date.getFullYear() == today.getFullYear()
+      // && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10 ){ no hace flata chequear la deuda por lo anterior
+      if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()) {
         lastFullMonthOrders.push(this.ordersService.orders[i]);
       }
     }
@@ -256,10 +316,11 @@ export class CommissionsDashComponent implements OnInit {
     return false
   }
   getProdCategoryRewards(sellerName: string) {
+    // this.lastFullMonthOrders = this.ordersBorrar;
     let prodCategoryRewards = [];
     let totalRewards = 0;
     for (let j=0;j<this.prodsCategories.length;j++) {
-      totalRewards += this.rewardCalc(this.prodsCategories[j].name, sellerName, this.lastFullMonthOrders);
+      totalRewards += parseFloat(this.rewardCalc(this.prodsCategories[j].name, sellerName, this.lastFullMonthOrders));
       let categoryReward = 0;
       if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
         categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].name];
@@ -277,6 +338,18 @@ export class CommissionsDashComponent implements OnInit {
     }
     return result
   }
+
+  //solo para setear fechas de pedidos con pago completo para un vendedor
+  calculateFullPaymentDates() {
+    this.ordersService.calculateFullPaymentDates("Enrique Oyhamburu")
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
+   }
 }
 
 

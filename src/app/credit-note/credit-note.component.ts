@@ -1,13 +1,11 @@
 import { Component, OnInit,  } from '@angular/core';
 import { ActivatedRoute, Router} from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { OrdersService } from '../services/orders.service';
-import { ClientsService } from '../services/clients.service';
 import { FormControl } from '@angular/forms';
 import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { PaymentsService } from '../services/payments.service';
 
 @Component({
   selector: 'app-credit-note',
@@ -27,19 +25,19 @@ export class CreditNoteComponent implements OnInit {
   filteredClients:any[];
   client: boolean = true;
   noteEmpty: boolean = true;
+  subscription: Subscription;
+  subscription2: Subscription;
 
   constructor(
     public ordersService: OrdersService,
-    public clientsService: ClientsService,
     private auth: AuthService,
     private router: Router,
-    private paymentsService: PaymentsService
   ) {}
 
   ngOnInit(){
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.clientsService.getAll().subscribe(clients => {
+      this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
         this.filteredClients = [];
         for (let i=0;i<this.clients.length;i++) {
@@ -76,7 +74,7 @@ export class CreditNoteComponent implements OnInit {
     }
     if (confirm('Está segur@ que quiere crear la nota de crédito?')) {
 
-      this.paymentsService.create({
+      this.ordersService.createPayment({
         "amount": note.amount,
         "aproved": true,
         "client": this.clientFantasyName,
@@ -84,7 +82,7 @@ export class CreditNoteComponent implements OnInit {
         "date": note.date,
         "sellerName": this.appUser.name,
         "orderNumber": note.orderNumber
-      });
+      }, this.clients);
       this.router.navigateByUrl('/payments/payments');
     }
     return;
@@ -95,6 +93,8 @@ export class CreditNoteComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
   }
 }
 

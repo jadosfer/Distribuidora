@@ -17,13 +17,17 @@ import { StockService } from '../services/stock.service';
 export class BuyComponent implements OnInit {
 
   appUser: AppUser;
-  subscription: Subscription;
   buy: any;
   filteredBuy:any;
   products:any;
   products$:any;
   prodsCategory: string | null;
   sortedData: any[];
+
+  subscription: Subscription;
+  subscription2: Subscription
+  subscription3: Subscription
+  subscription4: Subscription
 
   buyEmpty: boolean = false;
 
@@ -35,13 +39,13 @@ export class BuyComponent implements OnInit {
 
   ngOnInit() {
     //this.filter("");
-    this.stockService.getBuy().subscribe(buy => {
-      this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.stockService.getBuy().subscribe(buy => {
+      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
-        this.productService.getAll().subscribe(products => {
+        this.subscription3 = this.productService.getAll().subscribe(products => {
           this.products = products;
           this.buy = buy;
-          this.route.queryParamMap.subscribe(params => {
+          this.subscription4 = this.route.queryParamMap.subscribe(params => {
             this.prodsCategory = params.get('prodsCategory');
             this.filteredBuy = [];
             if (this.buy[0]) {
@@ -113,29 +117,10 @@ export class BuyComponent implements OnInit {
       return this.stockService.getQuantityOfP(pBuy);
     }
 
-    // saveBuy(product: any, formproduct: any) {
-    //   if (confirm('Está segur@ que quiere guardar estos valores?')) {
-    //     let prod = {
-    //       "disc1": product.disc1,
-    //       "disc2": product.disc2,
-    //       "disc3": product.disc3,
-    //       "disc4": product.disc4,
-    //       "buyPrice": product.buyPrice,
-    //       "price1": formproduct.payload.val().price1,
-    //       "price2": formproduct.payload.val().price2,
-    //       "price3": formproduct.payload.val().price3,
-    //       "price4": formproduct.payload.val().price4,
-    //       "discPrice1": formproduct.payload.val().discPrice1,
-    //       "discPrice2": formproduct.payload.val().discPrice2,
-    //       "discPrice3": formproduct.payload.val().discPrice3,
-    //       "discPrice4": formproduct.payload.val().discPrice4,
-    //       "prodsCategory": product.prodsCategory,
-    //       "title": product.title
-    //     }
-    //     this.productService.update(formproduct.key, prod);
-    //     location.reload();
-    //     //this.router.navigate(['/admin/prods']);
-    //   }
-    // }
-
+    ngOnDestroy() {
+      this.subscription.unsubscribe();
+      this.subscription2.unsubscribe();
+      this.subscription3.unsubscribe();
+      this.subscription4.unsubscribe();
+    }
 }

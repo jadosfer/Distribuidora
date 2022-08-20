@@ -1,16 +1,15 @@
-import { SellersService } from 'src/app/services/sellers.service';
+import { OrdersService } from 'src/app/services/orders.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CategoryService } from 'src/app/services/category.service';
-import { ClientsService } from 'src/app/services/clients.service';
 
 @Component({
   selector: 'clients-form',
   templateUrl: './clients-form.component.html',
   styleUrls: ['./clients-form.component.scss']
 })
-export class ClientsFormComponent implements OnInit {
+export class ClientsFormComponent {
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
   IVAConditions:string[] = ["Inscripto", "Monotributista", "Consumidor Final"];
@@ -18,18 +17,19 @@ export class ClientsFormComponent implements OnInit {
   sellers$: Observable<any>;
   client:any = {};
   id:any;
+  subscription: Subscription;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private clientsService: ClientsService,
-    private sellersService: SellersService) {
+    private ordersService: OrdersService
+    ) {
 
     this.clientsCategories = categoryService.getAllClientsCategories();
-    this.sellers$ = sellersService.getAll();
+    this.sellers$ = ordersService.getAllSellers();
     this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id) this.clientsService.get(this.id).take(1).subscribe(p => {
+    if (this.id) this.subscription = this.ordersService.get(this.id).take(1).subscribe(p => {
       this.client = p.payload.val();
     });
    }
@@ -37,10 +37,10 @@ export class ClientsFormComponent implements OnInit {
   save(client: any) {
     if (confirm('Está segur@ que quiere guardar/crear este cliente?')) {
       if (this.id) {
-        this.clientsService.update(this.id, client);
+        this.ordersService.update(this.id, client);
       }
       else {
-        this.clientsService.create(client);
+        this.ordersService.createClient(client);
       }
       this.router.navigate(['/admin/clients']);
     }
@@ -48,13 +48,13 @@ export class ClientsFormComponent implements OnInit {
 
   delete() {
     if (confirm('Está segur@ que quiere borrar este cliente? No podrá recuperarlo')) {
-      this.clientsService.delete(this.id);
+      this.ordersService.delete(this.id);
       this.router.navigate(['/admin/clients']);
     }
   }
 
-  ngOnInit(): void {
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
-
 }
 

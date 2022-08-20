@@ -15,11 +15,12 @@ export class AppComponent implements OnInit, OnDestroy{
   mediaSub: Subscription;
   itemValue = '';
   items: Observable<any>;
+  subscription: Subscription
 
   constructor(private auth: AuthService, private userService: UserService, public db: AngularFireDatabase,
      private router: Router, private mediaObserver: MediaObserver) {
 
-    auth.user$.subscribe(user => {
+    this.subscription = auth.user$.subscribe(user => {
       if (!user) return;
 
       this.userService.save(user);
@@ -36,5 +37,6 @@ export class AppComponent implements OnInit, OnDestroy{
   }
 
   ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

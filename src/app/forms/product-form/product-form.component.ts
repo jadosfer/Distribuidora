@@ -10,7 +10,7 @@ import { CategoryService } from 'src/app/services/category.service';
   selector: 'app-product-form',
   templateUrl: './product-form.component.html'
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent {
   prodsCategories: Observable<any>;
   product:any = {};
   id:any;

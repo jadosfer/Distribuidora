@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { ClientsService } from '../services/clients.service';
+import { OrdersService } from '../services/orders.service';
 
 @Component({
   selector: 'app-replaces',
@@ -15,12 +16,14 @@ export class ReplacesComponent implements OnInit {
   finishShow: boolean = false;
   noMatch: boolean = false;
   form: any = {};
+  subscription: Subscription;
+  subscription2: Subscription;
 
-  constructor(private clientsService: ClientsService, private auth: AuthService) { }
+  constructor(private ordersService: OrdersService, private auth: AuthService) { }
 
   ngOnInit() {
-    this.clientsService.getAll().subscribe(clients => {
-      this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.ordersService.getAllClients().subscribe(clients => {
+      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
         this.clients = clients;
       });
@@ -28,11 +31,9 @@ export class ReplacesComponent implements OnInit {
   }
 
   replaceSeller(form: any) {
-    console.log('form', form);
-
     for (let i=0;i<this.clients.length;i++) {
       if (this.clients[i].payload.val().designatedSeller == form.oldSeller.toString()) {
-        this.clientsService.update(this.clients[i].key, {"designatedSeller": form.newSeller.toString()})
+        this.ordersService.update(this.clients[i].key, {"designatedSeller": form.newSeller.toString()})
         this.finishShow = true;
       }
     }
@@ -43,4 +44,8 @@ export class ReplacesComponent implements OnInit {
      }, 800);
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+  }
 }

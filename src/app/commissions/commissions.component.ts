@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { CommissionsService } from '../services/commissions.service';
 import { OrdersService } from '../services/orders.service';
-import { SellersService } from '../services/sellers.service';
 
 @Component({
   selector: 'app-commissions',
@@ -16,16 +16,21 @@ export class CommissionsComponent implements OnInit {
   commissionsByMonth: any[];
   isExpanded: boolean = false;
   prodCatDetails: boolean = false;
+  subscription: Subscription;
 
   constructor(public ordersService: OrdersService, private auth: AuthService,
-    private sellersService: SellersService, private commissionsService: CommissionsService ) { }
+    private commissionsService: CommissionsService ) { }
 
   ngOnInit() {
     this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.commissionsService.getCommissionsByMonth().subscribe(commissionsByMonth => {
+      this.subscription = this.commissionsService.getCommissionsByMonth().subscribe(commissionsByMonth => {
         this.commissionsByMonth = commissionsByMonth;
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

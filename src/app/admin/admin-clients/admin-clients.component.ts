@@ -3,12 +3,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ClientsService } from 'src/app/services/clients.service';
 import { OrdersService } from 'src/app/services/orders.service';
-import { PaymentsService } from 'src/app/services/payments.service';
 import { AppUser } from 'src/app/models/app-user';
 import { AuthService } from 'src/app/services/auth.service';
 import { UtilityService } from 'src/app/services/utility.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -19,7 +18,7 @@ import { UtilityService } from 'src/app/services/utility.service';
 export class AdminClientsComponent implements OnInit {
 
   appUser: AppUser;
-  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt2', 'seller', 'IVACond', 'resume', 'edit', 'payments', 'orders'];
+  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt2', 'debt3', 'seller', 'IVACond', 'resume', 'edit', 'payments', 'orders'];
   dataSource: any;
   clients:any[];
   sortedData:any[];
@@ -32,30 +31,34 @@ export class AdminClientsComponent implements OnInit {
   //ordersInDebt: any[];
   clientsInDebt: any[];
 
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+  subscription4: Subscription;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private clientsService: ClientsService, private paymentsService: PaymentsService,
-    private ordersService: OrdersService, private auth: AuthService, public printService: PrintService,
-    public utilityService: UtilityService) {
+  constructor(public ordersService: OrdersService,
+    private auth: AuthService, public printService: PrintService, public utilityService: UtilityService) {
   }
 
   ngOnInit() {
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.clientsService.getAll().subscribe(clients => {
+      this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.filteredClients = this.clients = clients;
         this.dataSource = new MatTableDataSource<any>(this.filteredClients);
         this.dataSource.paginator = this.paginator;
-        if (this.clientsService.clientsPaginator.pageIndex > 0 || this.clientsService.clientsPaginator.pageSize != 10) {
-        this.paginator.pageIndex = this.clientsService.clientsPaginator.pageIndex;
-        this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
+        if (this.ordersService.clientsPaginator.pageIndex > 0 || this.ordersService.clientsPaginator.pageSize != 10) {
+        this.paginator.pageIndex = this.ordersService.clientsPaginator.pageIndex;
+        this.paginator.pageSize = this.ordersService.clientsPaginator.pageSize;
         this.dataSource.paginator = this.paginator
         }
-        this.paymentsService.getAll().subscribe(payments => {
+        this.subscription3 = this.ordersService.getAllPayments().subscribe(payments => {
           this.payments = payments;
-          this.ordersService.getAll().subscribe(orders => {
+          this.subscription4 = this.ordersService.getAllOrders().subscribe(orders => {
             this.orders = orders;
-            this.clientsInDebt = this.clientsService.getClientsInDebt(this.clients, this.orders);
+            this.clientsInDebt = this.ordersService.getClientsInDebt(this.clients, this.orders);
             for (let i=0;i<this.clientsInDebt.length;i++) {
               this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
             }
@@ -111,12 +114,12 @@ export class AdminClientsComponent implements OnInit {
   }
 
   getPagination() {
-    this.clientsService.clientsPaginator.pageIndex = this.paginator.pageIndex;
-    this.clientsService.clientsPaginator.pageSize = this.paginator.pageSize;
+    this.ordersService.clientsPaginator.pageIndex = this.paginator.pageIndex;
+    this.ordersService.clientsPaginator.pageSize = this.paginator.pageSize;
   }
 
   searchPayments(clientFantasyName: string) {
-    this.paymentsService.clientFantasyName = clientFantasyName;
+    this.ordersService.clientFantasyName = clientFantasyName;
   }
 
   searchOrders(clientFantasyName: string) {
@@ -127,15 +130,16 @@ export class AdminClientsComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  calcDebt(client: any) {
-    let ordersAmount = this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName);
-    let paymentsAmount = this.paymentsService.getClientPaymentsAmount(client.payload.val().fantasyName);
-    return ordersAmount - paymentsAmount
+  getClientLastPayment(fantasyName: string) {
+    let payment = this.ordersService.getClientLastPayment(fantasyName, this.payments);
+    return payment;
   }
 
-  getClientLastPayment(fantasyName: string) {
-    let payment = this.clientsService.getClientLastPayment(fantasyName, this.payments);
-    return payment;
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
   }
 }
 

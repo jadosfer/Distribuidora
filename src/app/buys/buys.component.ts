@@ -19,6 +19,7 @@ import { StockService } from '../services/stock.service';
 export class BuysComponent implements OnInit {
   sortedData: any;
   subscription: Subscription;
+  subscription2: Subscription;
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl()
@@ -44,7 +45,7 @@ export class BuysComponent implements OnInit {
     ngOnInit(){
       //this.filter("");
       this.subscription = this.stockService.getBuys().subscribe(buys => {
-        this.auth.appUser$.subscribe(appUser => {
+        this.subscription2 = this.auth.appUser$.subscribe(appUser => {
           this.appUser = appUser;
           //this.buys =  buys;
           this.buys = this.dateRangefilteredBuys = this.datefilteredBuys = this.filteredBuys = buys;
@@ -146,8 +147,11 @@ export class BuysComponent implements OnInit {
 
       // Save the PDF
       doc.save('buy.pdf');
-
-
     }
+
+    ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+  }
 
 }

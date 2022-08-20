@@ -5,8 +5,6 @@ import { Sort } from '@angular/material/sort';
 import { Observable, Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { ClientsService } from '../services/clients.service';
-import { PaymentsService } from '../services/payments.service';
 import { OrdersService } from '../services/orders.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { UtilityService } from '../services/utility.service';
@@ -25,6 +23,7 @@ export class ClientsComponent implements OnInit {
   clients: any;
   filteredClients: any;
   subscription: Subscription;
+  subscription2: Subscription;
   sortedData: any[];
   includedClients: any[] = [];
 
@@ -33,17 +32,16 @@ export class ClientsComponent implements OnInit {
   currentItemsToShow: any[];
   query: {client: string, seller: string} = {client: "", seller: ""}
 
-  constructor(private clientsService: ClientsService, private auth: AuthService,
-    public printService: PrintService, private paymentsService: PaymentsService,
-    private ordersService: OrdersService, public utilityService: UtilityService) {
+  constructor(private auth: AuthService, public printService: PrintService,
+    public ordersService: OrdersService, public utilityService: UtilityService) {
   }
 
   ngOnInit() {
     this.filter("");
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
 
       this.appUser = appUser;
-      this.clientsService.getAll().subscribe(clients => {
+      this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
         this.includedClients = [];
         this.currentItemsToShow = [];
@@ -121,15 +119,11 @@ export class ClientsComponent implements OnInit {
   }
 
   searchPayments(clientFantasyName: string) {
-    this.paymentsService.clientFantasyName = clientFantasyName;
+    this.ordersService.clientFantasyName = clientFantasyName;
   }
 
   searchOrders(clientFantasyName: string) {
     this.ordersService.clientFantasyName = clientFantasyName;
-  }
-
-  calcDebt(client: any) {
-    return this.clientsService.calcDebt(client)
   }
 
   onPageChange($event: any) {
@@ -137,5 +131,10 @@ export class ClientsComponent implements OnInit {
       $event.pageIndex * $event.pageSize,
       $event.pageIndex * $event.pageSize + $event.pageSize
     );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
   }
 }

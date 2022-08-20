@@ -21,6 +21,8 @@ export class StockComponent implements OnInit {
   filteredStock: any;
   filteredProducts: any;
   products: any;
+  subscription: Subscription;
+  subscription2: Subscription;
 
   constructor(public stockService: StockService,
     private productService: ProductService,
@@ -29,9 +31,9 @@ export class StockComponent implements OnInit {
     }
 
   ngOnInit(){
-    this.auth.appUser$.subscribe(appUser => {
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.productService.getAll().subscribe(products => {
+      this.subscription2 = this.productService.getAll().subscribe(products => {
         this.products = this.filteredProducts = products;
         let alertProducts = []
         for (let i=0;i<this.products.length;i++) {
@@ -84,4 +86,8 @@ export class StockComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();   
+  }
 }

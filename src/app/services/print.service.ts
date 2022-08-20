@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { float } from 'html2canvas/dist/types/css/property-descriptors/float';
 import jsPDF from 'jspdf';
-import { ClientsService } from './clients.service';
+import { Subscription } from 'rxjs';
 import { OrdersService } from './orders.service';
-import { PaymentsService } from './payments.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,25 +12,29 @@ export class PrintService {
   orderOrPayment: boolean;
   clients: any;
   filteredClients: any;
+  subscription: Subscription;
+  subscription2: Subscription;
+  subscription3: Subscription;
+  subscription4: Subscription;
+  subscription5: Subscription;
 
-  constructor(private clientsService: ClientsService, private paymentsService: PaymentsService,
-    private ordersService: OrdersService) { }
+  constructor( private ordersService: OrdersService) { }
 
     ngOnInit() {
-      this.clientsService.getAll().subscribe(clients => {
+      this.subscription = this.ordersService.getAllClients().subscribe(clients => {
         this.filteredClients = this.clients = clients;
         // this.dataSource = new MatTableDataSource<any>(this.filteredClients);
         // this.dataSource.paginator = this.paginator;
-        // if (this.clientsService.clientsPaginator.pageIndex > 0 || this.clientsService.clientsPaginator.pageSize != 10) {
-        // this.paginator.pageIndex = this.clientsService.clientsPaginator.pageIndex;
-        // this.paginator.pageSize = this.clientsService.clientsPaginator.pageSize;
+        // if (this.ordersService.clientsPaginator.pageIndex > 0 || this.ordersService.clientsPaginator.pageSize != 10) {
+        // this.paginator.pageIndex = this.ordersService.clientsPaginator.pageIndex;
+        // this.paginator.pageSize = this.ordersService.clientsPaginator.pageSize;
         // this.dataSource.paginator = this.paginator
         // }
       });
-      this.ordersService.getAll().subscribe(orders => {
+      this.subscription2 = this.ordersService.getAllOrders().subscribe(orders => {
         this.ordersService.orders = orders;
       });
-      this.paymentsService.getAll().subscribe(payments => {
+      this.subscription3 = this.ordersService.getAllPayments().subscribe(payments => {
         this.payments = payments;
       });
     }
@@ -66,9 +68,9 @@ export class PrintService {
       doc.text('SALDO', col6, line2);
       doc.setFontSize(7);
 
-      this.ordersService.getAll().subscribe(ordrs => {
+      this.subscription4 = this.ordersService.getAllOrders().subscribe(ordrs => {
         this.ordersService.orders = ordrs;
-        this.paymentsService.getAll().subscribe(paymnts => {
+        this.subscription5 = this.ordersService.getAllPayments().subscribe(paymnts => {
           this.payments = paymnts;
           let orders = [];
           let payments = [];
@@ -318,5 +320,13 @@ export class PrintService {
       return 0;
     });
     return array;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
+    this.subscription5.unsubscribe();
   }
 }
