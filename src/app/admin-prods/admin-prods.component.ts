@@ -32,7 +32,7 @@ export class AdminProdsComponent implements OnInit {
   clientCategories: any;
 
   filteredProducts:any[] = [];
-  prodsCategories$: Observable<any>;
+  prodsCategories: any[];
   subscription: Subscription;
   subscription2: Subscription
   subscription3: Subscription
@@ -40,9 +40,12 @@ export class AdminProdsComponent implements OnInit {
   recharged: boolean;
   mobile:boolean = false;
 
-  constructor(private productService: ProductService, private db: AngularFireDatabase, private router: Router,
-     private categoryService: CategoryService) {
-    this.prodsCategories$ = categoryService.getAllProdsCategories()
+  constructor(private productService: ProductService, private db: AngularFireDatabase,
+    private router: Router,
+    private categoryService: CategoryService) {
+      categoryService.getAllProdsCategories().subscribe((prodsCategories)=>{
+        this.prodsCategories = prodsCategories;
+      });
   }
 
   ngOnInit() {

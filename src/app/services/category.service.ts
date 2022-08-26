@@ -6,6 +6,8 @@ import { AngularFireDatabase } from '@angular/fire/database';
 })
 export class CategoryService {
 
+  categories: any;
+
   constructor(private db: AngularFireDatabase) { }
 
 
@@ -13,11 +15,21 @@ export class CategoryService {
     return this.db.list('clientsCategories').valueChanges();
   }
 
+  // getAllProdsCategories() {
+  //   return this.db.list('categories').valueChanges();
+  // }
+
+
   getAllProdsCategories() {
-    return this.db.list('categories').valueChanges();
+    return this.db.list('/productsCategories').snapshotChanges();
+
   }
 
   getAllPaysCategories() {
     return this.db.list('payWay').valueChanges();
+  }
+
+  setNewProdCategory(category: String) {
+    return this.db.list('/productsCategories').push({name: category});
   }
 }

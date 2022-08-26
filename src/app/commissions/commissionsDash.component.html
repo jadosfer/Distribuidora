@@ -38,7 +38,15 @@
       <h3>Premios</h3>
 
       <p>
-        <mat-form-field appearance="legacy" class="m-1">
+        <mat-form-field *ngFor="let prodCar of this.prodsCategories; let i = index" appearance="legacy"
+        class="m-1">
+          <mat-label>Meta en {{prodCar.payload.val().name}}</mat-label>
+          <input #prodCar.payload.val().name="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards['${prodCar.payload.val().name']" name="prodCar.payload.val().name" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="prodCar.payload.val().name.touched && prodCar.payload.val().name.invalid">Meta en {{prodCar.payload.val().name}} es requerida</div>
+
+        </mat-form-field>
+
+        <!-- <mat-form-field appearance="legacy" class="m-1">
           <mat-label>Meta en barras</mat-label>
           <input #Barras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Barras" name="Barras" placeholder="" required>
           <div class="alert alert-danger" *ngIf="Barras.touched && Barras.invalid">Meta en Barras es requerida</div>
@@ -66,7 +74,7 @@
           <mat-label>Meta en otros</mat-label>
           <input #Otros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Otros" name="Otros" placeholder="" required>
           <div class="alert alert-danger" *ngIf="Otros.touched && Otros.invalid">Meta en Otros es requerida</div>
-        </mat-form-field>
+        </mat-form-field> -->
       </p>
 
       <p>
@@ -170,15 +178,15 @@
       <tbody>
         <tr *ngFor="let seller of sellers">
           <td>{{seller.payload.val().name}}</td>
-          <td>{{this.prodCategorySales("Barras", seller.payload.val().name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Barras", seller.payload.val().name)}}</td>
           <td>{{this.rewardCalc("Barras", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales("Proteinas", seller.payload.val().name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Proteinas", seller.payload.val().name)}}</td>
           <td>{{this.rewardCalc("Proteinas", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales("Quemadores", seller.payload.val().name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Quemadores", seller.payload.val().name)}}</td>
           <td>{{this.rewardCalc("Quemadores", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales("Recuperadores", seller.payload.val().name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Recuperadores", seller.payload.val().name)}}</td>
           <td>{{this.rewardCalc("Recuperadores", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales("Otros", seller.payload.val().name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Otros", seller.payload.val().name)}}</td>
           <td>{{this.rewardCalc("Otros", seller.payload.val().name, this.monthOrders)}}</td>
         </tr>
       </tbody>
@@ -237,11 +245,11 @@
         <tr>
           <td>{{this.commissions[0].payload.val().rewards.Barras}}</td>
           <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
-          <td>{{this.prodCategorySales("Barras", appUser.name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Barras", appUser.name)}}</td>
           <td>{{this.rewardCalc("Barras", appUser.name, this.monthOrders)}}</td>
           <td>{{this.commissions[0].payload.val().rewards.Proteinas}}</td>
           <td>{{this.commissions[0].payload.val().rewards.rewardProteinas}}</td>
-          <td>{{this.prodCategorySales("Proteinas", appUser.name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Proteinas", appUser.name)}}</td>
           <td>{{this.rewardCalc("Proteinas", appUser.name, this.monthOrders)}}</td>
         </tr>
       </tbody>
@@ -261,11 +269,11 @@
         <tr>
           <td>{{this.commissions[0].payload.val().rewards.Quemadores}}</td>
           <td>{{this.commissions[0].payload.val().rewards.rewardQuemadores}}</td>
-          <td>{{this.prodCategorySales("Quemadores", appUser.name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Quemadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Quemadores", appUser.name, this.monthOrders)}}</td>
           <td>{{this.commissions[0].payload.val().rewards.Recuperadores}}</td>
           <td>{{this.commissions[0].payload.val().rewards.rewardRecuperadores}}</td>
-          <td>{{this.prodCategorySales("Recuperadores", appUser.name)}}</td>
+          <td>{{this.prodCategorySales(this.monthOrders, "Recuperadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Recuperadores", appUser.name, this.monthOrders)}}</td>
         </tr>
       </tbody>
@@ -280,7 +288,7 @@
       <tbody>
         <td>{{this.commissions[0].payload.val().rewards.Otros}}</td>
         <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
-        <td>{{this.prodCategorySales("Otros", appUser.name)}}</td>
+        <td>{{this.prodCategorySales(this.monthOrders, "Otros", appUser.name)}}</td>
         <td>{{this.rewardCalc("Otros", appUser.name, this.monthOrders)}}</td>
       </tbody>
     </table>

@@ -617,18 +617,6 @@ export class OrdersService implements OnDestroy, OnInit {
     return this.db.object('/sellers/' + sellerId).remove();
   }
 
-  getSellerRetailSalesAdded(seller: string) {
-    if (this.getSellerByName(seller) && this.getSellerByName(seller).payload.val().retailSalesAdded)
-    return this.getSellerByName(seller).payload.val().retailSalesAdded;
-    return 0;
-  }
-
-  getSellerWholesalerSalesAdded(seller: string) {
-    if (this.getSellerByName(seller).payload.val().wholesalerSalesAdded)
-    return this.getSellerByName(seller).payload.val().wholesalerSalesAdded;
-    return 0;
-  }
-
   getSellerByName(seller: string) {
     if (this.sellers) {
       for (let i=0;i<this.sellers.length;i++) {

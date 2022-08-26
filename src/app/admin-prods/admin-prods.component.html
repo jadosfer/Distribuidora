@@ -148,8 +148,8 @@
             <mat-form-field appearance="legacy" style="width:5vw;min-width:80px;">
               <mat-label>Categorias</mat-label>
               <mat-select #prodsCategory="ngModel" [(ngModel)]="product.payload.val().prodsCategory" name="prodsCategory" required>
-                <mat-option *ngFor="let c of prodsCategories$ | async" [value]="c.name">
-                  {{c.name}}
+                <mat-option *ngFor="let c of prodsCategories" [value]="c.payload.val().name">
+                  {{c.payload.val().name}}
                 </mat-option>
               </mat-select>
               <div class="alert alert-danger" *ngIf="prodsCategory.touched && prodsCategory.invalid">Category is required</div>

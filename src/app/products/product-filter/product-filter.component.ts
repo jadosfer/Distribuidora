@@ -11,11 +11,15 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class ProductFilterComponent implements OnInit {
 
-  prodsCategories:any;
+  prodsCategories$:any;
+  prodsCategories: any[];
 
 
   constructor(private categoryService: CategoryService) {
-    this.prodsCategories = categoryService.getAllProdsCategories();
+    this.prodsCategories$ = categoryService.getAllProdsCategories();
+    categoryService.getAllProdsCategories().subscribe((prodsCategories) => {
+      this.prodsCategories = prodsCategories
+    });
    }
 
   ngOnInit(): void {
