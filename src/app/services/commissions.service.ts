@@ -11,21 +11,25 @@ import { OrdersService } from './orders.service';
 export class CommissionsService {
 
   totalSellerDebtDelayed: number;
-  prodsCategory: any;
+  prodsCategories: any;
 
   constructor(private db: AngularFireDatabase, private prodsCatService: CategoryService) {
-    this.prodsCatService.getAllProdsCategories().subscribe((prodsCategory)=>{
-      this.prodsCategory = prodsCategory;
+    this.prodsCatService.getAllProdsCategories().subscribe((prodsCategories)=>{
+      this.prodsCategories = prodsCategories;
     })
    }
 
   createCommissions() {
-    let rewardsStrObj = '{';
-    for (let i=0; i<this.prodsCategory.length; i++) {
-      rewardsStrObj += '"' + this.prodsCategory[i].payload.val().name + '": 0,';
+    console.log('creando commissions');    //let rewardsStrObj = '{';
+    let rewardsArray = []
+    let prodsCat = []
+    for (let i=0; i<this.prodsCategories.length; i++) {
+      //rewardsStrObj += '"' + this.prodsCategories[i].payload.val().name + '": 0,';
+      rewardsArray.push("0");
+      prodsCat.push(this.prodsCategories[i].payload.val().name)
     }
-    rewardsStrObj = rewardsStrObj.slice(0, -1) + '}';
-    let rewardsObj = JSON.parse(rewardsStrObj)
+    // rewardsStrObj = rewardsStrObj.slice(0, -1) + '}';
+    // let rewardsObj = JSON.parse(rewardsStrObj)
 
     let result = this.db.list('/commissions/').push({
       "minRetailTotalSales": 400000,
@@ -34,8 +38,9 @@ export class CommissionsService {
       "wholesalerPercent": 0.01,
       "monthlyRate": 0.01,
       "wholesalerCommission": 0,
-      "rewardsGoals": rewardsObj,
-      "rewards": rewardsObj,
+      "productsCategories" : prodsCat,
+      "rewardsGoals": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
+      "rewards": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
       // "rewards": {
       //   "Barras":250000,
       //   "rewardBarras": 3500,
@@ -71,18 +76,9 @@ export class CommissionsService {
       "retailPercent": commissionsForm.retailPercent,
       "wholesalerPercent": commissionsForm.wholesalerPercent,
       "monthlyRate": commissionsForm.monthlyRate,
-      "rewards": {
-        "Barras":commissionsForm.Barras,
-        // "rewardBarras": commissionsForm.rewardBarras,
-        "Proteinas":commissionsForm.Proteinas,
-        // "rewardProteinas": commissionsForm.rewardProteinas,
-        "Recuperadores":commissionsForm.Recuperadores,
-        // "rewardRecuperadores": commissionsForm.rewardRecuperadores,
-        "Quemadores":commissionsForm.Quemadores,
-        // "rewardQuemadores": commissionsForm.rewardQuemadores,
-        "Otros":commissionsForm.Otros,
-        // "rewardOtros": commissionsForm.rewardOtros,
-      },
+      "rewards" : commissionsForm.rewards,
+      "rewardsGoals" : commissionsForm.rewardsGoals,
+      "productsCategories" : commissions[0].payload.val().productsCategories,
       "monthCommissionsSavedDate" : {
         'month' : commissions[0].payload.val().monthCommissionsSavedDate.month,
         'year' : commissions[0].payload.val().monthCommissionsSavedDate.year
@@ -97,18 +93,18 @@ export class CommissionsService {
       "retailPercent": commissions[0].payload.val().retailPercent,
       "wholesalerPercent": commissions[0].payload.val().wholesalerPercent,
       "monthlyRate": commissions[0].payload.val().monthlyRate,
-      "rewards": {
-        "Barras":commissions[0].payload.val().rewards.Barras,
-       // "rewardBarras": commissions[0].payload.val().rewards.rewardBarras,
-        "Proteinas":commissions[0].payload.val().rewards.Proteinas,
-    //    "rewardProteinas": commissions[0].payload.val().rewards.rewardProteinas,
-        "Recuperadores":commissions[0].payload.val().rewards.Recuperadores,
-        // "rewardRecuperadores": commissions[0].payload.val().rewards.rewardRecuperadores,
-        "Quemadores":commissions[0].payload.val().rewards.Quemadores,
-        // "rewardQuemadores": commissions[0].payload.val().rewards.rewardQuemadores,
-        "Otros":commissions[0].payload.val().rewards.Otros,
-        // "rewardOtros": commissions[0].payload.val().rewards.rewardOtros,
-      },
+    //   "rewards": {
+    //     "Barras":commissions[0].payload.val().rewards.Barras,
+    //    // "rewardBarras": commissions[0].payload.val().rewards.rewardBarras,
+    //     "Proteinas":commissions[0].payload.val().rewards.Proteinas,
+    // //    "rewardProteinas": commissions[0].payload.val().rewards.rewardProteinas,
+    //     "Recuperadores":commissions[0].payload.val().rewards.Recuperadores,
+    //     // "rewardRecuperadores": commissions[0].payload.val().rewards.rewardRecuperadores,
+    //     "Quemadores":commissions[0].payload.val().rewards.Quemadores,
+    //     // "rewardQuemadores": commissions[0].payload.val().rewards.rewardQuemadores,
+    //     "Otros":commissions[0].payload.val().rewards.Otros,
+    //     // "rewardOtros": commissions[0].payload.val().rewards.rewardOtros,
+    //   },
       "monthCommissionsSavedDate" : {
         'month' : today.getMonth(),
         'year' : today.getFullYear()

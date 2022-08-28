@@ -6,131 +6,43 @@
 
   <h1 style="display: inline; margin:10px;">COMISIONES</h1>
   <hr>
-  <div *ngIf="!loading && appUser && appUser.isAdmin"></div>
+  <!-- <div *ngIf="!loading && appUser && appUser.isAdmin"></div> -->
 
-  <div *ngIf="edit" fxLayout="row" fxLayout.xs="column">
+  <div *ngIf="edit && commissions" fxLayout="row" fxLayout.xs="column">
+    <form (ngSubmit)="send(myGroup.value)" [formGroup]="myGroup">
+      <div>
+        <input [formControlName]="'retailPercent'" required>
+        <label class="m-1">% Minorista</label>
+      </div>
+      <div>
+        <input [formControlName]="'wholesalerPercent'" required>
+        <label class="m-1">% Mayorista</label>
+      </div>
+      <div>
+        <input [formControlName]="'monthlyRate'" required>
+        <label class="m-1">Tasa Mensual</label>
+      </div>
+      <div>
+        <input [formControlName]="'minRetailTotalSales'" required>
+        <label class="m-1">Mínima Facturación Total Minorista</label>
+      </div>
 
-
-    <div formArrayName="prodCategoriesArray"></div>
-
-
-    <form #f="ngForm" (ngSubmit)="save(f.value)">
-      <h3>Comisiones</h3>
-      <p>
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>% Minorista</mat-label>
-          <input #retailPercent="ngModel" matInput [(ngModel)]="commissions[0].payload.val().retailPercent" name="retailPercent" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="retailPercent.touched && retailPercent.invalid">Campo requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>% Mayorista</mat-label>
-          <input #wholesalerPercent="ngModel" matInput [(ngModel)]="commissions[0].payload.val().wholesalerPercent" name="wholesalerPercent" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="wholesalerPercent.touched && wholesalerPercent.invalid">Campo requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>Tasa Mensual</mat-label>
-          <input #monthlyRate="ngModel" matInput [(ngModel)]="commissions[0].payload.val().monthlyRate" name="monthlyRate" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="monthlyRate.touched && monthlyRate.invalid">Campo requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Mínima Facturación Total Minorista</mat-label>
-          <input #minRetailTotalSales="ngModel" matInput [(ngModel)]="commissions[0].payload.val().minRetailTotalSales" name="minRetailTotalSales" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="minRetailTotalSales.touched && minRetailTotalSales.invalid">Campo requerido</div>
-        </mat-form-field>
-      </p>
-      <h3>Premios</h3>
-
-      <p>
-        <mat-form-field *ngFor="let prodCar of this.prodsCategories; let i = index" appearance="legacy"
-        class="m-1">
-          <mat-label>Meta en {{prodCar.payload.val().name}}</mat-label>
-          <input #prodCar="ngModel" matInput
-            [(ngModel)]="commissions[0].payload.val().rewardsGoals[i]"
-            name="{{prodCar.payload.val().name}}" placeholder=""
-            [ngModelOptions]="{standalone: true}" required>
-          <div class="alert alert-danger" *ngIf="prodCar.touched && prodCar.invalid">Meta en {{prodCar.payload.val().name}} es requerida</div>
-
-        </mat-form-field>
-
-        <!-- <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Meta en barras</mat-label>
-          <input #Barras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Barras" name="Barras" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="Barras.touched && Barras.invalid">Meta en Barras es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>Meta en proteinas</mat-label>
-          <input #Proteinas="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Proteinas" name="Proteinas" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="Proteinas.touched && Proteinas.invalid">Meta en Proteinas es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Meta en quemadores</mat-label>
-          <input #Quemadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Quemadores" name="Quemadores" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="Quemadores.touched && Quemadores.invalid">Meta en Quemadores es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>Meta en recuperadores</mat-label>
-          <input #Recuperadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Recuperadores" name="Recuperadores" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="Recuperadores.touched && Recuperadores.invalid">Meta en Recuperadores es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Meta en otros</mat-label>
-          <input #Otros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.Otros" name="Otros" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="Otros.touched && Otros.invalid">Meta en Otros es requerida</div>
-        </mat-form-field> -->
-      </p>
-
-      <p>
-        <!-- <mat-form-field *ngFor="let prodCar of this.prodsCategories; let i = index" appearance="legacy"
-        class="m-1">
-          <mat-label>Premio en {{prodCar.payload.val().name}}</mat-label>
-          <input #prodCar.payload.val().name="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards[i]"  [attr.name]="'reward' + prodCar.payload.val().name" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="prodCar.payload.val().name.touched && prodCar.payload.val().name.invalid">Premio en {{prodCar.payload.val().name}} es requerido</div>
-
-        </mat-form-field> -->
-
-        <!-- <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Premio Barras</mat-label>
-          <input #rewardBarras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardBarras" name="rewardBarras" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="rewardBarras.touched && rewardBarras.invalid">Premio Barras es requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>Premio Proteinas</mat-label>
-          <input #rewardProteinas="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardProteinas" name="rewardProteinas" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="rewardProteinas.touched && rewardProteinas.invalid">Premio Proteinas es requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Premio Quemadores</mat-label>
-          <input #rewardQuemadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardQuemadores" name="rewardQuemadores" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="rewardQuemadores.touched && rewardQuemadores.invalid">Premio Quemadores es requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy">
-          <mat-label>Premio Recuperadores</mat-label>
-          <input #rewardRecuperadores="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardRecuperadores" name="rewardRecuperadores" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="rewardRecuperadores.touched && rewardRecuperadores.invalid">Premio Recuperadores es requerido</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="legacy" class="m-1">
-          <mat-label>Premio otros</mat-label>
-          <input #rewardOtros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardOtros" name="rewardOtros" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="rewardOtros.touched && rewardOtros.invalid">Premio Otros es requerido</div>
-        </mat-form-field> -->
-      </p>
-
-      <button mat-raised-button type="submit" color="primary" >Guardar</button>
-      <button (click)="back()" mat-raised-button type="button" color="warn">Volver</button>
+      <div formArrayName="rewardsGoals">
+        <div *ngFor="let rewardGoal of rewardsGoalsArray.controls; index as i">
+          <input [formControlName]="i" required>
+          <label class="m-1" for="">Meta en {{this.prodsCategories[i].payload.val().name}}</label>
+        </div>
+      </div>
+      <div formArrayName="rewards">
+        <div *ngFor="let reward of rewardsArray.controls; index as i">
+          <input [formControlName]="i" required>
+          <label class="m-1" for="">Premio en {{this.prodsCategories[i].payload.val().name}}</label>
+        </div>
+      </div>
+      <button class="m-1" mat-raised-button type="submit" color="primary" >Guardar Premios</button>
+      <button (click)="back()" mat-raised-button type="button" color="accent">Volver</button>
     </form>
   </div>
-
 
   <div *ngIf="!edit">
     <div class="row">
@@ -142,8 +54,8 @@
       </div>
     </div>
 
-    <h1 *ngIf="this.ordersService.orders && this.commissions" >Comisiones del mes en curso</h1>
-    <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+    <h1 *ngIf="this.ordersService.orders && commissions" >Comisiones del mes en curso</h1>
+    <table *ngIf="this.ordersService.orders && commissions" class="table table-striped table-sm mat-elevation-z8">
       <thead>
         <tr>
           <th>Vendedor</th>
@@ -151,6 +63,7 @@
           <th>Com. Min. ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
           <th>Fact. May.</th>
           <th>Com. May. ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+          <th>Premios</th>
           <th>Cobranza</th>
           <th>Comisión final</th>
           <th>Deuda en mora</th>
@@ -165,12 +78,13 @@
           <td>{{this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders)}}</td>
           <td>{{this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
             this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))}}</td>
+          <td>{{this.getProdCategoryRewards(seller.payload.val().name).totalRewards}}</td>
           <td>{{this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, seller.payload.val().name, this.ordersService.orders)}}</td>
           <td>{{this.retailCommission(this.commissions[0].payload.val().retailPercent,
             this.retailSalesPMonth(seller.payload.val().name, this.monthOrders)) + this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
             this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))
              + this.getProdCategoryRewards(seller.payload.val().name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate,
-             seller.payload.val().name, this.ordersService.orders)}}  </td>
+             seller.payload.val().name, this.ordersService.orders) | number:'1.1-1'}}  </td>
           <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
         </tr>
       </tbody>
@@ -182,31 +96,15 @@
       <thead>
         <tr>
           <th>Vendedor</th>
-          <th>Fact Barras</th>
-          <th>Premio Barras</th>
-          <th>Fact Proteinas</th>
-          <th>Premio Proteinas</th>
-          <th>Fact Quemadores</th>
-          <th>Premio Quemadores</th>
-          <th>Fact Recuperadores</th>
-          <th>Premio Recuperadores</th>
-          <th>Fact Otros</th>
-          <th>Premio Otros</th>
+          <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">Fact {{reward}}</th>
+          <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">Premio {{reward}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let seller of sellers">
           <td>{{seller.payload.val().name}}</td>
-          <td>{{this.prodCategorySales(this.monthOrders, "Barras", seller.payload.val().name)}}</td>
-          <td>{{this.rewardCalc("Barras", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales(this.monthOrders, "Proteinas", seller.payload.val().name)}}</td>
-          <td>{{this.rewardCalc("Proteinas", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales(this.monthOrders, "Quemadores", seller.payload.val().name)}}</td>
-          <td>{{this.rewardCalc("Quemadores", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales(this.monthOrders, "Recuperadores", seller.payload.val().name)}}</td>
-          <td>{{this.rewardCalc("Recuperadores", seller.payload.val().name, this.monthOrders)}}</td>
-          <td>{{this.prodCategorySales(this.monthOrders, "Otros", seller.payload.val().name)}}</td>
-          <td>{{this.rewardCalc("Otros", seller.payload.val().name, this.monthOrders)}}</td>
+          <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward, seller.payload.val().name)}}</td>
+          <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.rewardCalc(i, reward, seller.payload.val().name, this.monthOrders)}}</td>
         </tr>
       </tbody>
     </table>
@@ -224,6 +122,7 @@
         <th>Com. Minorista ({{this.commissions[0].payload.val().retailPercent*100}}%)</th>
         <th>Fact. Mayorista</th>
         <th>Com. Mayorista ({{this.commissions[0].payload.val().wholesalerPercent*100}}%)</th>
+        <th>Premios</th>
         <th>Cobranza</th>
         <th>Comisión final</th>
         <th>Deuda en mora</th>
@@ -237,79 +136,43 @@
         <td>{{this.wholesalerSalesPMonth(appUser.name, this.monthOrders)}}</td>
         <td>{{this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
           this.wholesalerSalesPMonth(appUser.name, this.monthOrders), this.retailSalesPMonth(appUser.name, this.monthOrders))}}</td>
+        <td>{{this.getProdCategoryRewards(appUser.name).totalRewards}}</td>
         <td>{{this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.ordersService.orders)}}</td>
         <td>{{this.retailCommission(this.commissions[0].payload.val().retailPercent,
           this.retailSalesPMonth(appUser.name, this.monthOrders)) + this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent,
           this.wholesalerSalesPMonth(appUser.name, this.monthOrders), this.retailSalesPMonth(appUser.name, this.monthOrders))
-           + this.getProdCategoryRewards(appUser.name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.ordersService.orders)}}  </td>
+           + this.getProdCategoryRewards(appUser.name).totalRewards -
+           this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.ordersService.orders) | number:'1.1-1'}}  </td>
         <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
       </tr>
     </tbody>
   </table>
   <h1 >Mis Premios</h1>
-    <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
-      <thead>
-        <tr>
-          <th>Objetivo Barras</th>
-          <th>Premio Barras</th>
-          <th>Fact Barras</th>
-          <th>Monto Obtenido</th>
-          <th>Objetivo Proteinas</th>
-          <th>Premio Proteinas</th>
-          <th>Fact Proteinas</th>
-          <th>Monto Obtenido</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{this.commissions[0].payload.val().rewards.Barras}}</td>
-          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td> -->
-          <td>{{this.prodCategorySales(this.monthOrders, "Barras", appUser.name)}}</td>
-          <td>{{this.rewardCalc("Barras", appUser.name, this.monthOrders)}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.Proteinas}}</td>
-          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardProteinas}}</td> -->
-          <td>{{this.prodCategorySales(this.monthOrders, "Proteinas", appUser.name)}}</td>
-          <td>{{this.rewardCalc("Proteinas", appUser.name, this.monthOrders)}}</td>
-        </tr>
-      </tbody>
-      <thead>
-        <tr>
-          <th>Objetivo Quemadores</th>
-          <th>Premio Quemadores</th>
-          <th>Fact Quemadores</th>
-          <th>Monto Obtenido</th>
-          <th>Objetivo Recuperadores</th>
-          <th>Premio Recuperadores</th>
-          <th>Fact Recuperadores</th>
-          <th>Monto Obtenido</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{this.commissions[0].payload.val().rewards.Quemadores}}</td>
-          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardQuemadores}}</td> -->
-          <td>{{this.prodCategorySales(this.monthOrders, "Quemadores", appUser.name)}}</td>
-          <td>{{this.rewardCalc("Quemadores", appUser.name, this.monthOrders)}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.Recuperadores}}</td>
-          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardRecuperadores}}</td> -->
-          <td>{{this.prodCategorySales(this.monthOrders, "Recuperadores", appUser.name)}}</td>
-          <td>{{this.rewardCalc("Recuperadores", appUser.name, this.monthOrders)}}</td>
-        </tr>
-      </tbody>
-      <thead>
-        <tr>
-          <th>Objetivo Otros</th>
-          <th>Premio Otros</th>
-          <th>Fact Otros</th>
-          <th>Monto Obtenido</th>
-        </tr>
-      </thead>
-      <tbody>
-        <td>{{this.commissions[0].payload.val().rewards.Otros}}</td>
-        <!-- <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td> -->
-        <td>{{this.prodCategorySales(this.monthOrders, "Otros", appUser.name)}}</td>
-        <td>{{this.rewardCalc("Otros", appUser.name, this.monthOrders)}}</td>
-      </tbody>
-    </table>
+  <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+    <thead>
+      <tr>
+        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Objetivo {{reward}}</th>
+        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Premio {{reward}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.commissions[0].payload.val().rewardsGoals[i]}}</td>
+        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.commissions[0].payload.val().rewards[i]}}</td>
+      </tr>
+    </tbody>
+    <thead>
+      <tr>
+        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Fact {{reward}}</th>
+        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Monto Obtenido {{reward}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward, appUser.name)}}</td>
+        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.rewardCalc(i, reward, appUser.name, this.monthOrders)}}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 

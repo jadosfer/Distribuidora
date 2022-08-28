@@ -8,43 +8,28 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 })
 export class PruebaComponent implements OnInit {
 
-  prodsArray = ["barras", "protes", "quemadores"]
-
-  prodCategoriesArray:any;
-  prodCategoryGroup:any;
-
-  cities = ["SF", "NY", "CHI"]
-  cityArray: any;
+  prodsCategories = ["barras", "protes", "quemadores"]
+  rewards = [1500, 1000, 500]
+  rewardsArray:any;
   myGroup: any;
 
   constructor(private formBuilder: FormBuilder) {
     let myArray = []
-    for (let i=0;i<this.cities.length;i++) {
-      myArray.push(new FormControl(this.cities[i]))
+    for (let i=0;i<this.prodsCategories.length;i++) {
+      myArray.push(new FormControl(this.rewards[i])) //valor de inicializacion
     }
-    this.cityArray = new FormArray(myArray);
+    this.rewardsArray = new FormArray(myArray);
 
     this.myGroup = new FormGroup({
-      cities: this.cityArray
+      rewards: this.rewardsArray
     });
-
-    // this.prodCategoryGroup = this.formBuilder.group({
-    //   goalAmount: new FormControl(0),
-    //   rewardAmount: new FormControl(0)
-    // })
-
-    // this.prodCategoriesArray = this.formBuilder.array([
-    //   this.formBuilder.control('', [Validators.required])
-    // ])
   }
 
   ngOnInit(): void {
   }
 
   send(value: any) {
-    console.log('len ', value.length);
     console.log('value ', value);
-
   }
 
 }

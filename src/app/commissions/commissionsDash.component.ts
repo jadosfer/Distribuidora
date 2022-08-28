@@ -6,6 +6,7 @@ import { OrdersService } from '../services/orders.service';
 import { Router} from '@angular/router';
 import { CategoryService } from '../services/category.service';
 import { Subscription } from 'rxjs';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-commissions',
@@ -13,6 +14,17 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./commissionsDash.component.scss']
 })
 export class CommissionsDashComponent implements OnInit {
+
+  //prodsCateg = ["barras", "protes", "quemadores"]
+  rewards = [1500, 1000, 500]
+  retailPercent: any;
+  wholesalerPercent: any;
+  monthlyRate: any;
+  minRetailTotalSales: any;
+  rewardsArray:any;
+  rewardsGoalsArray: any
+  myGroup: any;
+  myRewardsGoalsGroup: any;
 
   appUser: AppUser;
   orders: any[];
@@ -35,7 +47,8 @@ export class CommissionsDashComponent implements OnInit {
 
 
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
-    public commissionsService: CommissionsService, public catService: CategoryService) {
+    public commissionsService: CommissionsService, public catService: CategoryService,
+    private formBuilder: FormBuilder) {
     }
 
   ngOnInit(){
@@ -48,6 +61,28 @@ export class CommissionsDashComponent implements OnInit {
         if (this.commissions.length == 0) {
           this.commissionsService.createCommissions();
         }
+        // Forms groups  --------------------
+        let rewardsGoalsArray = [];
+        let rewardsArray = [];
+        for (let i=0;i<this.prodsCategories.length;i++) {
+          rewardsGoalsArray.push(new FormControl(this.commissions[0].payload.val().rewardsGoals[i])) //valor de inicializacion
+          rewardsArray.push(new FormControl(this.commissions[0].payload.val().rewards[i])) //valor de inicializacion
+        }
+        this.rewardsGoalsArray = new FormArray(rewardsGoalsArray);
+        this.rewardsArray = new FormArray(rewardsArray);
+        this.myGroup = new FormGroup({
+          retailPercent: new FormControl(this.commissions[0].payload.val().retailPercent),
+          wholesalerPercent: new FormControl(this.commissions[0].payload.val().wholesalerPercent),
+          monthlyRate: new FormControl(this.commissions[0].payload.val().monthlyRate),
+          minRetailTotalSales: new FormControl(this.commissions[0].payload.val().minRetailTotalSales),
+          rewardsGoals: this.rewardsGoalsArray,
+          rewards: this.rewardsArray
+        });
+        // this.myRewardsGoalsGroup = new FormGroup({
+        //   rewardsGoals: this.rewardsGoalsArray
+        // });
+
+
         this.subscription3 = this.ordersService.getAllOrders().subscribe(orders => {
           this.ordersService.orders = orders;
 
@@ -89,6 +124,9 @@ export class CommissionsDashComponent implements OnInit {
 
           this.subscription4 = this.auth.appUser$.subscribe(appUser => {
             this.appUser = appUser;
+            //manipulo USER
+            this.appUser.isAdmin = false;
+            this.appUser.name="Enrique Oyhamburu"
             //this.appUser.name = "Enrique Oyhamburu" //borrar
             //borrar
             // appUser.name = 'Enrique Oyhamburu'
@@ -116,7 +154,6 @@ export class CommissionsDashComponent implements OnInit {
         });
       });
     });
-
   }
 
   getThisMonthOrders() {
@@ -216,25 +253,22 @@ export class CommissionsDashComponent implements OnInit {
     if (confirm('Está segur@ que quiere guardar/crear estos valores de comisiones?')) {
       if (commissions) {
         console.log('commissions ', commissions);
-        console.log('this.prodsCategories ' + this.prodsCategories);
-        console.log('commissions[0].payload.val().rewardsGoals ' + commissions[0].payload.val().rewardsGoals);
-        this.commissionsService.update(this.commissions, commissions);
+        //this.commissionsService.update(this.commissions, commissions);
       }
     }
     this.edit = false;
-    document.location.reload();
+    //document.location.reload();
   }
 
   back() {
     this.edit = false;
   }
 
-  rewardCalc(prodCategory: string, sellerName: string, orders: any[]) {
+  rewardCalc(indexx: number, prodCategory: string, sellerName: string, orders: any[]) {
     let prodCategorySales = this.prodCategorySales(orders, prodCategory, sellerName);
-    if (prodCategorySales >= this.commissions[0].payload.val().rewards[prodCategory]
+    if (prodCategorySales >= this.commissions[0].payload.val().rewardsGoals[indexx]
     && this.retailSalesPMonth(sellerName, orders) >= this.commissions[0].payload.val().minRetailTotalSales)
-      //return this.commissions[0].payload.val().rewards["reward" + prodCategory]
-      return this.commissions[0].payload.val().rewardsGoals[prodCategory]
+      return this.commissions[0].payload.val().rewards[indexx]
     return 0;
   }
 
@@ -248,7 +282,9 @@ export class CommissionsDashComponent implements OnInit {
       "retailPercent": this.commissions[0].payload.val().retailPercent,
       "wholesalerPercent": this.commissions[0].payload.val().wholesalerPercent,
       "monthlyRate": this.commissions[0].payload.val().monthlyRate,
+      "productsCategories" : this.commissions[0].payload.val().productsCategories,
       "rewards": this.commissions[0].payload.val().rewards,
+      "rewardsGoals" : this.commissions[0].payload.val().rewardsGoals,
       'sellersCommissionsInfo' : sellersCommissionsInfo
     }
     this.commissionsService.saveCommissionsByMonth(monthCommissions, this.commissions);
@@ -313,7 +349,7 @@ export class CommissionsDashComponent implements OnInit {
     let prodCategoryRewards = [];
     let totalRewards = 0;
     for (let j=0;j<this.prodsCategories.length;j++) {
-      totalRewards += parseFloat(this.rewardCalc(this.prodsCategories[j].payload.val().name, sellerName, this.lastFullMonthOrders));
+      totalRewards += parseFloat(this.rewardCalc(j, this.prodsCategories[j].payload.val().name, sellerName, this.lastFullMonthOrders));
       let categoryReward = 0;
 
 
@@ -323,12 +359,12 @@ export class CommissionsDashComponent implements OnInit {
       //   categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].payload.val().name];
       // };
       if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
-        categoryReward = this.commissions[0].payload.val().rewardsGoals[this.prodsCategories[j].payload.val().name];
+        categoryReward = this.commissions[0].payload.val().rewards[j];
       };
       prodCategoryRewards.push({
         'prodCategory': this.prodsCategories[j].payload.val().name,
         'prodCategorySales': this.prodCategorySales(this.lastFullMonthOrders, this.prodsCategories[j].payload.val().name, sellerName),
-        'categoryAim': parseFloat(this.commissions[0].payload.val().rewards[this.prodsCategories[j].payload.val().name]),
+        'categoryAim': parseFloat(this.commissions[0].payload.val().rewardsGoals[j]),
         'categoryReward': categoryReward
       })
     }
@@ -350,6 +386,17 @@ export class CommissionsDashComponent implements OnInit {
     this.subscription3.unsubscribe();
     this.subscription4.unsubscribe();
    }
+
+   send(commissions: any) {
+    if (confirm('Está segur@ que quiere guardar/crear estos valores de comisiones?')) {
+      if (commissions) {
+        console.log('commissions ', commissions);
+        this.commissionsService.update(this.commissions, commissions);
+      }
+    }
+    this.edit = false;
+    document.location.reload();
+  }
 }
 
 

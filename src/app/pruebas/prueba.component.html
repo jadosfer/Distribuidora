@@ -3,16 +3,12 @@
   <p>----------------------COMPONENTE DE PRUEBAS-----------------------------------</p>
 </div>
 <form (ngSubmit)="send(myGroup.value)" [formGroup]="myGroup">
-  <div formArrayName="cities">
-    <div *ngFor="let city of cityArray.controls; index as i">
-      <input [formControlName]="i">
+  <div formArrayName="rewards">
+    <div *ngFor="let reward of rewardsArray.controls; index as i">
+      <input matInput [formControlName]="i" required>
     </div>
   </div>
   <button mat-raised-button type="submit" color="primary" >Guardar</button>
 </form>
-
-<div [formGroup]="myGroup">
-
-</div>
 
 

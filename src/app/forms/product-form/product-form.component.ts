@@ -11,7 +11,7 @@ import { CategoryService } from 'src/app/services/category.service';
   templateUrl: './product-form.component.html'
 })
 export class ProductFormComponent {
-  prodsCategories: Observable<any>;
+  prodsCategories: any[];
   product:any = {};
   id:any;
 
@@ -21,7 +21,9 @@ export class ProductFormComponent {
     private categoryService: CategoryService,
     private productService: ProductService) {
 
-    this.prodsCategories = categoryService.getAllProdsCategories();
+    this.categoryService.getAllProdsCategories().subscribe(prodsCategories => {
+      this.prodsCategories = prodsCategories
+    });
     this.id = this.route.snapshot.paramMap.get('id');
     if (this.id) this.productService.get(this.id).take(1).subscribe(p => {
       this.product = p.payload.val();
