@@ -50,6 +50,7 @@ import { CommissionsDashComponent } from './commissions/commissionsDash.componen
 import { CommissionsComponent } from './commissions/commissions.component';
 import { UtilityService } from './services/utility.service';
 import { ReplacesComponent } from './replaces/replaces.component';
+import { PruebaComponent } from './pruebas/prueba.component';
 
 
 @NgModule({
@@ -79,6 +80,7 @@ import { ReplacesComponent } from './replaces/replaces.component';
     CommissionsDashComponent,
     CommissionsComponent,
     ReplacesComponent,
+    PruebaComponent,
   ],
   imports: [
     BrowserAnimationsModule,

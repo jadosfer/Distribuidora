@@ -9,6 +9,7 @@
   <a mat-button routerLink="payments/payments" *ngIf="appUser">Cobros</a>
   <a mat-button routerLink="client/client" *ngIf="appUser">Clientes</a>
   <a mat-button routerLink="stock/stock" *ngIf="appUser">Stock</a>
+  <a mat-button routerLink="pruebas/prueba" *ngIf="appUser && appUser.name=='Tecnología & Programación'">Prueba</a>
   <!-- <mat-chip class="navbar-chip" *ngIf="getTotalItems() !== 0" color="accent" selected>&nbsp;&nbsp;&nbsp;{{getTotalItems()}}&nbsp;&nbsp;&nbsp;</mat-chip> -->
 
   <a mat-menu-item></a>

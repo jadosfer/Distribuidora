@@ -21,7 +21,7 @@ export class OrdersService implements OnDestroy, OnInit {
   orderId: any;
   appUser: AppUser;
   products:any[];
-  prodsCategory: string | null;
+  prodsCategory: any;
   filteredProducts:any[];
   orderIndex: number;
   clientFantasyName: string;

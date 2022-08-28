@@ -2,12 +2,18 @@
   <span class="visually-hidden"></span>
 </div>
 
-<div class="SCContainer ml-3">
+<div *ngIf="this.commissions" class="SCContainer ml-3">
+
   <h1 style="display: inline; margin:10px;">COMISIONES</h1>
   <hr>
   <div *ngIf="!loading && appUser && appUser.isAdmin"></div>
 
   <div *ngIf="edit" fxLayout="row" fxLayout.xs="column">
+
+
+    <div formArrayName="prodCategoriesArray"></div>
+
+
     <form #f="ngForm" (ngSubmit)="save(f.value)">
       <h3>Comisiones</h3>
       <p>
@@ -24,7 +30,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="legacy">
-          <mat-label>% Mayorista</mat-label>
+          <mat-label>Tasa Mensual</mat-label>
           <input #monthlyRate="ngModel" matInput [(ngModel)]="commissions[0].payload.val().monthlyRate" name="monthlyRate" placeholder="" required>
           <div class="alert alert-danger" *ngIf="monthlyRate.touched && monthlyRate.invalid">Campo requerido</div>
         </mat-form-field>
@@ -41,8 +47,11 @@
         <mat-form-field *ngFor="let prodCar of this.prodsCategories; let i = index" appearance="legacy"
         class="m-1">
           <mat-label>Meta en {{prodCar.payload.val().name}}</mat-label>
-          <input #prodCar.payload.val().name="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards['${prodCar.payload.val().name']" name="prodCar.payload.val().name" placeholder="" required>
-          <div class="alert alert-danger" *ngIf="prodCar.payload.val().name.touched && prodCar.payload.val().name.invalid">Meta en {{prodCar.payload.val().name}} es requerida</div>
+          <input #prodCar="ngModel" matInput
+            [(ngModel)]="commissions[0].payload.val().rewardsGoals[i]"
+            name="{{prodCar.payload.val().name}}" placeholder=""
+            [ngModelOptions]="{standalone: true}" required>
+          <div class="alert alert-danger" *ngIf="prodCar.touched && prodCar.invalid">Meta en {{prodCar.payload.val().name}} es requerida</div>
 
         </mat-form-field>
 
@@ -78,7 +87,15 @@
       </p>
 
       <p>
-        <mat-form-field appearance="legacy" class="m-1">
+        <!-- <mat-form-field *ngFor="let prodCar of this.prodsCategories; let i = index" appearance="legacy"
+        class="m-1">
+          <mat-label>Premio en {{prodCar.payload.val().name}}</mat-label>
+          <input #prodCar.payload.val().name="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards[i]"  [attr.name]="'reward' + prodCar.payload.val().name" placeholder="" required>
+          <div class="alert alert-danger" *ngIf="prodCar.payload.val().name.touched && prodCar.payload.val().name.invalid">Premio en {{prodCar.payload.val().name}} es requerido</div>
+
+        </mat-form-field> -->
+
+        <!-- <mat-form-field appearance="legacy" class="m-1">
           <mat-label>Premio Barras</mat-label>
           <input #rewardBarras="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardBarras" name="rewardBarras" placeholder="" required>
           <div class="alert alert-danger" *ngIf="rewardBarras.touched && rewardBarras.invalid">Premio Barras es requerido</div>
@@ -106,13 +123,15 @@
           <mat-label>Premio otros</mat-label>
           <input #rewardOtros="ngModel" matInput [(ngModel)]="commissions[0].payload.val().rewards.rewardOtros" name="rewardOtros" placeholder="" required>
           <div class="alert alert-danger" *ngIf="rewardOtros.touched && rewardOtros.invalid">Premio Otros es requerido</div>
-        </mat-form-field>
+        </mat-form-field> -->
       </p>
 
       <button mat-raised-button type="submit" color="primary" >Guardar</button>
       <button (click)="back()" mat-raised-button type="button" color="warn">Volver</button>
     </form>
   </div>
+
+
   <div *ngIf="!edit">
     <div class="row">
       <div class="col">
@@ -244,11 +263,11 @@
       <tbody>
         <tr>
           <td>{{this.commissions[0].payload.val().rewards.Barras}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
+          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td> -->
           <td>{{this.prodCategorySales(this.monthOrders, "Barras", appUser.name)}}</td>
           <td>{{this.rewardCalc("Barras", appUser.name, this.monthOrders)}}</td>
           <td>{{this.commissions[0].payload.val().rewards.Proteinas}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.rewardProteinas}}</td>
+          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardProteinas}}</td> -->
           <td>{{this.prodCategorySales(this.monthOrders, "Proteinas", appUser.name)}}</td>
           <td>{{this.rewardCalc("Proteinas", appUser.name, this.monthOrders)}}</td>
         </tr>
@@ -268,11 +287,11 @@
       <tbody>
         <tr>
           <td>{{this.commissions[0].payload.val().rewards.Quemadores}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.rewardQuemadores}}</td>
+          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardQuemadores}}</td> -->
           <td>{{this.prodCategorySales(this.monthOrders, "Quemadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Quemadores", appUser.name, this.monthOrders)}}</td>
           <td>{{this.commissions[0].payload.val().rewards.Recuperadores}}</td>
-          <td>{{this.commissions[0].payload.val().rewards.rewardRecuperadores}}</td>
+          <!-- <td>{{this.commissions[0].payload.val().rewards.rewardRecuperadores}}</td> -->
           <td>{{this.prodCategorySales(this.monthOrders, "Recuperadores", appUser.name)}}</td>
           <td>{{this.rewardCalc("Recuperadores", appUser.name, this.monthOrders)}}</td>
         </tr>
@@ -287,7 +306,7 @@
       </thead>
       <tbody>
         <td>{{this.commissions[0].payload.val().rewards.Otros}}</td>
-        <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td>
+        <!-- <td>{{this.commissions[0].payload.val().rewards.rewardBarras}}</td> -->
         <td>{{this.prodCategorySales(this.monthOrders, "Otros", appUser.name)}}</td>
         <td>{{this.rewardCalc("Otros", appUser.name, this.monthOrders)}}</td>
       </tbody>

@@ -33,14 +33,16 @@ export class CommissionsDashComponent implements OnInit {
   subscription3: Subscription
   subscription4: Subscription
 
+
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
-    public commissionsService: CommissionsService, public catService: CategoryService ) {}
+    public commissionsService: CommissionsService, public catService: CategoryService) {
+    }
 
   ngOnInit(){
+
     let today = new Date();
     this.subscription = this.catService.getAllProdsCategories().subscribe(prodsCategories => {
       this.prodsCategories = prodsCategories;
-      console.log('prodcategories ' + this.prodsCategories);
       this.subscription2 = this.commissionsService.getCommissions().subscribe(commissions => {
         this.commissions = commissions;
         if (this.commissions.length == 0) {
@@ -213,6 +215,9 @@ export class CommissionsDashComponent implements OnInit {
   save(commissions: any) {
     if (confirm('Está segur@ que quiere guardar/crear estos valores de comisiones?')) {
       if (commissions) {
+        console.log('commissions ', commissions);
+        console.log('this.prodsCategories ' + this.prodsCategories);
+        console.log('commissions[0].payload.val().rewardsGoals ' + commissions[0].payload.val().rewardsGoals);
         this.commissionsService.update(this.commissions, commissions);
       }
     }
@@ -228,7 +233,8 @@ export class CommissionsDashComponent implements OnInit {
     let prodCategorySales = this.prodCategorySales(orders, prodCategory, sellerName);
     if (prodCategorySales >= this.commissions[0].payload.val().rewards[prodCategory]
     && this.retailSalesPMonth(sellerName, orders) >= this.commissions[0].payload.val().minRetailTotalSales)
-      return this.commissions[0].payload.val().rewards["reward" + prodCategory]
+      //return this.commissions[0].payload.val().rewards["reward" + prodCategory]
+      return this.commissions[0].payload.val().rewardsGoals[prodCategory]
     return 0;
   }
 
@@ -309,8 +315,15 @@ export class CommissionsDashComponent implements OnInit {
     for (let j=0;j<this.prodsCategories.length;j++) {
       totalRewards += parseFloat(this.rewardCalc(this.prodsCategories[j].payload.val().name, sellerName, this.lastFullMonthOrders));
       let categoryReward = 0;
+
+
+//------------------------MUY IMPORTANTE RESOLVER LODE ABAJO
+
+      // if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
+      //   categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].payload.val().name];
+      // };
       if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales) {
-        categoryReward = this.commissions[0].payload.val().rewards["reward" + this.prodsCategories[j].payload.val().name];
+        categoryReward = this.commissions[0].payload.val().rewardsGoals[this.prodsCategories[j].payload.val().name];
       };
       prodCategoryRewards.push({
         'prodCategory': this.prodsCategories[j].payload.val().name,
