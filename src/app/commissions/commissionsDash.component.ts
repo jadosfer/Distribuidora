@@ -129,13 +129,9 @@ export class CommissionsDashComponent implements OnInit {
   }
 
   getActiveSellers() {
-    let activeSellers = [];
-    for (let i=0;i<this.sellers.length;i++) {
-      if (this.isSellerActive(this.sellers[i].payload.val().name)) {
-        activeSellers.push(this.sellers[i]);
-      }
-
-    }
+    let activeSellers = this.sellers.filter((seller)=>{
+      if (this.isSellerActive(seller.payload.val().name)) return seller;
+    })
     this.sellers = activeSellers;
   }
 
