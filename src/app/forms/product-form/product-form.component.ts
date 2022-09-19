@@ -1,3 +1,4 @@
+import { StockService } from './../../services/stock.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Observable } from 'rxjs';
@@ -14,12 +15,16 @@ export class ProductFormComponent {
   prodsCategories: any[];
   product:any = {};
   id:any;
+  products: any[];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private productService: ProductService) {
+    private productService: ProductService,
+    private stockService: StockService) {
+
+
 
     this.categoryService.getAllProdsCategories().subscribe(prodsCategories => {
       this.prodsCategories = prodsCategories
@@ -37,6 +42,10 @@ export class ProductFormComponent {
       }
       else {
         this.productService.create(product);
+        this.productService.getAll().subscribe(products => {
+          this.products = products;
+          this.stockService.updateBuy(this.products);
+        })
       }
       this.router.navigate(['/admin/prods']);
     }

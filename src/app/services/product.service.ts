@@ -13,11 +13,9 @@ export class ProductService implements OnInit{
   subscription: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
+  subscription4: Subscription;
 
   constructor(private db: AngularFireDatabase) {
-  }
-
-  ngOnInit() {
     this.subscription = this.getAll().subscribe(products => {
       this.products = products;
     });
@@ -26,27 +24,37 @@ export class ProductService implements OnInit{
     });
   }
 
+  ngOnInit() {
+  }
+
   create(product: any) {
-    product.disc1=0;
-    product.disc2=0;
-    product.disc3=0;
-    product.disc4=0;
-    product.price1=product.buyPrice*1.1;  //harcoded recharges
-    product.price2=product.buyPrice*1.2;  //harcoded recharges
-    product.price3=product.buyPrice*1.3;  //harcoded recharges
-    product.price4=product.buyPrice*1.3;  //harcoded recharges
-    product.discPrice1=product.price1;
-    product.discPrice2=product.price2;
-    product.discPrice3=product.price3;
-    product.discPrice4=product.price4;
-    return this.db.list('/products').push(product);
+    this.subscription4 = this.getAllRecharges().subscribe(recharges => {
+      this.recharges = recharges;
+
+      product.disc1=0;
+      product.disc2=0;
+      product.disc3=0;
+      product.disc4=0;
+      product.price1=product.buyPrice*(1 + (this.recharges[0].payload.val().distRecharge/100));
+      product.price2=product.buyPrice*(1 + (this.recharges[0].payload.val().comRecharge/100));
+      product.price3=product.buyPrice*(1 + (this.recharges[0].payload.val().pvpRecharge/100));
+      product.price4=product.buyPrice*(1 + (this.recharges[0].payload.val().gymRecharge/100));
+      product.discPrice1=product.price1;
+      product.discPrice2=product.price2;
+      product.discPrice3=product.price3;
+      product.discPrice4=product.price4;
+      product.stock = 0;
+      return this.db.list('/products').push(product);
+    });
+
   }
 
   createRecharge() {
     this.recharges = {
-      distRecharge: 10,
-      comRecharge: 20,
-      gymRecharge: 30
+      distRecharge: 15,
+      comRecharge: 30,
+      pvpRecharge: 60,
+      gymRecharge: 44
     }
     let result = this.db.list('/recharges').push(this.recharges);
     if (result.key) this.rechargeKey = result.key;
@@ -198,7 +206,8 @@ export class ProductService implements OnInit{
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();   
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
   }
 }
 

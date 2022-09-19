@@ -7,6 +7,7 @@ import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
+import { AngularFireDatabase } from '@angular/fire/database';
 
 
 @Component({
@@ -34,16 +35,18 @@ export class BuyComponent implements OnInit {
   constructor(public stockService: StockService,
     private productService: ProductService,
     private route: ActivatedRoute,
-    private auth: AuthService) {
+    private auth: AuthService, public db: AngularFireDatabase) {
     }
 
   ngOnInit() {
     //this.filter("");
-    this.subscription = this.stockService.getBuy().subscribe(buy => {
+
+
       this.subscription2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
         this.subscription3 = this.productService.getAll().subscribe(products => {
           this.products = products;
+          this.subscription = this.stockService.getBuy().subscribe(buy => {
           this.buy = buy;
           this.subscription4 = this.route.queryParamMap.subscribe(params => {
             this.prodsCategory = params.get('prodsCategory');
@@ -60,9 +63,9 @@ export class BuyComponent implements OnInit {
               }
             }
           });
+        });
         })
       });
-    });
     }
 
     updateBuyItemQuantity(buy: any, product: any, change: number){

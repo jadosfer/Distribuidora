@@ -98,7 +98,7 @@ export class BuysComponent implements OnInit {
           total += this.stockService.getTotalCost(buy);
         });
       }
-      return total;
+      return Math.round(total * 10) / 10;;
     }
 
     removeBuy(buyId: any) {

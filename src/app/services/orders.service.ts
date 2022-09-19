@@ -28,7 +28,7 @@ export class OrdersService implements OnDestroy, OnInit {
   hasDiscount: boolean = false;
   orderNumber: any = [];
 
-  clientsPaginator: {"pageIndex": number, "pageSize": number} = {"pageIndex": 0, "pageSize": 10};
+  clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
   DEBT_TOLERATED = 100;
   payment: any;

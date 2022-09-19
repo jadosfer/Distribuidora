@@ -3,13 +3,12 @@
 </div>
 
 <div *ngIf="this.commissions" class="SCContainer ml-3">
-
   <h1 style="display: inline; margin:10px;">COMISIONES</h1>
   <hr>
   <!-- <div *ngIf="!loading && appUser && appUser.isAdmin"></div> -->
 
   <div *ngIf="edit && commissions" fxLayout="row" fxLayout.xs="column">
-    <form (ngSubmit)="send(myGroup.value)" [formGroup]="myGroup">
+    <form (ngSubmit)="save(myGroup.value)" [formGroup]="myGroup">
       <div>
         <input [formControlName]="'retailPercent'" required>
         <label class="m-1">% Minorista</label>
@@ -96,15 +95,15 @@
       <thead>
         <tr>
           <th>Vendedor</th>
-          <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">Fact {{reward}}</th>
-          <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">Premio {{reward}}</th>
+          <th *ngFor="let reward of prodsCategories; index as i">Fact {{reward.payload.val().name}}</th>
+          <th *ngFor="let reward of prodsCategories; index as i">Premio {{reward.payload.val().name}}</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let seller of sellers">
           <td>{{seller.payload.val().name}}</td>
-          <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward, seller.payload.val().name)}}</td>
-          <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.rewardCalc(i, reward, seller.payload.val().name, this.monthOrders)}}</td>
+          <td *ngFor="let reward of prodsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward.payload.val().name, seller.payload.val().name)}}</td>
+          <td *ngFor="let reward of prodsCategories; index as i">{{this.rewardCalc(i, reward.payload.val().name, seller.payload.val().name, this.monthOrders)}}</td>
         </tr>
       </tbody>
     </table>
@@ -151,26 +150,26 @@
   <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
     <thead>
       <tr>
-        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Objetivo {{reward}}</th>
-        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Premio {{reward}}</th>
+        <th *ngFor="let reward of prodsCategories">Objetivo {{reward.payload.val().name}}</th>
+        <th *ngFor="let reward of prodsCategories">Premio {{reward.payload.val().name}}</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.commissions[0].payload.val().rewardsGoals[i]}}</td>
-        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.commissions[0].payload.val().rewards[i]}}</td>
+        <td *ngFor="let reward of prodsCategories; index as i">{{this.commissions[0].payload.val().rewardsGoals[i]}}</td>
+        <td *ngFor="let reward of prodsCategories; index as i">{{this.commissions[0].payload.val().rewards[i]}}</td>
       </tr>
     </tbody>
     <thead>
       <tr>
-        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Fact {{reward}}</th>
-        <th *ngFor="let reward of this.commissions[0].payload.val().productsCategories">Monto Obtenido {{reward}}</th>
+        <th *ngFor="let reward of prodsCategories">Fact {{reward.payload.val().name}}</th>
+        <th *ngFor="let reward of prodsCategories">Monto Obtenido {{reward.payload.val().name}}</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward, appUser.name)}}</td>
-        <td *ngFor="let reward of this.commissions[0].payload.val().productsCategories; index as i">{{this.rewardCalc(i, reward, appUser.name, this.monthOrders)}}</td>
+        <td *ngFor="let reward of prodsCategories; index as i">{{this.prodCategorySales(this.monthOrders, reward, appUser.name)}}</td>
+        <td *ngFor="let reward of prodsCategories; index as i">{{this.rewardCalc(i, reward, appUser.name, this.monthOrders)}}</td>
       </tr>
     </tbody>
   </table>

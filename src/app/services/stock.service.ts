@@ -42,6 +42,12 @@ export class StockService {
               p.payload.val().prodsCategory == this.prodsCategory) :
             this.products;
           }
+          this.subscription4 = this.getBuy().subscribe(buy => {
+            this.buy = buy;
+            if (this.buy.length == 0) {
+              this.createBuy(this.products);
+            }
+          });
           // this.getStock().subscribe(stock => {
           //   this.stock = stock;
           //   if (this.stock.length == 0) {
@@ -49,12 +55,6 @@ export class StockService {
           //   }
           // });
         });
-      });
-      this.subscription4 = this.getBuy().subscribe(buy => {
-        this.buy = buy;
-        if (this.buy.length == 0) {
-          this.createBuy();
-        }
       });
      }
 
@@ -69,19 +69,19 @@ export class StockService {
   //   return result;
   // }
 
-  public createBuy() {
-    let products = []
-    for (let i=0;i<this.products.length;i++) {
-      products.push({
-        "price": this.products[i].payload.val().buyPrice,
-        "product": this.products[i].payload.val(),
-        "productId":this.products[i].key,
+  public createBuy(products: any[]) {
+    let productBuy = []
+    for (let i=0;i<products.length;i++) {
+      productBuy.push({
+        "price": products[i].payload.val().buyPrice,
+        "product": products[i].payload.val(),
+        "productId":products[i].key,
         "quantity": 0
       });
     }
     let result = this.db.list('/buy/').push({
       "buyItemsCount": 0,
-      "products": products
+      "products": productBuy
     });
     this.buyId = result.key;
   }
@@ -94,6 +94,26 @@ export class StockService {
   public getBuy() {
     let result = this.db.list('/buy').snapshotChanges();
     return result;
+  }
+
+  updateBuy(products: any) {
+    if (this.buy) {
+      let productsBuy = [];
+    for (let i=0;i<products.length;i++) {
+      productsBuy.push({
+        "price": products[i].payload.val().buyPrice,
+        "product": products[i].payload.val(),
+        "productId": products[i].key,
+        "quantity": 0,
+      })
+    }
+
+      return this.db.object('/buy/' + this.buy[0].key).update({
+        "buyItemsCount": 0,
+        "products": productsBuy
+      });
+    }
+    return null
   }
 
   public getBuys() {
@@ -236,10 +256,12 @@ export class StockService {
 
   getTotalCost(buy: any) {
     let totalCost = 0
-    for (let i=0;i<buy.payload.val().buy.length;i++) {
-      totalCost += buy.payload.val().buy[i].quantity * buy.payload.val().buy[i].price;
+    if (buy && buy.payload.val().buy) {
+      for (let i=0;i<buy.payload.val().buy.length;i++) {
+        totalCost += parseInt(buy.payload.val().buy[i].quantity) * parseFloat(buy.payload.val().buy[i].price);
+      }
     }
-   return totalCost;
+    return Math.round(totalCost * 10) / 10;;
   }
 
   ngOnDestroy() {

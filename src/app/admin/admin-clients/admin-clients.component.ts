@@ -1,8 +1,7 @@
 import { PrintService } from './../../services/print.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { OrdersService } from 'src/app/services/orders.service';
 import { AppUser } from 'src/app/models/app-user';
 import { AuthService } from 'src/app/services/auth.service';
@@ -18,7 +17,6 @@ import { Subscription } from 'rxjs';
 export class AdminClientsComponent implements OnInit {
 
   appUser: AppUser;
-  displayedColumns: string[] = ['businessName', 'fantasyName', 'debt2', 'debt3', 'seller', 'IVACond', 'resume', 'edit', 'payments', 'orders'];
   dataSource: any;
   clients:any[];
   sortedData:any[];
@@ -28,6 +26,7 @@ export class AdminClientsComponent implements OnInit {
   orderOrPayment: boolean;
   pos: number;
   query: {client: string, seller: string} = {client: "", seller: ""}
+
   //ordersInDebt: any[];
   clientsInDebt: any[];
 
@@ -36,6 +35,15 @@ export class AdminClientsComponent implements OnInit {
   subscription3: Subscription;
   subscription4: Subscription;
 
+  showClientsInDebt: boolean;
+  loading: boolean = false;
+
+  //nuevos
+  clientValue: string;
+  sellerValue: string;
+  currentItemsToShow: any[];
+  includedClients: any[] = [];
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(public ordersService: OrdersService,
@@ -43,17 +51,30 @@ export class AdminClientsComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    //this.filter("");
     this.subscription = this.auth.appUser$.subscribe(appUser => {
+
       this.appUser = appUser;
       this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
-        this.filteredClients = this.clients = clients;
-        this.dataSource = new MatTableDataSource<any>(this.filteredClients);
-        this.dataSource.paginator = this.paginator;
-        if (this.ordersService.clientsPaginator.pageIndex > 0 || this.ordersService.clientsPaginator.pageSize != 10) {
-        this.paginator.pageIndex = this.ordersService.clientsPaginator.pageIndex;
-        this.paginator.pageSize = this.ordersService.clientsPaginator.pageSize;
-        this.dataSource.paginator = this.paginator
+        this.clients = clients;
+        this.includedClients = [];
+        this.currentItemsToShow = [];
+
+        for (let i=0;i<this.clients.length;i++) {
+          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
+            this.includedClients.push(this.clients[i]);
+          }
         }
+
+        this.filteredClients = this.includedClients;
+        this.currentItemsToShow = this.filteredClients;
+
+      if (this.ordersService.clientsPaginator.pageIndex > 0) {
+        this.onPageChange({previousPageIndex: this.ordersService.clientsPaginator.pageIndex - 1, pageIndex: this.ordersService.clientsPaginator.pageIndex, pageSize: this.ordersService.clientsPaginator.pageSize, length: this.ordersService.clientsPaginator.length});
+      }
+      else this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+
         this.subscription3 = this.ordersService.getAllPayments().subscribe(payments => {
           this.payments = payments;
           this.subscription4 = this.ordersService.getAllOrders().subscribe(orders => {
@@ -61,61 +82,71 @@ export class AdminClientsComponent implements OnInit {
             this.clientsInDebt = this.ordersService.getClientsInDebt(this.clients, this.orders);
             for (let i=0;i<this.clientsInDebt.length;i++) {
               this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
+              //this.clientsInDebt[i].ordersDebt = this.ordersService.calcDebtGreatherThan30(this.clientsInDebt[i].payload.val().fantasyName);
+              this.clientsInDebt[i].debt = this.ordersService.calcDebt(this.clientsInDebt[i].payload.val().fantasyName);
             }
+            this.loading = false;
           });
         });
+
       });
+
     });
   }
 
   filter(query: string) {
     this.query.client = query;
     this.filteredClients = [];
-    for (let i=0;i<this.clients.length;i++) {
-      if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
-      && this.clients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase())
-      )
-      this.filteredClients.push(this.clients[i]);
+    for (let i=0;i<this.includedClients.length;i++) {
+      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+      this.filteredClients.push(this.includedClients[i]);
     }
-    this.dataSource = new MatTableDataSource<any>(this.filteredClients);
-    this.dataSource.paginator = this.paginator;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   filterBySeller(query: string) {
     this.query.seller = query;
     this.filteredClients = [];
-    for (let i=0;i<this.clients.length;i++) {
-      if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.clients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())
-      )
-      this.filteredClients.push(this.clients[i]);
+    for (let i=0;i<this.includedClients.length;i++) {
+      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
+        this.filteredClients.push(this.includedClients[i])
+      }
     }
 
-    this.dataSource = new MatTableDataSource<any>(this.filteredClients);
-    this.dataSource.paginator = this.paginator;
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
   }
 
   sortData(sort: Sort) {
-    const data = this.filteredClients.slice();
+    const data = this.filteredClients;
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
       return;
     }
-    this.sortedData = data.sort((a, b) => {
+
+    this.sortedData = data.sort((a: any, b: any) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
-        case 'fantasyName': return this.compare(a.payload.val().fantasyName, b.payload.val().fantasyName, isAsc);
-        case 'businessName': return this.compare(a.payload.val().businessName, b.payload.val().businessName, isAsc);
+        case 'cliente': return this.compare(a.payload.val().fantasyName, b.payload.val().fantasyName, isAsc);
         default: return 0;
       }
     });
-    this.dataSource = new MatTableDataSource<any>(this.sortedData);
-    this.dataSource.paginator = this.paginator;
+  }
+  compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  getPagination() {
-    this.ordersService.clientsPaginator.pageIndex = this.paginator.pageIndex;
-    this.ordersService.clientsPaginator.pageSize = this.paginator.pageSize;
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredClients.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
+    this.ordersService.clientsPaginator.pageIndex = $event.pageIndex;
+    this.ordersService.clientsPaginator.pageSize = $event.pageSize;
+    this.ordersService.clientsPaginator.length = $event.length;
   }
 
   searchPayments(clientFantasyName: string) {
@@ -126,13 +157,19 @@ export class AdminClientsComponent implements OnInit {
     this.ordersService.clientFantasyName = clientFantasyName;
   }
 
-  compare(a: number | string, b: number | string, isAsc: boolean) {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
-
   getClientLastPayment(fantasyName: string) {
     let payment = this.ordersService.getClientLastPayment(fantasyName, this.payments);
     return payment;
+  }
+
+  hideTable() {
+    this.showClientsInDebt = !this.showClientsInDebt;
+  }
+
+  getPagination() {
+    // this.ordersService.clientsPaginator.pageIndex = this.paginator.pageIndex;
+    // this.ordersService.clientsPaginator.pageSize = this.paginator.pageSize;
+    // this.ordersService.clientsPaginator.length = this.paginator.length;
   }
 
   ngOnDestroy() {

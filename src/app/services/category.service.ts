@@ -1,3 +1,4 @@
+import { CommissionsService } from './commissions.service';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 
@@ -29,7 +30,11 @@ export class CategoryService {
     return this.db.list('payWay').valueChanges();
   }
 
-  setNewProdCategory(category: String) {
+  // setNewProdCategory(category: String) {
+  //   return this.db.list('/productsCategories').push({name: category});
+  // }
+
+  addProdCategory(category: String) {
     return this.db.list('/productsCategories').push({name: category});
   }
 }

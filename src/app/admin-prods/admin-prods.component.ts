@@ -1,3 +1,4 @@
+import { CommissionsService } from './../services/commissions.service';
 import { CategoryService } from '../services/category.service';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
@@ -19,6 +20,8 @@ export class AdminProdsComponent implements OnInit {
   currentItemsToShow:any[];
   pageSize: number = 20;
   pageIndex: number = 0;
+  prodCat: String;
+  prodCategory:any = {};
 
   dist:number;
   com:number;
@@ -39,32 +42,34 @@ export class AdminProdsComponent implements OnInit {
 
   recharged: boolean;
   mobile:boolean = false;
+  prodAdded:boolean = false;
 
-  constructor(private productService: ProductService, private db: AngularFireDatabase,
+  constructor(private productService: ProductService, private commissionsService: CommissionsService,
     private router: Router,
     private categoryService: CategoryService) {
+      this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
+        this.clientCategories = clientCategories;
+      })
       categoryService.getAllProdsCategories().subscribe((prodsCategories)=>{
         this.prodsCategories = prodsCategories;
       });
-  }
+      this.subscription2 = this.productService.getAll().subscribe(products => {
+        this.filteredProducts = this.products = products;
+        this.onPageChange({previousPageIndex: 0, pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.filteredProducts.length})
+        //this.createStockValue(this.products);
+        this.subscription3 = this.productService.getAllRecharges().subscribe(recharges => {
+          this.recharges = recharges;
+          if (!recharges) {
+            this.productService.createRecharge();
+          }
+          this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
+        });
+      });
+
+      // if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
+    }
 
   ngOnInit() {
-    this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
-      this.clientCategories = clientCategories;
-    })
-    this.subscription2 = this.productService.getAll().subscribe(products => {
-      this.filteredProducts = this.products = products;
-      this.onPageChange({previousPageIndex: 0, pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.filteredProducts.length})
-      //this.createStockValue(this.products);
-    });
-    this.subscription3 = this.productService.getAllRecharges().subscribe(recharges => {
-      this.recharges = recharges;
-      if (!recharges) {
-        this.productService.createRecharge();
-      }
-      this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
-    });
-    if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
   }
 
   // filter(query: string) {
@@ -153,19 +158,22 @@ export class AdminProdsComponent implements OnInit {
       const line1 = 20;
       const line2 = line1 + 10;
       const line3 = line2 + 10;
-      const col1 = 30;
-      const col2 = 140;
+      const col1 = 20;
+      const col2 = 120;
+      const col3 = 160;
 
       var doc = new jsPDF();
       let pageHeight= 0;
       doc.setFontSize(9);
       doc.text('GENTECH MAR DEL PLATA', col1, line1);
+      doc.text('CATEGORÍA: ' + prod.categoryPDF, 120, line1);
       doc.text('PRODUCTO', col1, line2);
       if (prod.categoryPDF == "Pvp" || prod.categoryPDF == "Gimnasio") {
-        doc.text('Importe', 140, line2);
+        doc.text('Importe', 120, line2);
       }
       else {
-        doc.text('Importe s/IVA', 140, line2);
+        doc.text('Importe s/IVA', 120, line2);
+        doc.text('Importe c/IVA', 160, line2);
       }
 
       doc.setFontSize(8);
@@ -187,9 +195,11 @@ export class AdminProdsComponent implements OnInit {
         switch (prod.categoryPDF) {
           case "Distribuidor":
             doc.text(this.products[i].payload.val().discPrice1.toFixed(1).toString(), col2, line3 + y);
+            doc.text((1.21*this.products[i].payload.val().discPrice1).toFixed(1).toString(), col3, line3 + y);
             break;
           case "Comercio":
             doc.text(this.products[i].payload.val().discPrice2.toFixed(1).toString(), col2, line3 + y);
+            doc.text((1.21*this.products[i].payload.val().discPrice2).toFixed(1).toString(), col3, line3 + y);
             break;
           case "Pvp":
             doc.text(this.products[i].payload.val().discPrice3.toFixed(1).toString(), col2, line3 + y);
@@ -202,7 +212,7 @@ export class AdminProdsComponent implements OnInit {
       doc.setFontSize(8);
 
       // Save the PDF
-      doc.save('ListaDePreciosGentech.pdf');
+      doc.save('ListaDePreciosGentech-' + prod.categoryPDF +'.pdf');
     }
   }
 
@@ -210,6 +220,12 @@ export class AdminProdsComponent implements OnInit {
     this.subscription.unsubscribe();
     this.subscription2.unsubscribe();
     this.subscription3.unsubscribe();
+  }
+
+  addProdCategory(prodCategory: any) {
+    this.categoryService.addProdCategory(prodCategory.title);
+    location.reload();
+    //this.commissionsService.addProdCategory(prodCategory.title);
   }
 }
 

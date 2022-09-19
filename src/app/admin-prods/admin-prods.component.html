@@ -12,7 +12,7 @@
       </div>
 
       <div fxLayout="row">
-        <div>
+        <div >
           <form #f2="ngForm" (ngSubmit)="exportPDF(f2.value)">
             <mat-form-field appearance="fill">
               <mat-label>Categoría de cliente</mat-label>
@@ -23,9 +23,25 @@
               </mat-select>
               <div class="alert alert-danger" *ngIf="categoryPDF.touched && categoryPDF.invalid">La categoría es obligatoria</div>
             </mat-form-field>
-            <button class="ms-2" mat-raised-button type="submit" color="primary" [disabled]="!f2.valid">Descargar PDF</button>
+            <div class="row">
+              <div class="row"><button class="ms-2" mat-raised-button type="submit" color="primary" [disabled]="!f2.valid">Descargar PDF</button></div>
+            </div>
           </form>
+        </div>
 
+        <div class="ms-3 mt-2">
+          <form #f3="ngForm" (ngSubmit)="addProdCategory(f3.value)">
+            <mat-form-field appearance="legacy">
+              <mat-label>Nueva Categoría de Prod</mat-label>
+              <input #title="ngModel" matInput [(ngModel)]="prodCategory.title" name="title" placeholder="" maxlength="40" required>
+              <div class="alert alert-danger" *ngIf="title.touched && title.invalid">El nombre es obligatorio. Máximo 30 caracteres</div>
+            </mat-form-field>
+            <div class="row">
+              <div class="row">
+                <button class="ms-2" mat-raised-button type="submit" color="primary" [disabled]="!f3.valid">Agregar</button>
+              </div>
+            </div>
+          </form>
         </div>
         <!-- <div>
           <td><button mat-icon-button (click)="exportPDF()" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
@@ -69,7 +85,7 @@
     </div>
     <div>
       <div class="admin-prods-form" *ngFor="let product of currentItemsToShow; index as i;">
-        <form #f="ngForm" (ngSubmit)="saveProd(f.value, product)">
+        <form #f2="ngForm" (ngSubmit)="saveProd(f2.value, product)">
             <mat-form-field appearance="legacy" style="width:25vw;min-width:320px;margin-right: 10px; ">
               <input #title="ngModel" matInput [(ngModel)]="product.payload.val().title" name="title" placeholder="" required>
               <mat-hint>Producto</mat-hint>
@@ -157,9 +173,9 @@
 
 
 
-          <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
+          <button mat-raised-button type="submit" color="primary" [disabled]="!f2.valid">Guardar</button>
           <button (click)="delete(product.key)" mat-raised-button type="button" color="warn">Eliminar</button>
-          <span *ngIf="!f.valid">&nbsp;&nbsp;ERROR: hay datos inválidos! recuerde usar punto en vez de coma para los decimales</span>
+          <span *ngIf="!f2.valid">&nbsp;&nbsp;ERROR: hay datos inválidos! recuerde usar punto en vez de coma para los decimales</span>
         </form>
       </div>
     </div>

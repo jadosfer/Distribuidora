@@ -1,7 +1,9 @@
-<div class="SCContainer" *ngIf="appUser">
+<div class="SCContainer ms-1" *ngIf="appUser">
   <div class="row">
-    <div [ngClass]="{'col-1': !this.utilityService.isMobile(), 'col-4': this.utilityService.isMobile()}"><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
-    <div [ngClass]="{'col-1': !this.utilityService.isMobile(), 'col-2': this.utilityService.isMobile()}"><button mat-icon-button (click)="this.printService.exportClients(this.clients)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></div>
+    <!-- <div [ngClass]="{'col-4': this.utilityService.wL700(), 'col-6': !this.utilityService.wL700()}"><h1 style="display: inline; margin:10px;">CLIENTES</h1></div> -->
+    <div class="col-5"><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
+    <!-- <div [ngClass]="{'col-5': this.utilityService.wL700(), 'col-6': !this.utilityService.wL700()}"><button mat-icon-button (click)="this.printService.exportClients(this.clients)" color="primary" >Descargar Listado<mat-icon>picture_as_pdf</mat-icon></button></div> -->
+    <div class="col-4"><button mat-icon-button (click)="this.printService.exportClients(this.clients)" color="primary" >Descargar Listado<mat-icon>picture_as_pdf</mat-icon></button></div>
   </div>
 
   <hr>

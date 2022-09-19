@@ -1,0 +1,18 @@
+permite eliminar elementos salvados. Elminar a partir de la ubicacion i = 4
+        this.subscription = this.commissionsService.getCommissionsByMonth().subscribe(commissionsByMonth => {
+          this.commissionsByMonth = commissionsByMonth;
+          for (let i=0;i<this.commissionsByMonth.length;i++) {
+            if (i>4) {
+              this.db.object('/commissionsByMonth/' +  this.commissionsByMonth[i].key).remove();
+            }
+          }
+        });
+
+        this.subscription = this.stockService.getBuy().subscribe(buy => {
+          this.buy = buy;
+          for (let i=0;i<this.buy.length;i++) {
+            if (i>2) {
+              this.db.object('/buy/' +  this.buy[i].key).remove();
+            }
+          }
+        });

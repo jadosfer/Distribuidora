@@ -47,8 +47,7 @@ export class ClientsComponent implements OnInit {
         this.currentItemsToShow = [];
 
         for (let i=0;i<this.clients.length;i++) {
-          //let isUserClient = this.clients[i].payload.val().designatedSeller == this.appUser.name;
-          let isUserClient = true;
+          let isUserClient = this.clients[i].payload.val().designatedSeller == this.appUser.name;
           if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserClient)) {
             this.includedClients.push(this.clients[i]);
           }
@@ -61,17 +60,8 @@ export class ClientsComponent implements OnInit {
         if (this.paginator) this.paginator.pageIndex = 0;
 
       });
-
     });
-
   }
-
-
-  // filter(query: string) {
-  //   this.filteredClients = (query) ?
-  //   this.userClients.filter((c: { payload: { val: () => { (): any; new(): any; fantasyName: string; }; }; }) => c.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())) :
-  //   this.userClients;
-  // }
 
   filter(query: string) {
     this.query.client = query;

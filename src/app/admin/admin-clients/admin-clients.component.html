@@ -1,140 +1,102 @@
-<div class="SCContainer">
+<!-- <div *ngIf="loading" class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div> -->
+<div class="SCContainer ms-1">
   <div><h1 style="display: inline; margin:10px;">ADMINISTRAR CLIENTES</h1></div>
   <hr>
   <div [ngClass]="{'row': !this.utilityService.isMobile()}">
-    <div *ngIf="appUser.isAdmin" [ngClass]="{'col-5': !this.utilityService.isMobile(), 'col-12': this.utilityService.isMobile()}">
+    <!-- <div *ngIf="appUser.isAdmin" [ngClass]="{'col-5': !this.utilityService.isMobile(), 'col-12': this.utilityService.isMobile()}"> -->
+      <div [ngClass]="{'col-5': !this.utilityService.isMobile(), 'col-12': this.utilityService.isMobile()}">
       <p>
         <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
+        <button class="m-1" mat-raised-button (click)="hideTable()" color="primary" >Mostrar/Ocultar clientes en mora</button>
       </p>
     </div>
     <div [ngClass]="{'col-7': !this.utilityService.isMobile()}">
       <div class="row">
-      <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
+      <div *ngIf="showClientsInDebt" fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="space-around center" style="margin-left:40px;">
         <div style="display: inline; margin:10px;">CLIENTES EN MORA: &nbsp;&nbsp;
-          <span *ngIf="clientsInDebt" matBadge="{{clientsInDebt.length}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+          <span *ngIf="clientsInDebt" matBadge="{{clientsInDebt.length}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
         <div class="col-8">
-          <mat-accordion>
-            <mat-expansion-panel hideToggle>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  Ver lista
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <table class="table table-striped table-sm mat-elevation-z8">
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Vendedor</th>
-                    <th>Deuda</th>
-                    <th>Último Pago</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let client of clientsInDebt; let i = index">
-                    <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                    <td>{{client.payload.val().designatedSeller}}</td>
-                    <td>{{this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
-                    <!-- <td>{{getClientLastPayment(client.payload.val().fantasyName).payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;</td> -->
-                    <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
-
-                  </tr>
-                </tbody>
-              </table>
-
-            </mat-expansion-panel>
-          </mat-accordion>
+          <table class="table table-striped table-sm mat-elevation-z8">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <!-- <th>Monto Pedidos en Deuda</th> -->
+                <th>Deuda Neta</th>
+                <th>Último Pago</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let client of this.clientsInDebt; let i = index">
+                <td>{{client.payload.val().fantasyName}}</td>
+                <td>{{client.payload.val().designatedSeller}}</td>
+                <!-- <td>{{client.ordersDebt | number:'1.1-1'}}</td> -->
+                <td>{{client.debt | number:'1.1-1'}}</td>
+                <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
     </div>
   </div>
 
-  <h3 *ngIf="appUser.isAdmin">*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
-  <h3 *ngIf="appUser.isAdmin">Buscar cliente:</h3>
-  <div *ngIf="appUser.isAdmin">
-    <table><tr>
-      <td>
-        <mat-icon matSuffix>search</mat-icon>
-      </td>
-      <td>
-        <input class="border-end-0 border rounded-pill" #query (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
-      </td>
-      <td>
-        <input class="border-end-0 border rounded-pill" #querySeller (keyup)="filterBySeller(querySeller.value)" type="text" placeholder="   Vendedor...">
-      </td>
-    </tr></table>
+
+
+  <!-- ----------------------------- -->
+  <div class="row">
+    <div [ngClass]="{'col-5': !this.utilityService.isMobile(), 'col-4': this.utilityService.isMobile()}"><h1 style="display: inline; margin:10px;">CLIENTES</h1></div>
+    <div [ngClass]="{'col-1': !this.utilityService.isMobile(), 'col-2': this.utilityService.isMobile()}"><button mat-icon-button (click)="this.printService.exportClients(this.clients)" color="primary" >Descargar Listado&nbsp;&nbsp;<mat-icon>picture_as_pdf</mat-icon></button></div>
   </div>
 
-  <table *ngIf="this.filteredClients != this.clients" class="table table-striped mat-elevation-z8" mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
+  <hr>
+  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
 
-    <!-- businessName Column -->
-    <ng-container matColumnDef="businessName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="businessName"><h3> Razon Social </h3></th>
-      <td mat-cell *matCellDef="let c"> {{c.payload.val().businessName}} &nbsp;&nbsp;</td>
-    </ng-container>
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+      <div><mat-icon matSuffix>search</mat-icon></div>
+      <div fxLayout="row">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
+      </div>
+      <div fxLayout="row" *ngIf="appUser && (appUser.isAdmin || appUser.isSalesManager)">
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
+      </div>
+    </div>
+  </div>
 
-    <!-- fantasyName Column -->
-    <ng-container matColumnDef="fantasyName">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="fantasyName"><h3> Nombre de Fantasía&nbsp;&nbsp;&nbsp;</h3></th>
-      <td mat-cell *matCellDef="let c"> {{c.payload.val().fantasyName}} &nbsp;&nbsp;</td>
-    </ng-container>
-
-    <!-- debt Column -->
-    <!-- <ng-container matColumnDef="debt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt"><h2> Deuda*&nbsp;&nbsp;&nbsp;</h2></th>
-      <td mat-cell *matCellDef="let c">{{c.payload.val().debt | number:'1.1-1'}}</td>
-    </ng-container> -->
-
-      <!-- debt sum-rest -->
-      <ng-container matColumnDef="debt2">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt2"><h3> Deuda sum-rest* </h3></th>
-      <td mat-cell *matCellDef="let c">{{this.ordersService.calcDebt(c.payload.val().fantasyName) | number:'1.1-1'}}</td>
-    </ng-container>
-
-     <!-- debt sum greather 30 -->
-     <ng-container matColumnDef="debt3">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="debt3"><h3> Deuda > 30 </h3></th>
-      <td mat-cell *matCellDef="let c">{{this.ordersService.calcDebtGreatherThan30(c.payload.val().fantasyName) | number:'1.1-1'}}</td>
-    </ng-container>
-
-      <!-- seller -->
-      <ng-container matColumnDef="seller">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="seller"><h3>Vendedor</h3></th>
-      <td mat-cell *matCellDef="let c">{{c.payload.val().designatedSeller}}&nbsp;</td>
-    </ng-container>
-
-    <!-- IVA Condition -->
-    <ng-container matColumnDef="IVACond">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="IVACond"><h3>Condición IVA</h3></th>
-      <td mat-cell *matCellDef="let c">{{c.payload.val().IVACondition}}&nbsp;</td>
-    </ng-container>
-
-      <!-- Resume -->
-      <ng-container matColumnDef="resume">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="resume"><h3>Resumen</h3></th>
-      <td mat-cell *matCellDef="let c"><button mat-icon-button (click)="this.printService.exportResume(c.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-    </ng-container>
-
-      <!-- Edit Column -->
-      <ng-container matColumnDef="edit">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="edit"></th>
-        <td mat-cell *matCellDef="let c"><a (click)="getPagination()" [routerLink]="['/admin/clients', c.key]">Editar</a></td>
-      </ng-container>
-
-      <!-- Payments Column -->
-      <ng-container matColumnDef="payments">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="payments"></th>
-        <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
-      </ng-container>
-
-      <!-- Orders Column -->
-      <ng-container matColumnDef="orders">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header="orders"></th>
-        <td mat-cell *matCellDef="let c"><a style="margin-left:50px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(c.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver pedidos del cliente</span></td>
-      </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <table class="table table-striped table-sm mat-elevation-z8" matSort (matSortChange)="sortData($event)">
+    <thead>
+      <tr>
+        <th mat-sort-header="businessName">Razón social</th>
+        <th mat-sort-header="fantasyName">Nombre de Fantasía</th>
+        <th mat-sort-header="seller">Vendedor</th>
+        <th mat-sort-header="cuit">CUIT</th>
+        <th mat-sort-header="address">Dirección</th>
+        <th mat-sort-header="phone">Teléfono</th>
+        <th mat-sort-header="debt">Deuda*</th>
+        <th mat-sort-header="resume">Estado de cuenta</th>
+        <th mat-sort-header="edit">Editar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of currentItemsToShow; let i = index">
+        <td>{{client.payload.val().businessName}}&nbsp;&nbsp;&nbsp;</td>
+        <td>{{client.payload.val().fantasyName}}</td>
+        <td>{{client.payload.val().designatedSeller}}</td>
+        <td>{{client.payload.val().cuit}}</td>
+        <td>{{client.payload.val().address}}</td>
+        <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
+        <td>{{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td><a (click)="getPagination()" [routerLink]="['/admin/clients', client.key]">Editar</a></td>
+        <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
+        <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>
+      </tr>
+    </tbody>
   </table>
-  <mat-paginator *ngIf="this.filteredClients != this.clients" [pageSizeOptions]="[10, 20]" showFirstLastButtons></mat-paginator>
+  <mat-paginator *ngIf="this.filteredClients" (page)="onPageChange($event)" [length]="this.filteredClients.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
  </div>
