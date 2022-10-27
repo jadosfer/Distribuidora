@@ -74,7 +74,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="legacy">
-              <input #pvp="ngModel" matInput [(ngModel)]="rechargeDelForm.pvp" name="pvp" placeholder="pvp: {{this.recharges[0].payload.val().pvpRecharge}}%" required>
+              <input #kios="ngModel" matInput [(ngModel)]="rechargeDelForm.kios" name="kios" placeholder="kios: {{this.recharges[0].payload.val().kiosRecharge}}%" required>
               <div class="alert alert-danger" *ngIf="com.touched && com.invalid">campo obligatorio</div>
             </mat-form-field>
 

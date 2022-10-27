@@ -133,7 +133,7 @@ export class OrdersComponent implements OnInit {
           this.dateValue = today + "/" + month + "/" + year;
           this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
-          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
+          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
           if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
             this.dateValue = "";
             this.clientValue = this.ordersService.clientFantasyName; // idem
@@ -145,7 +145,7 @@ export class OrdersComponent implements OnInit {
         });
       });
     });
-    //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length})
+    //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
     // this.ordersService.getAll().subscribe(clients => {
     //   this.clients = clients;
     // });
@@ -162,7 +162,7 @@ export class OrdersComponent implements OnInit {
       this.filteredOrders.push(this.userOrders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
 
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -179,7 +179,7 @@ export class OrdersComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -194,7 +194,7 @@ export class OrdersComponent implements OnInit {
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
 
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -213,7 +213,7 @@ export class OrdersComponent implements OnInit {
       this.query.dateRange.start = new Date(Date.parse(range.start?._d));
       this.query.dateRange.end = new Date(Date.parse(range.end?._d));
     }
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
@@ -259,7 +259,7 @@ export class OrdersComponent implements OnInit {
     this.clientValue = "";
     this.dateValue = "";
     this.filterByDate( this.dateValue);
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 20, length: this.filteredOrders.length});
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;
 
   }
@@ -293,7 +293,7 @@ export class OrdersComponent implements OnInit {
       doc.text('Cantidad', 10, line2);
       doc.text('Producto', 30, line2);
       let posX = 0;
-      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
         doc.text('Importe+iva', 185, line2);
       }
       else {
@@ -310,7 +310,7 @@ export class OrdersComponent implements OnInit {
           doc.text(order.payload.val().order.products[i].quantity.toString(), 10, line3 + 10*cont);
           doc.text(order.payload.val().order.products[i].product.title, 30, line3 + 10*cont);
           posX = 0;
-          if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+          if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
             doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
           }
           else {
@@ -324,7 +324,7 @@ export class OrdersComponent implements OnInit {
 
       let footerVertPos = line3 + 10 * cont + 10;
       doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
-      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "PVP") {
+      if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
         doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
       }
       else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);

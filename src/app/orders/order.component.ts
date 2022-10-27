@@ -311,7 +311,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
           break;
-          case "Pvp":
+          case "Kiosko":
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
           this.iva = 0;

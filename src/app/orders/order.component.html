@@ -41,12 +41,12 @@
       </div>
       <div>
         <label style="margin:5px" id="example-radio-group-label"><b>IVA:</b></label>
-        <mat-radio-group *ngIf="getClientCategory()!='Gimnasio' && getClientCategory()!='Pvp'" aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="this.iva">
+        <mat-radio-group *ngIf="getClientCategory()!='Gimnasio' && getClientCategory()!='Kiosko'" aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="this.iva">
           <mat-radio-button style="margin:5px" class="example-radio-button" *ngFor="let iva of ivas" [value]="iva">
             {{iva}}%
           </mat-radio-button>
         </mat-radio-group>
-        <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Pvp'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y VP 0%</span>
+        <span *ngIf="getClientCategory()=='Gimnasio' || getClientCategory()=='Kiosko'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y VP 0%</span>
         <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
         <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
         <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
@@ -97,7 +97,7 @@
       <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente</span>
       <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
       <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
-      <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Pvp 0% IVA</span>
+      <span *ngIf="getClientCategory()=='Gimnasio' && getClientCategory()=='Gimnasio'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kioskos 0% IVA</span>
     </div>
   </div>
 

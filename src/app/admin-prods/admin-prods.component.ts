@@ -69,11 +69,11 @@ export class AdminProdsComponent implements OnInit {
           if (!recharges) {
             this.productService.createRecharge();
           }
-          this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
+          this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
         });
       });
 
-      // if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().pvpRecharge, this.recharges[0].payload.val().gymRecharge);
+      // if (this.recharges) this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
     }
 
   ngOnInit() {
@@ -170,17 +170,17 @@ export class AdminProdsComponent implements OnInit {
 
   save(recharge:any) {
     if (confirm('Está segur@ que quiere cambiar la remarcación?')) {
-      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.pvp), Number(recharge.gym))
+      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.kios), Number(recharge.gym))
     }
   }
 
-  recharge(distRecharge: number, comRecharge: number, pvpRecharge: number, gymRecharge: number) {
+  recharge(distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
     if (this.recharges) {
       this.recharged=true;
       setTimeout(()=> {
         this.recharged = false;
        }, 800);
-      this.productService.recharge(this.products, distRecharge, comRecharge, pvpRecharge, gymRecharge);
+      this.productService.recharge(this.products, distRecharge, comRecharge, kiosRecharge, gymRecharge);
       return
     }
     this.productService.createRecharge();
@@ -225,7 +225,7 @@ export class AdminProdsComponent implements OnInit {
     this.products.sort(this.compareCategory)
     if (confirm('Descargar Excel')) {
       let data: any[] = [];
-      data.push(["PRODUCTO", "DISTRIBUIDOR", "COMERCIO", "PVP", "GIMNASIO", "CATEGORIA"])
+      data.push(["PRODUCTO", "DISTRIBUIDOR", "COMERCIO", "KIOSKO", "GIMNASIO", "CATEGORIA"])
       this.filteredProducts.forEach((prod)=>{
         data.push([prod.payload.val().title, prod.payload.val().discPrice1.toFixed(1),
           prod.payload.val().discPrice2.toFixed(1), prod.payload.val().discPrice3.toFixed(1),
@@ -275,7 +275,7 @@ export class AdminProdsComponent implements OnInit {
       doc.text('GENTECH MAR DEL PLATA', col1, line1);
       doc.text('CATEGORÍA: ' + prod.categoryPDF, 120, line1);
       doc.text('PRODUCTO', col1, line2);
-      if (prod.categoryPDF == "Pvp" || prod.categoryPDF == "Gimnasio") {
+      if (prod.categoryPDF == "Kiosko" || prod.categoryPDF == "Gimnasio") {
         doc.text('Importe', 120, line2);
       }
       else {
@@ -308,7 +308,7 @@ export class AdminProdsComponent implements OnInit {
             doc.text(this.products[i].payload.val().discPrice2.toFixed(1).toString(), col2, line3 + y);
             doc.text((1.21*this.products[i].payload.val().discPrice2).toFixed(1).toString(), col3, line3 + y);
             break;
-          case "Pvp":
+          case "Kiosko":
             doc.text(this.products[i].payload.val().discPrice3.toFixed(1).toString(), col2, line3 + y);
             break;
           case "Gimnasio":

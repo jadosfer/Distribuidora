@@ -30,7 +30,7 @@ export class OrdersService implements OnDestroy, OnInit {
 
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
-  DEBT_TOLERATED = 100;
+  TOLERATED_DEBT = 100;
   payment: any;
   payments: any[];
   paymentId: any;
@@ -225,11 +225,11 @@ export class OrdersService implements OnDestroy, OnInit {
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
     for (let i=0;i<products.length;i++) {
-      if (parseFloat(products[i].discount) != 0) this.hasDiscount = true;
       if (parseInt(products[i].quantity) != 0) { //solo guardo los prod con quant > 0
         prods.push({"discount" : products[i].discount, "discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
         "product": {"title": products[i].product.title, "prodsCategory": products[i].product.prodsCategory}});
-        amount += parseInt(products[i].quantity) * parseFloat(products[i].discountPrice) * (1 + iva/100)
+        amount += parseInt(products[i].quantity) * parseFloat(products[i].discountPrice) * (1 + iva/100);
+        if (parseFloat(products[i].discount) != 0) this.hasDiscount = true;
       }
     }
     let time = new Date();
@@ -527,7 +527,7 @@ export class OrdersService implements OnDestroy, OnInit {
     this.orders.forEach((order) =>{
       if (order.payload.val().clientFantasyName == payment.client) {
         amounts += parseFloat(order.payload.val().amount);
-        if (!order.payload.val().fullPaymentDate && totalPayments > amounts) {
+        if (!order.payload.val().fullPaymentDate && totalPayments > amounts - this.TOLERATED_DEBT) {
           this.updateOrder(order.key, {"fullPaymentDate": Date.now()}) //payment.date}) //
         }
       }
@@ -556,7 +556,7 @@ export class OrdersService implements OnDestroy, OnInit {
   //         rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
   //         this.updateOrder(this.orders[i].key, {"debt": 0}) //con este
   //         this.updateOrder(this.orders[i].key, {"fullPaymentDate": paymentDate})
-  //         if (rest < this.DEBT_TOLERATED) break
+  //         if (rest < this.TOLERATED_DEBT) break
   //       }
   //       else if (this.orders[i].payload.val().debt) {
   //         let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10

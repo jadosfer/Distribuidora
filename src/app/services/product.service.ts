@@ -37,7 +37,7 @@ export class ProductService implements OnInit{
       product.disc4=0;
       product.price1=product.buyPrice*(1 + (this.recharges[0].payload.val().distRecharge/100));
       product.price2=product.buyPrice*(1 + (this.recharges[0].payload.val().comRecharge/100));
-      product.price3=product.buyPrice*(1 + (this.recharges[0].payload.val().pvpRecharge/100));
+      product.price3=product.buyPrice*(1 + (this.recharges[0].payload.val().kiosRecharge/100));
       product.price4=product.buyPrice*(1 + (this.recharges[0].payload.val().gymRecharge/100));
       product.discPrice1=product.price1;
       product.discPrice2=product.price2;
@@ -53,7 +53,7 @@ export class ProductService implements OnInit{
     this.recharges = {
       distRecharge: 15,
       comRecharge: 30,
-      pvpRecharge: 60,
+      kiosRecharge: 60,
       gymRecharge: 44
     }
     let result = this.db.list('/recharges').push(this.recharges);
@@ -86,7 +86,7 @@ export class ProductService implements OnInit{
     return this.db.object('/products/' + productId).remove();
   }
 
-  recharge(products:any, distRecharge: number, comRecharge: number, pvpRecharge: number, gymRecharge: number) {
+  recharge(products:any, distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
     for (let i=0;i<products.length;i++) {
       let prod = {
         "disc1": products[i].payload.val().disc1,
@@ -96,7 +96,7 @@ export class ProductService implements OnInit{
         "buyPrice": products[i].payload.val().buyPrice,
         "price1": products[i].payload.val().buyPrice * (1 + distRecharge/100),
         "price2": products[i].payload.val().buyPrice * (1 + comRecharge/100),
-        "price3": products[i].payload.val().buyPrice * (1 + pvpRecharge/100),
+        "price3": products[i].payload.val().buyPrice * (1 + kiosRecharge/100),
         "price4": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
         "discPrice1": products[i].payload.val().discPrice1,
         "discPrice2": products[i].payload.val().discPrice2,
@@ -117,7 +117,7 @@ export class ProductService implements OnInit{
     this.recharges = {
       "distRecharge": distRecharge,
       "comRecharge": comRecharge,
-      "pvpRecharge": pvpRecharge,
+      "kiosRecharge": kiosRecharge,
       "gymRecharge": gymRecharge
     }
     let result = this.getAllRecharges().subscribe(result => {
