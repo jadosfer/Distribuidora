@@ -51,6 +51,7 @@ import { CommissionsComponent } from './commissions/commissions.component';
 import { UtilityService } from './services/utility.service';
 import { ReplacesComponent } from './replaces/replaces.component';
 import { PruebaComponent } from './pruebas/prueba.component';
+import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
 
 
 @NgModule({
@@ -81,6 +82,7 @@ import { PruebaComponent } from './pruebas/prueba.component';
     CommissionsComponent,
     ReplacesComponent,
     PruebaComponent,
+    EditProductPricesComponent,
   ],
   imports: [
     BrowserAnimationsModule,

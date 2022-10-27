@@ -24,6 +24,7 @@ import { CreditNoteComponent } from './credit-note/credit-note.component';
 import { CommissionsDashComponent } from './commissions/commissionsDash.component';
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PruebaComponent } from './pruebas/prueba.component';
+import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
@@ -44,6 +45,7 @@ const routes: Routes = [
   { path: "stock/stock", component: StockComponent},
   { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "buys", component: BuysComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: "editProductPrices", component: EditProductPricesComponent, canActivate: [AuthGuard, AdminAuthGuard] },
 
   { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },

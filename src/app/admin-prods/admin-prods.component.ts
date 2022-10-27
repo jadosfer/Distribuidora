@@ -7,6 +7,7 @@ import {MatPaginator} from '@angular/material/paginator';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
 
 
 @Component({
@@ -16,8 +17,11 @@ import { jsPDF } from 'jspdf';
 })
 export class AdminProdsComponent implements OnInit {
 
+
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  currentItemsToShow:any[];
+  currentItemsToShow: any[];
+  toSave: any[] = [];
   pageSize: number = 20;
   pageIndex: number = 0;
   prodCat: String;
@@ -41,12 +45,12 @@ export class AdminProdsComponent implements OnInit {
   subscription3: Subscription
 
   recharged: boolean;
-  mobile:boolean = false;
-  prodAdded:boolean = false;
+  mobile: boolean = false;
+  prodAdded: boolean = false;
+  saving: boolean = false;
 
   constructor(private productService: ProductService, private commissionsService: CommissionsService,
-    private router: Router,
-    private categoryService: CategoryService) {
+    private router: Router, private categoryService: CategoryService) {
       this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
         this.clientCategories = clientCategories;
       })
@@ -55,6 +59,9 @@ export class AdminProdsComponent implements OnInit {
       });
       this.subscription2 = this.productService.getAll().subscribe(products => {
         this.filteredProducts = this.products = products;
+        this.filteredProducts.sort(this.compareTitle);
+        this.filteredProducts.sort(this.compareCategory);
+
         this.onPageChange({previousPageIndex: 0, pageIndex: this.pageIndex, pageSize: this.pageSize, length: this.filteredProducts.length})
         //this.createStockValue(this.products);
         this.subscription3 = this.productService.getAllRecharges().subscribe(recharges => {
@@ -89,31 +96,71 @@ export class AdminProdsComponent implements OnInit {
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
-  saveProd(product: any, formproduct: any) {
-    if (confirm('Está segur@ que quiere guardar estos valores?')) {
+  saveProd(productForm: any, product: any) {
+    // if (confirm('Está segur@ que quiere guardar estos valores?')) {
       let prod = {
-        "disc1": product.disc1,
-        "disc2": product.disc2,
-        "disc3": product.disc3,
-        "disc4": product.disc4,
-        "buyPrice": product.buyPrice,
-        "price1": formproduct.payload.val().price1,
-        "price2": formproduct.payload.val().price2,
-        "price3": formproduct.payload.val().price3,
-        "price4": formproduct.payload.val().price4,
-        "discPrice1": formproduct.payload.val().discPrice1,
-        "discPrice2": formproduct.payload.val().discPrice2,
-        "discPrice3": formproduct.payload.val().discPrice3,
-        "discPrice4": formproduct.payload.val().discPrice4,
-        "stock": product.stock,
-        "prodsCategory": product.prodsCategory,
-        "title": product.title
+        "disc1": productForm.disc1,
+        "disc2": productForm.disc2,
+        "disc3": productForm.disc3,
+        "disc4": productForm.disc4,
+        "buyPrice": productForm.buyPrice,
+        "price1": product.payload.val().price1,
+        "price2": product.payload.val().price2,
+        "price3": product.payload.val().price3,
+        "price4": product.payload.val().price4,
+        "discPrice1": product.payload.val().discPrice1,
+        "discPrice2": product.payload.val().discPrice2,
+        "discPrice3": product.payload.val().discPrice3,
+        "discPrice4": product.payload.val().discPrice4,
+        "stock": productForm.stock,
+        "prodsCategory": productForm.prodsCategory,
+        "title": productForm.title
       }
-      this.productService.update(formproduct.key, prod);
+      this.productService.update(product.key, prod);
+      //this.toSave.push({"key": product.key, "prod": prod})
+      //console.log('toSave ', this.toSave);
       //location.reload();
       //this.router.navigate(['/admin/prods']);
-    }
+    // }
   }
+
+  // saveAllProducts() {
+  //   this.saving = true;
+  //   if (this.toSave.length == 0) {
+  //     this.saving = false;
+  //     return;
+  //   }
+  //   this.productService.update(this.toSave[0].key, this.toSave[0].prod).then(()=>{
+  //     console.log('entro a then');
+  //   })
+  //   .catch((e)=>{
+  //     console.log('entro a catch');
+  //     console.log('error ', e);
+  //   })
+  //   .finally(()=>{
+  //     console.log('entro a finally');
+  //     this.toSave.pop();
+  //     this.saveAllProducts()
+  //     // location.reload();
+  //   })
+
+  //   this.toSave.forEach((save)=>{
+  //     this.saving = true;
+  //     this.productService.update(save.key, save.prod).then(()=>{
+  //       console.log('entro a then');
+  //     })
+  //     .catch((e)=>{
+  //       console.log('entro a catch');
+  //       console.log('error ', e);
+  //     })
+  //     .finally(()=>{
+  //       console.log('entro a finally');
+  //       this.saving = false;
+  //       // location.reload();
+  //     })
+  //   });
+  //   this.toSave = [];
+  // }
 
   delete(id: string) {
     if (confirm('Está segur@ que quiere eliminar este producto?')) {
@@ -152,8 +199,68 @@ export class AdminProdsComponent implements OnInit {
     );
   }
 
+  compareCategory( a: any, b: any ) {
+    if ( a.payload.val().prodsCategory.toLowerCase() < b.payload.val().prodsCategory.toLowerCase()){
+      return -1;
+    }
+    if ( a.payload.val().prodsCategory.toLowerCase() > b.payload.val().prodsCategory.toLowerCase()){
+      return 1;
+    }
+    return 0;
+  }
+
+  compareTitle( a: any, b: any ) {
+    if ( a.payload.val().title.toLowerCase() < b.payload.val().title.toLowerCase()){
+      return -1;
+    }
+    if ( a.payload.val().title.toLowerCase() > b.payload.val().title.toLowerCase()){
+      return 1;
+    }
+    return 0;
+  }
+
+  exportExcel(prod: any) {
+    console.log('prod', this.filteredProducts[0].payload.val());
+    this.products.sort(this.compareTitle)
+    this.products.sort(this.compareCategory)
+    if (confirm('Descargar Excel')) {
+      let data: any[] = [];
+      data.push(["PRODUCTO", "DISTRIBUIDOR", "COMERCIO", "PVP", "GIMNASIO", "CATEGORIA"])
+      this.filteredProducts.forEach((prod)=>{
+        data.push([prod.payload.val().title, prod.payload.val().discPrice1.toFixed(1),
+          prod.payload.val().discPrice2.toFixed(1), prod.payload.val().discPrice3.toFixed(1),
+          prod.payload.val().discPrice4.toFixed(1), prod.payload.val().prodsCategory])
+      });
+
+      // (C2) CREATE NEW EXCEL "FILE"
+      var workbook = XLSX.utils.book_new(),
+          worksheet = XLSX.utils.aoa_to_sheet(data);
+      workbook.SheetNames.push("Precios");
+      workbook.Sheets["Precios"] = worksheet;
+
+      var wscols = [
+        {wch:40},
+        {wch:15},
+        {wch:15},
+        {wch:15},
+        {wch:15},
+        {wch:15}
+    ];
+
+    worksheet['!cols'] = wscols;
+
+      // (C3) "FORCE DOWNLOAD" XLSX FILE
+      XLSX.writeFile(workbook, "precios.xlsx");
+
+      console.log('prod excel ', prod);
+    }
+
+  }
+
   exportPDF(prod: any) {
     if (confirm('Descargar PDF')) {
+      this.products.sort(this.compareTitle)
+      this.products.sort(this.compareCategory)
 
       const line1 = 20;
       const line2 = line1 + 10;

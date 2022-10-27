@@ -81,8 +81,6 @@ export class CommissionsDashComponent implements OnInit {
         this.subscription3 = this.ordersService.getAllOrders().subscribe(orders => {
           this.ordersService.orders = orders;
 
-
-
           //Me permite calcular y setear fecha de pago completo de pedidos de un vendedor!!!-------------------------
           //this.calculateFullPaymentDates();
 
@@ -118,7 +116,7 @@ export class CommissionsDashComponent implements OnInit {
 
   getThisMonthOrders() {
     let today = new Date();
-    let filteredMonthOrders = this.ordersService.orders.filter((order)=>{
+    let filteredMonthOrders = this.ordersService.orders.filter(order => {
       let date = new Date(order.payload.val().fullPaymentDate);
       if (date.getMonth() == today.getMonth() && date.getFullYear() == today.getFullYear()){
         return order
@@ -129,9 +127,9 @@ export class CommissionsDashComponent implements OnInit {
   }
 
   getActiveSellers() {
-    let activeSellers = this.sellers.filter((seller)=>{
-      if (this.isSellerActive(seller.payload.val().name)) return seller;
-    })
+    let activeSellers = this.sellers.filter(seller =>
+      this.isSellerActive(seller.payload.val().name)
+    )
     this.sellers = activeSellers;
   }
 

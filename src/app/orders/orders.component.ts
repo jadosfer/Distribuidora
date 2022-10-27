@@ -330,7 +330,7 @@ export class OrdersComponent implements OnInit {
       else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
       // Save the PDF
-      doc.save('order.pdf');
+      doc.save(`${order.payload.val().clientFantasyName} ${date}.pdf`);
     }
   }
 

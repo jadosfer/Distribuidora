@@ -127,7 +127,7 @@ export class OrdersService implements OnDestroy, OnInit {
     return 0;
   }
 
-  public createOrderEmpty() {
+  createOrderEmpty() {
     if (!this.appUser) return;
     if (!this.products) return;
     let products = []
@@ -176,17 +176,17 @@ export class OrdersService implements OnDestroy, OnInit {
     }
   }
 
-  public getOrder() {
+  getOrder() {
     let result = this.db.list('/order').snapshotChanges();
     return result;
   }
 
-  public getOrderNumber() {
+  getOrderNumber() {
     let result = this.db.list('/orderNumber').snapshotChanges();
     return result;
   }
 
-  public getAllOrders() {
+  getAllOrders() {
     return this.db.list('/orders').snapshotChanges();
   }
 
@@ -227,7 +227,7 @@ export class OrdersService implements OnDestroy, OnInit {
     for (let i=0;i<products.length;i++) {
       if (parseFloat(products[i].discount) != 0) this.hasDiscount = true;
       if (parseInt(products[i].quantity) != 0) { //solo guardo los prod con quant > 0
-        prods.push({"discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
+        prods.push({"discount" : products[i].discount, "discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
         "product": {"title": products[i].product.title, "prodsCategory": products[i].product.prodsCategory}});
         amount += parseInt(products[i].quantity) * parseFloat(products[i].discountPrice) * (1 + iva/100)
       }
@@ -278,6 +278,7 @@ export class OrdersService implements OnDestroy, OnInit {
     this.productService.updateStocks(prods, this.products, false);
   }
 
+  //volarlo si resuevo quitar debt en orders
   restoreOrderAmount(payment: any) {
     let rest = 0;
     if (payment.payload) rest = payment.payload.val().amount;
@@ -357,12 +358,17 @@ export class OrdersService implements OnDestroy, OnInit {
   }
 
   isClientInDebt(fantasyName: string, orders: any[]) {
+    // const inDebt = (order: any) => this.isOrderInDebt(order)
+    // return orders.some(inDebt)
+
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().clientFantasyName == fantasyName &&
       this.isOrderInDebt(orders[i])) return true;
     }
     return false;
   }
+
+
 
   //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a 30
   getClientOrdersAmount(fantasyName: string, inDebt: boolean) {
@@ -486,69 +492,102 @@ export class OrdersService implements OnDestroy, OnInit {
 
   // ................................................payments methods................................................
 
+  // createPayment(payment: any, clients: any) {
+  //   payment.aproved = false;
+  //   //this.addPaymentAmount(payment.client, payment.amount, clients)
+  //   //antes le ponia la fecha del dia, ahora puede elegirla, por eso comento lo de abajo
+
+  //   payment.date = payment.date.unix()*1000;
+
+  //   //el cobro no es para una factura en particular
+  //   if (!payment.orderNumber) {
+  //     payment.orderNumber = 0;
+  //     this.clearDebts(payment.client, payment.amount, payment.date)
+  //   }
+  //   //el cobro es para una factura en particular
+  //   else if (payment.orderNumber >= 0) {
+  //     this.clearOrderDebt(payment)
+  //   }
+  //   return this.db.list('/payments').push(payment);
+  // }
+
   createPayment(payment: any, clients: any) {
-    payment.aproved = false;
-    //this.addPaymentAmount(payment.client, payment.amount, clients)
-    //antes le ponia la fecha del dia, ahora puede elegirla, por eso comento lo de abajo
-
     payment.date = payment.date.unix()*1000;
-
-    //el cobro no es para una factura en particular
+    this.setOrdersPaymentDate(payment)
+        //el cobro no es para una factura en particular
     if (!payment.orderNumber) {
       payment.orderNumber = 0;
-      this.clearDebts(payment.client, payment.amount, payment.date)
-    }
-    //el cobro es para una factura en particular
-    else if (payment.orderNumber >= 0) {
-      this.clearOrderDebt(payment)
     }
     return this.db.list('/payments').push(payment);
   }
 
-  clearDebts(clientFantasyName: string, amount: number, paymentDate: number) {
-    let rest = amount
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-        if (parseFloat(this.orders[i].payload.val().debt)
-        && parseFloat(this.orders[i].payload.val().debt) <= rest) {
-          this.addSaleToSeller(this.orders[i],
-          this.orders[i].payload.val().amount, this.orders[i].payload.val().clientFantasyName);
-          //update order paymentDate---------------
-          rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
-          this.updateOrder(this.orders[i].key, {"debt": 0}) //con este
-          this.updateOrder(this.orders[i].key, {"fullPaymentDate": paymentDate})
-          if (rest < this.DEBT_TOLERATED) break
-        }
-        else if (this.orders[i].payload.val().debt) {
-          let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": debt})
-          break
+  setOrdersPaymentDate(payment: any) {
+    let totalPayments = this.getTotalPayments(payment)
+    let amounts = 0
+    this.orders.forEach((order) =>{
+      if (order.payload.val().clientFantasyName == payment.client) {
+        amounts += parseFloat(order.payload.val().amount);
+        if (!order.payload.val().fullPaymentDate && totalPayments > amounts) {
+          this.updateOrder(order.key, {"fullPaymentDate": Date.now()}) //payment.date}) //
         }
       }
-    }
+    });
   }
 
-  clearOrderDebt(payment: any) {
-    let rest = payment.amount
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().orderNumber == payment.orderNumber) {
-        if (parseFloat(this.orders[i].payload.val().debt)
-        && parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
-          rest = rest - parseFloat(this.orders[i].payload.val().debt);
-          this.addSaleToSeller(this.orders[i].payload.val().order.sellerName, this.orders[i].payload.val().amount,
-          this.orders[i].payload.val().clientFantasyName);
-          this.updateOrder(this.orders[i].key, {"debt": 0})
-          this.clearDebts(payment.client, rest, payment.date.unix()*1000);
-          break
-        }
-        else if (this.orders[i].payload.val().debt) {
-          let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": debt})
-          break
-        }
+  getTotalPayments(payment: any) {
+    let totalPayments = 0;
+    this.payments.forEach((pay) => {
+      if (pay.payload.val().client == payment.client) {
+        totalPayments += parseFloat(pay.payload.val().amount);
       }
-    }
+    });
+    return totalPayments
   }
+
+  // clearDebts(clientFantasyName: string, amount: number, paymentDate: number) {
+  //   let rest = amount
+  //   for (let i=0;i<this.orders.length;i++) {
+  //     if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
+  //       if (parseFloat(this.orders[i].payload.val().debt)
+  //       && parseFloat(this.orders[i].payload.val().debt) <= rest) {
+  //         this.addSaleToSeller(this.orders[i],
+  //         this.orders[i].payload.val().amount, this.orders[i].payload.val().clientFantasyName);
+  //         //update order paymentDate---------------
+  //         rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
+  //         this.updateOrder(this.orders[i].key, {"debt": 0}) //con este
+  //         this.updateOrder(this.orders[i].key, {"fullPaymentDate": paymentDate})
+  //         if (rest < this.DEBT_TOLERATED) break
+  //       }
+  //       else if (this.orders[i].payload.val().debt) {
+  //         let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
+  //         this.updateOrder(this.orders[i].key, {"debt": debt})
+  //         break
+  //       }
+  //     }
+  //   }
+  // }
+
+  // clearOrderDebt(payment: any) {
+  //   let rest = payment.amount
+  //   for (let i=0;i<this.orders.length;i++) {
+  //     if (this.orders[i].payload.val().orderNumber == payment.orderNumber) {
+  //       if (parseFloat(this.orders[i].payload.val().debt)
+  //       && parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
+  //         rest = rest - parseFloat(this.orders[i].payload.val().debt);
+  //         this.addSaleToSeller(this.orders[i].payload.val().order.sellerName, this.orders[i].payload.val().amount,
+  //         this.orders[i].payload.val().clientFantasyName);
+  //         this.updateOrder(this.orders[i].key, {"debt": 0})
+  //         this.clearDebts(payment.client, rest, payment.date.unix()*1000);
+  //         break
+  //       }
+  //       else if (this.orders[i].payload.val().debt) {
+  //         let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
+  //         this.updateOrder(this.orders[i].key, {"debt": debt})
+  //         break
+  //       }
+  //     }
+  //   }
+  // }
 
   updatePayment(key: any, payment:any) {
     return this.db.object('/payments/' + key).update(payment);
