@@ -300,8 +300,9 @@ export class OrderComponent implements OnInit, OnDestroy {
     for (let i=0;i<this.orderProducts.length;i++) {
       switch (clientCategory) {
         case "":
-          this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
-          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
+          // this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
+          // this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
+          throw Error("Error en el canal de venta");
             break;
         case "Distribuidor":
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
@@ -311,7 +312,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
           break;
-          case "Kiosko":
+        case "Kiosko":
           this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
           this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
           this.iva = 0;
