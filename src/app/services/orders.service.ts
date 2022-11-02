@@ -1,4 +1,4 @@
-import { Injectable, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { EventEmitter, Injectable, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -13,6 +13,13 @@ import { ProductService } from './product.service';
 })
 //...........concentra operaciones de pedidos, pagos, clientes y vendedores..............
 export class OrdersService implements OnDestroy, OnInit {
+
+  private filteredClients: any[];
+  private clientsCurrentItemsToShow: any[];
+  private fromEditing: boolean;
+  private clientPageIndex: number;
+  private clientPageSize: number;
+
 
   clients: any[];
   order: any;
@@ -815,6 +822,46 @@ export class OrdersService implements OnDestroy, OnInit {
     }
     else console.log('falla en OrdersService, metodo getSellerPayments');
     return sellerPayments
+  }
+
+  setFilteredClients(filteredClients: any[]) {
+    this.filteredClients = filteredClients;
+  }
+
+  getFilteredClients() {
+    return this.filteredClients;
+  }
+
+  setClientsCurrentItemsToShow(clientsCurrentItemsToShow: any[]) {
+    this.clientsCurrentItemsToShow = clientsCurrentItemsToShow;
+  }
+
+  getClientsCurrentItemsToShow() {
+    return this.clientsCurrentItemsToShow;
+  }
+
+  setFromEditing(fromEditing: boolean) {
+    this.fromEditing = fromEditing;
+  }
+
+  getFromEditing() {
+    return this.fromEditing;
+  }
+
+  setClientPageIndex(clientPageIndex: number) {
+    this.clientPageIndex = clientPageIndex;
+  }
+
+  getClientPageIndex() {
+    return this.clientPageIndex;
+  }
+
+  setClientPageSize(clientPageSize: number) {
+    this.clientPageSize = clientPageSize;
+  }
+
+  getClientPageSize() {
+    return this.clientPageSize;
   }
 
   ngOnDestroy() {

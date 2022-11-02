@@ -151,6 +151,7 @@
       </tr>
     </tbody>
   </table>
+  <button *ngIf="currentItemsToShow.length > 0" mat-raised-button (click)="downloadAll(currentItemsToShow)" color="primary" >Descargar todos <mat-icon>picture_as_pdf</mat-icon></button>
   <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="10" [pageSizeOptions]="[10, 20]"></mat-paginator>
 
 </div>

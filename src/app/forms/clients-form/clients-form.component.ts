@@ -1,5 +1,5 @@
 import { OrdersService } from 'src/app/services/orders.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { CategoryService } from 'src/app/services/category.service';
@@ -10,6 +10,8 @@ import { CategoryService } from 'src/app/services/category.service';
   styleUrls: ['./clients-form.component.scss']
 })
 export class ClientsFormComponent {
+  @Output() redirect:EventEmitter<boolean> = new EventEmitter();
+  fromEditing:boolean = true;
 
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
   IVAConditions:string[] = ["Inscripto", "Monotributista", "Consumidor Final"];
@@ -36,6 +38,7 @@ export class ClientsFormComponent {
 
   save(client: any) {
     if (confirm('Está segur@ que quiere guardar/crear este cliente?')) {
+      this.ordersService.setFromEditing(true);
       if (this.id) {
         this.ordersService.update(this.id, client);
       }

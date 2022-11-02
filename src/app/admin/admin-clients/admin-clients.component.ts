@@ -1,5 +1,5 @@
 import { PrintService } from './../../services/print.service';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { OrdersService } from 'src/app/services/orders.service';
@@ -8,13 +8,12 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UtilityService } from 'src/app/services/utility.service';
 import { Subscription } from 'rxjs';
 
-
 @Component({
   selector: 'admin-clients',
   templateUrl: './admin-clients.component.html',
   styleUrls: ['./admin-clients.component.scss']
 })
-export class AdminClientsComponent implements OnInit {
+export class AdminClientsComponent implements OnInit, AfterViewInit {
 
   appUser: AppUser;
   dataSource: any;
@@ -37,20 +36,23 @@ export class AdminClientsComponent implements OnInit {
 
   showClientsInDebt: boolean;
   loading: boolean = false;
+  fromEditing: boolean = false;
 
   //nuevos
   clientValue: string;
   sellerValue: string;
-  currentItemsToShow: any[];
+  currentItemsToShow: any[] = [];
   includedClients: any[] = [];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(public ordersService: OrdersService,
     private auth: AuthService, public printService: PrintService, public utilityService: UtilityService) {
+      console.log('construrctor');
   }
 
   ngOnInit() {
+    console.log('onInit');
 
     //this.filter("");
     this.subscription = this.auth.appUser$.subscribe(appUser => {
@@ -59,21 +61,34 @@ export class AdminClientsComponent implements OnInit {
       this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
         this.includedClients = [];
-        this.currentItemsToShow = [];
 
-        for (let i=0;i<this.clients.length;i++) {
-          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
-            this.includedClients.push(this.clients[i]);
+        if (this.ordersService.getFromEditing()) {
+          console.log('entra from editing');
+          this.filteredClients = this.ordersService.getFilteredClients();
+          //this.currentItemsToShow = this.ordersService.getClientsCurrentItemsToShow();
+          this.ordersService.setFromEditing(false);
+          this.onPageChange({previousPageIndex: this.ordersService.getClientPageIndex() - 1, pageIndex: this.ordersService.getClientPageIndex(), pageSize: this.ordersService.getClientPageSize(), length: this.ordersService.getFilteredClients().length});
+          console.log('paginator ', this.paginator);
+        }
+        else {
+          for (let i=0;i<this.clients.length;i++) {
+            if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
+              this.includedClients.push(this.clients[i]);
+            }
           }
+
+          this.filteredClients = this.includedClients;
+          //this.currentItemsToShow = this.filteredClients;
+          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+          console.log('paginator ', this.paginator);
         }
 
-        this.filteredClients = this.includedClients;
-        this.currentItemsToShow = this.filteredClients;
 
-      if (this.ordersService.clientsPaginator.pageIndex > 0) {
-        this.onPageChange({previousPageIndex: this.ordersService.clientsPaginator.pageIndex - 1, pageIndex: this.ordersService.clientsPaginator.pageIndex, pageSize: this.ordersService.clientsPaginator.pageSize, length: this.ordersService.clientsPaginator.length});
-      }
-      else this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+
+        // if (this.ordersService.clientsPaginator.pageIndex > 0) {
+        //   this.onPageChange({previousPageIndex: this.ordersService.clientsPaginator.pageIndex - 1, pageIndex: this.ordersService.clientsPaginator.pageIndex, pageSize: this.ordersService.clientsPaginator.pageSize, length: this.ordersService.clientsPaginator.length});
+        // }
+        // else this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
 
         this.subscription3 = this.ordersService.getAllPayments().subscribe(payments => {
           this.payments = payments;
@@ -94,6 +109,10 @@ export class AdminClientsComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+
+  }
+
   filter(query: string) {
     this.query.client = query;
     this.filteredClients = [];
@@ -102,6 +121,7 @@ export class AdminClientsComponent implements OnInit {
       && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
       this.filteredClients.push(this.includedClients[i]);
     }
+    console.log('corre filter');
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -115,7 +135,7 @@ export class AdminClientsComponent implements OnInit {
         this.filteredClients.push(this.includedClients[i])
       }
     }
-
+    console.log('corre filter');
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -140,13 +160,14 @@ export class AdminClientsComponent implements OnInit {
   }
 
   onPageChange($event: any) {
+    console.log('evet', $event);
     this.currentItemsToShow = this.filteredClients.slice(
       $event.pageIndex * $event.pageSize,
       $event.pageIndex * $event.pageSize + $event.pageSize
     );
-    this.ordersService.clientsPaginator.pageIndex = $event.pageIndex;
-    this.ordersService.clientsPaginator.pageSize = $event.pageSize;
-    this.ordersService.clientsPaginator.length = $event.length;
+    // this.ordersService.clientsPaginator.pageIndex = $event.pageIndex;
+    // this.ordersService.clientsPaginator.pageSize = $event.pageSize;
+    // this.ordersService.clientsPaginator.length = $event.length;
   }
 
   searchPayments(clientFantasyName: string) {
@@ -166,17 +187,18 @@ export class AdminClientsComponent implements OnInit {
     this.showClientsInDebt = !this.showClientsInDebt;
   }
 
-  getPagination() {
-    // this.ordersService.clientsPaginator.pageIndex = this.paginator.pageIndex;
-    // this.ordersService.clientsPaginator.pageSize = this.paginator.pageSize;
-    // this.ordersService.clientsPaginator.length = this.paginator.length;
+  async savePagination() {
+    this.ordersService.setClientPageIndex(this.paginator.pageIndex);
+    this.ordersService.setClientPageSize(this.paginator.pageSize);
+    this.ordersService.setFilteredClients(this.filteredClients);
+    //await this.ordersService.setClientsCurrentItemsToShow(this.currentItemsToShow);
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
-    this.subscription4.unsubscribe();
+    // this.subscription.unsubscribe();
+    // this.subscription2.unsubscribe();
+    // this.subscription3.unsubscribe();
+    // this.subscription4.unsubscribe();
   }
 }
 
