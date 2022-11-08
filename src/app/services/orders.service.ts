@@ -19,6 +19,7 @@ export class OrdersService implements OnDestroy, OnInit {
   private fromEditing: boolean;
   private clientPageIndex: number;
   private clientPageSize: number;
+  private itemsPerPage: number;
 
 
   clients: any[];
@@ -848,20 +849,28 @@ export class OrdersService implements OnDestroy, OnInit {
     return this.fromEditing;
   }
 
-  setClientPageIndex(clientPageIndex: number) {
+  setClientsActualPage(clientPageIndex: number) {
     this.clientPageIndex = clientPageIndex;
   }
 
-  getClientPageIndex() {
+  getClientsActualPage() {
     return this.clientPageIndex;
   }
 
-  setClientPageSize(clientPageSize: number) {
+  setClientsTotalPages(clientPageSize: number) {
     this.clientPageSize = clientPageSize;
   }
 
-  getClientPageSize() {
+  getClientsTotalPages() {
     return this.clientPageSize;
+  }
+
+  setClientItemsPerPage(itemsPerPage: number){
+    this.itemsPerPage = itemsPerPage;
+  }
+
+  getClientItemsPerPage() {
+    return this.itemsPerPage;
   }
 
   ngOnDestroy() {

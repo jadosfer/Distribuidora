@@ -98,5 +98,15 @@
       </tr>
     </tbody>
   </table>
-  <mat-paginator *ngIf="this.filteredClients" [length]="this.filteredClients.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" (page)="onPageChange($event)"></mat-paginator>
+  <!-- <mat-paginator *ngIf="this.filteredClients" [length]="this.filteredClients.length" [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" (page)="onPageChange($event)"></mat-paginator> -->
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item disabled"><a class="page-link">Página actual <strong>{{actualPage + 1}}</strong></a></li>
+      <li class="page-item disabled me-1"><a class="page-link">Total <strong>{{totalPages}}</strong></a></li>
+      <li *ngIf="actualPage > 0" class="page-item"><a class="page-link" (click)="prevPage()"><< Anterior</a></li>
+      <li *ngIf="actualPage < totalPages -1" class="page-item"><a class="page-link" (click)="nextPage()">Próxima >></a></li>
+      <li class="page-item ms-3"><a class="page-link" (click)="this.itemsPerPage=10;this.actualPage =0;refreshPages()">10 por página</a></li>
+      <li class="page-item"><a class="page-link" (click)="this.itemsPerPage=20;this.actualPage =0;refreshPages()">20 por página</a></li>
+    </ul>
+  </nav>
  </div>

@@ -15,6 +15,13 @@ import { Subscription } from 'rxjs';
 })
 export class AdminClientsComponent implements OnInit, AfterViewInit {
 
+  //paginator
+  actualPage: number = 0;
+  totalPages: number = 1;
+  itemsPerPage: number = 10;
+
+  //paginator bootstrap
+
   appUser: AppUser;
   dataSource: any;
   clients:any[];
@@ -48,47 +55,35 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
   constructor(public ordersService: OrdersService,
     private auth: AuthService, public printService: PrintService, public utilityService: UtilityService) {
-      console.log('construrctor');
   }
 
   ngOnInit() {
-    console.log('onInit');
-
-    //this.filter("");
     this.subscription = this.auth.appUser$.subscribe(appUser => {
 
       this.appUser = appUser;
       this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
         this.includedClients = [];
+        this.filteredClients = [];
+
+        for (let i=0;i<this.clients.length;i++) {
+          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
+            this.includedClients.push(this.clients[i]);
+          }
+        }
+
+        this.filteredClients = this.includedClients;
 
         if (this.ordersService.getFromEditing()) {
           console.log('entra from editing');
+
           this.filteredClients = this.ordersService.getFilteredClients();
-          //this.currentItemsToShow = this.ordersService.getClientsCurrentItemsToShow();
-          this.ordersService.setFromEditing(false);
-          this.onPageChange({previousPageIndex: this.ordersService.getClientPageIndex() - 1, pageIndex: this.ordersService.getClientPageIndex(), pageSize: this.ordersService.getClientPageSize(), length: this.ordersService.getFilteredClients().length});
-          console.log('paginator ', this.paginator);
-        }
-        else {
-          for (let i=0;i<this.clients.length;i++) {
-            if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
-              this.includedClients.push(this.clients[i]);
-            }
-          }
-
-          this.filteredClients = this.includedClients;
-          //this.currentItemsToShow = this.filteredClients;
-          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
-          console.log('paginator ', this.paginator);
+          this.actualPage = this.ordersService.getClientsActualPage();
+          this.totalPages = this.ordersService.getClientsTotalPages();
+          this.itemsPerPage = this.ordersService.getClientItemsPerPage();
         }
 
-
-
-        // if (this.ordersService.clientsPaginator.pageIndex > 0) {
-        //   this.onPageChange({previousPageIndex: this.ordersService.clientsPaginator.pageIndex - 1, pageIndex: this.ordersService.clientsPaginator.pageIndex, pageSize: this.ordersService.clientsPaginator.pageSize, length: this.ordersService.clientsPaginator.length});
-        // }
-        // else this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
+        this.refreshPages();
 
         this.subscription3 = this.ordersService.getAllPayments().subscribe(payments => {
           this.payments = payments;
@@ -103,9 +98,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
             this.loading = false;
           });
         });
-
       });
-
     });
   }
 
@@ -114,16 +107,21 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   }
 
   filter(query: string) {
-    this.query.client = query;
-    this.filteredClients = [];
-    for (let i=0;i<this.includedClients.length;i++) {
-      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
-      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
-      this.filteredClients.push(this.includedClients[i]);
+    if (query == "") {
+      this.filteredClients = this.includedClients;
     }
-    console.log('corre filter');
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
-    if (this.paginator) this.paginator.pageIndex = 0;
+    else {
+      this.query.client = query;
+      this.filteredClients = [];
+      for (let i=0;i<this.includedClients.length;i++) {
+        if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+        && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+        this.filteredClients.push(this.includedClients[i]);
+      }
+    }
+    console.log('entra a filter');
+    this.actualPage = 0;
+    this.refreshPages();
   }
 
   filterBySeller(query: string) {
@@ -135,9 +133,9 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
         this.filteredClients.push(this.includedClients[i])
       }
     }
-    console.log('corre filter');
-    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
-    if (this.paginator) this.paginator.pageIndex = 0;
+    console.log('entra a filter by seller');
+    this.actualPage = 0;
+    this.refreshPages();
   }
 
   sortData(sort: Sort) {
@@ -159,17 +157,6 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  onPageChange($event: any) {
-    console.log('evet', $event);
-    this.currentItemsToShow = this.filteredClients.slice(
-      $event.pageIndex * $event.pageSize,
-      $event.pageIndex * $event.pageSize + $event.pageSize
-    );
-    // this.ordersService.clientsPaginator.pageIndex = $event.pageIndex;
-    // this.ordersService.clientsPaginator.pageSize = $event.pageSize;
-    // this.ordersService.clientsPaginator.length = $event.length;
-  }
-
   searchPayments(clientFantasyName: string) {
     this.ordersService.clientFantasyName = clientFantasyName;
   }
@@ -187,12 +174,40 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
     this.showClientsInDebt = !this.showClientsInDebt;
   }
 
-  async savePagination() {
-    this.ordersService.setClientPageIndex(this.paginator.pageIndex);
-    this.ordersService.setClientPageSize(this.paginator.pageSize);
+  savePagination() {
+    this.ordersService.setClientsActualPage(this.actualPage);
+    this.ordersService.setClientsTotalPages(this.totalPages);
     this.ordersService.setFilteredClients(this.filteredClients);
-    //await this.ordersService.setClientsCurrentItemsToShow(this.currentItemsToShow);
+    this.ordersService.setClientItemsPerPage(this.itemsPerPage);
+    this.ordersService.setFromEditing(false);
   }
+
+  //funciones paginator bootstrap
+  prevPage() {
+    if (this.actualPage == 0) return
+    this.actualPage -= 1;
+    this.refreshPages()
+  }
+
+  nextPage() {
+    if (this.actualPage == this.totalPages) return
+    this.actualPage += 1;
+    this.refreshPages();
+  }
+
+  refreshPages() {
+    this.totalPages = Math.ceil(this.filteredClients.length/this.itemsPerPage);
+    console.log('total pages ', this.totalPages);
+    this.currentItemsToShow = []
+    for (let i = this.actualPage*this.itemsPerPage; i<this.actualPage*this.itemsPerPage + this.itemsPerPage; i++) {
+      if (i == this.filteredClients.length) return
+      this.currentItemsToShow.push(this.filteredClients[i])
+    }
+    console.log('this.filteredClients ', this.filteredClients);
+    console.log('this.currentItemsToShow ', this.currentItemsToShow);
+  }
+  //funciones paginator bootstrap
+
 
   ngOnDestroy() {
     // this.subscription.unsubscribe();

@@ -1,35 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+// import { Component, OnInit } from '@angular/core';
+// import { Observable } from 'rxjs';
 
-@Component({
-  selector: 'app-prueba',
-  templateUrl: './prueba.component.html',
-  styleUrls: ['./prueba.component.scss']
-})
-export class PruebaComponent implements OnInit {
+// @Component({
+//   selector: 'app-prueba',
+//   templateUrl: './prueba.component.html',
+//   styleUrls: ['./prueba.component.scss']
+// })
+// export class PruebaComponent implements OnInit {
+//   count$: Observable<number>
 
-  prodsCategories = ["barras", "protes", "quemadores"]
-  rewards = [1500, 1000, 500]
-  rewardsArray:any;
-  myGroup: any;
+//   constructor() {
+//     // TODO: Connect `this.count$` stream to the current store `count` state
+//   }
 
-  constructor(private formBuilder: FormBuilder) {
-    let myArray = []
-    for (let i=0;i<this.prodsCategories.length;i++) {
-      myArray.push(new FormControl(this.rewards[i])) //valor de inicializacion
-    }
-    this.rewardsArray = new FormArray(myArray);
+//   ngOnInit(): void {
+//   }
 
-    this.myGroup = new FormGroup({
-      rewards: this.rewardsArray
-    });
-  }
+//   increment() {
+//     // TODO: Dispatch an increment action
+//   }
 
-  ngOnInit(): void {
-  }
+//   decrement() {
+//     // TODO: Dispatch a decrement action
+//   }
 
-  send(value: any) {
-    console.log('value ', value);
-  }
+//   reset() {
+//     // TODO: Dispatch a reset action
+//   }
 
-}
+
+// }

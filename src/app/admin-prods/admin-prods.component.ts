@@ -124,44 +124,6 @@ export class AdminProdsComponent implements OnInit {
     // }
   }
 
-  // saveAllProducts() {
-  //   this.saving = true;
-  //   if (this.toSave.length == 0) {
-  //     this.saving = false;
-  //     return;
-  //   }
-  //   this.productService.update(this.toSave[0].key, this.toSave[0].prod).then(()=>{
-  //     console.log('entro a then');
-  //   })
-  //   .catch((e)=>{
-  //     console.log('entro a catch');
-  //     console.log('error ', e);
-  //   })
-  //   .finally(()=>{
-  //     console.log('entro a finally');
-  //     this.toSave.pop();
-  //     this.saveAllProducts()
-  //     // location.reload();
-  //   })
-
-  //   this.toSave.forEach((save)=>{
-  //     this.saving = true;
-  //     this.productService.update(save.key, save.prod).then(()=>{
-  //       console.log('entro a then');
-  //     })
-  //     .catch((e)=>{
-  //       console.log('entro a catch');
-  //       console.log('error ', e);
-  //     })
-  //     .finally(()=>{
-  //       console.log('entro a finally');
-  //       this.saving = false;
-  //       // location.reload();
-  //     })
-  //   });
-  //   this.toSave = [];
-  // }
-
   delete(id: string) {
     if (confirm('Está segur@ que quiere eliminar este producto?')) {
       this.productService.delete(id);

@@ -1,14 +1,9 @@
-<p>----</p><p>----</p>
-<div>
-  <p>----------------------COMPONENTE DE PRUEBAS-----------------------------------</p>
-</div>
-<form (ngSubmit)="send(myGroup.value)" [formGroup]="myGroup">
-  <div formArrayName="rewards">
-    <div *ngFor="let reward of rewardsArray.controls; index as i">
-      <input matInput [formControlName]="i" required>
-    </div>
-  </div>
-  <button mat-raised-button type="submit" color="primary" >Guardar</button>
-</form>
+<!-- <button (click)="increment()">Increment</button>
+
+<div>Current Count: {{ count$ | async }}</div>
+
+<button (click)="decrement()">Decrement</button>
+
+<button (click)="reset()">Reset Counter</button> -->
 
 
