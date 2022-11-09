@@ -53,11 +53,6 @@ import { ReplacesComponent } from './replaces/replaces.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
 
-//ngrx
-// import { StoreModule } from '@ngrx/store';
-// import { counterReducer } from './counter.reducer';
-
-
 @NgModule({
   declarations: [
     AppComponent,

@@ -118,7 +118,6 @@ export class AdminProdsComponent implements OnInit {
       }
       this.productService.update(product.key, prod);
       //this.toSave.push({"key": product.key, "prod": prod})
-      //console.log('toSave ', this.toSave);
       //location.reload();
       //this.router.navigate(['/admin/prods']);
     // }
@@ -182,7 +181,6 @@ export class AdminProdsComponent implements OnInit {
   }
 
   exportExcel(prod: any) {
-    console.log('prod', this.filteredProducts[0].payload.val());
     this.products.sort(this.compareTitle)
     this.products.sort(this.compareCategory)
     if (confirm('Descargar Excel')) {
@@ -213,8 +211,6 @@ export class AdminProdsComponent implements OnInit {
 
       // (C3) "FORCE DOWNLOAD" XLSX FILE
       XLSX.writeFile(workbook, "precios.xlsx");
-
-      console.log('prod excel ', prod);
     }
 
   }

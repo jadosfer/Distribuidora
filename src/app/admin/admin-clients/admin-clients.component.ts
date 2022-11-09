@@ -75,7 +75,6 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
         this.filteredClients = this.includedClients;
 
         if (this.ordersService.getFromEditing()) {
-          console.log('entra from editing');
 
           this.filteredClients = this.ordersService.getFilteredClients();
           this.actualPage = this.ordersService.getClientsActualPage();
@@ -119,7 +118,6 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
         this.filteredClients.push(this.includedClients[i]);
       }
     }
-    console.log('entra a filter');
     this.actualPage = 0;
     this.refreshPages();
   }
@@ -133,7 +131,6 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
         this.filteredClients.push(this.includedClients[i])
       }
     }
-    console.log('entra a filter by seller');
     this.actualPage = 0;
     this.refreshPages();
   }
@@ -197,14 +194,11 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
   refreshPages() {
     this.totalPages = Math.ceil(this.filteredClients.length/this.itemsPerPage);
-    console.log('total pages ', this.totalPages);
     this.currentItemsToShow = []
     for (let i = this.actualPage*this.itemsPerPage; i<this.actualPage*this.itemsPerPage + this.itemsPerPage; i++) {
       if (i == this.filteredClients.length) return
       this.currentItemsToShow.push(this.filteredClients[i])
     }
-    console.log('this.filteredClients ', this.filteredClients);
-    console.log('this.currentItemsToShow ', this.currentItemsToShow);
   }
   //funciones paginator bootstrap
 

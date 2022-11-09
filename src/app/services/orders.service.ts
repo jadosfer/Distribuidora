@@ -738,7 +738,6 @@ export class OrdersService implements OnDestroy, OnInit {
 
     for (let k=0;k<this.clients.length;k++) {
       while (this.clients[k].payload.val().fantasyName != "Carlos Fox") k++;
-      console.log('1 ', this.clients[k].payload.val().fantasyName, " k ", k);
       let payments = this.sortArrayPayloadByDate(this.getClientPayments(this.clients[k].payload.val().fantasyName))
       let orders = this.sortArrayPayloadByDate(this.getClientOrders(this.clients[k].payload.val().fantasyName))
       let i = 0;
@@ -746,10 +745,8 @@ export class OrdersService implements OnDestroy, OnInit {
       let ordersAmount = 0;
       let paymentsAmount = 0;
       while (i < payments.length && j < orders.length) {
-        console.log('2 ', this.clients[k].payload.val().fantasyName, " k ", k);
         paymentsAmount += parseFloat(payments[i].payload.val().amount)
         while (j < orders.length) {
-          console.log('3 ', this.clients[k].payload.val().fantasyName, " k ", k);
           ordersAmount += parseFloat(orders[j].payload.val().amount)
           if (paymentsAmount > ordersAmount - 200) {
             this.updateOrder(orders[j].key, {"fullPaymentDate": payments[i].payload.val().date})
