@@ -166,9 +166,9 @@ export class OrdersService implements OnDestroy, OnInit {
     return this.db.object('/orders/' + key).update(order);
   }
 
-  removeOrder(order: any) {
-    this.db.object('/orders/' + order.key).remove();
-    this.productService.restoreStock(order, this.products);
+  async removeOrder(order: any) {
+    await this.db.object('/orders/' + order.key).remove();
+    await this.productService.restoreStock(order, this.products);
     //this.addPaymentAmount(order.payload.val().clientFantasyName, order.payload.val().debt, this.clients);
   }
 
