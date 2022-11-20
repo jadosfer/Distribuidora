@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { EventEmitter, Injectable, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { ProductService } from './product.service';
   providedIn: 'root'
 })
 //...........concentra operaciones de pedidos, pagos, clientes y vendedores..............
-export class OrdersService implements OnDestroy, OnInit {
+export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   private filteredClients: any[];
   private clientsCurrentItemsToShow: any[];
@@ -23,6 +23,7 @@ export class OrdersService implements OnDestroy, OnInit {
 
 
   clients: any[];
+  clients$: any;
   order: any;
   orders: any[];
   sellers: any[];
@@ -55,57 +56,63 @@ export class OrdersService implements OnDestroy, OnInit {
 
   constructor(private db: AngularFireDatabase, private productService: ProductService,
     private auth: AuthService, private route: ActivatedRoute) {
-    this.subscription = this.getAllSellers().subscribe(sellers => {
-      this.sellers = sellers;
-    });
-    this.subscription2 = this.auth.appUser$.subscribe(appUser => {
-      this.appUser = appUser;
-      this.filteredProducts = [];
-      this.subscription3 = this.productService.getAll().subscribe(products => {
-        this.filteredProducts = this.products = products;
-        this.subscription4 = this.route.queryParamMap.subscribe(params => {
-          this.prodsCategory = params.get('prodsCategory');
-          if (this.products) {
-            this.filteredProducts = (this.prodsCategory) ?
-            this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodsCategory: string | null; }; }; }) =>
-              p.payload.val().prodsCategory == this.prodsCategory) :
-            this.products;
-          }
-        });
 
-        this.subscription5 = this.getOrder().subscribe(order => {
-          if (!order) this.createOrderEmpty(); // pruebo esto
-          this.order = order;
-            this.orderIndex = -1
-            for (let i=0;i<this.order.length;i++) {
-              if (this.order && this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
-                this.orderIndex = i
-                this.orderId =  this.order[i].key;
-                break
-              }
+      this.clients$ = this.getAllClients();
+      this.subscription = this.getAllSellers().subscribe(sellers => {
+        this.sellers = sellers;
+      });
+      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
+        this.appUser = appUser;
+        this.filteredProducts = [];
+        this.subscription3 = this.productService.getAll().subscribe(products => {
+          this.filteredProducts = this.products = products;
+          this.subscription4 = this.route.queryParamMap.subscribe(params => {
+            this.prodsCategory = params.get('prodsCategory');
+            if (this.products) {
+              this.filteredProducts = (this.prodsCategory) ?
+              this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodsCategory: string | null; }; }; }) =>
+                p.payload.val().prodsCategory == this.prodsCategory) :
+              this.products;
             }
+          });
+
+          this.subscription5 = this.getOrder().subscribe(order => {
+            if (!order) this.createOrderEmpty(); // pruebo esto
+            this.order = order;
+              this.orderIndex = -1
+              for (let i=0;i<this.order.length;i++) {
+                if (this.order && this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
+                  this.orderIndex = i
+                  this.orderId =  this.order[i].key;
+                  break
+                }
+              }
+          });
         });
       });
-    });
-    this.subscription6 = this.getAllClients().subscribe(clients => {
-      this.clients = clients;
-    });
-    this.subscription7 = this.getAllOrders().subscribe(orders => {
-      this.orders = orders;
-      // for (let i=0;i<this.orders.length;i++) {
-      //   console.log('i = ', i);
-      //   if (this.orders[i].payload.val().date > this.orders[i].payload.val().fullPaymentDate) {
-      //     this.updateOrder(this.orders[i].key, {"fullPaymentDate": null})
-      //   }
-      // }
-    });
-    this.subscription8 = this.getAllPayments().subscribe(payments => {
-      this.payments = payments;
-    });
+      this.subscription6 = this.getAllClients().subscribe(clients => {
+        this.clients = clients;
+      });
+      this.subscription7 = this.getAllOrders().subscribe(orders => {
+        this.orders = orders;
+        // for (let i=0;i<this.orders.length;i++) {
+        //   console.log('i = ', i);
+        //   if (this.orders[i].payload.val().date > this.orders[i].payload.val().fullPaymentDate) {
+        //     this.updateOrder(this.orders[i].key, {"fullPaymentDate": null})
+        //   }
+        // }
+      });
+      this.subscription8 = this.getAllPayments().subscribe(payments => {
+        this.payments = payments;
+      });
+    }
+
+   ngOnChanges() {
+    console.log('onchanges');
    }
 
    ngOnInit() {
-
+    console.log('onInit');
    }
 
   // ................................................orders methods................................................
@@ -484,7 +491,7 @@ export class OrdersService implements OnDestroy, OnInit {
         }
       }
     }
-    return clientCategory
+    return null;
   }
 
   calcDebt(fantasyName: any) {

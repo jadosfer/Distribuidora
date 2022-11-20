@@ -1,10 +1,10 @@
 <div class="SCContainer ms-1" *ngIf="appUser && (!debtWarning || appUser.isAdmin); else elseBlock">
   <div class="row">
-    <div class="col-1 mt-2 col-sm-2"><h1>PEDIDOS</h1></div>
-    <div class="col-2 col-sm-3 mt-sm-1 align-top">
+    <div class="col-6 col-md-4 my-2"><h1>PEDIDOS</h1></div>
+    <div class="col-6 col-md-4 my-1">
       <a mat-icon-button routerLink="/orders/order"><mat-icon>control_point</mat-icon><span>Crear Pedido</span></a>
     </div>
-    <div  *ngIf="ordersNotAproved > 0" class="col mt-2 mt-sm-3 align-middle">
+    <div  *ngIf="ordersNotAproved > 0" class="col my-2">
       <div>PEDIDOS RECIENTES SIN APROBAR: &nbsp;&nbsp;&nbsp;&nbsp;
         <span matBadge="{{this.ordersNotAproved}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;
       </div>
@@ -43,20 +43,34 @@
   <!-- <div style="margin-left:20px"><h2>NOVEDADES: Se puede buscar por varios filtros a la vez</h2></div> -->
 
   <div class="row">
-    <div fxLayout="row" fxLayoutAlign="space-around center">
-      <div><mat-icon matSuffix>search</mat-icon></div>
-      <div fxLayout="row">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
+    <div class="row">
+      <div class="col-6 col-md-4 my-1">
+        <div class="input-group">
+          <div class="d-none d-sm-block">
+            <mat-icon matSuffix>search</mat-icon>
+          </div>
+          <input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
+        </div>
       </div>
-      <div fxLayout="row" *ngIf="appUser.isAdmin || appUser.isSalesManager">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
+      <div class="col-6 col-md-4 my-1">
+        <div class="input-group">
+          <div class="d-none d-sm-block">
+            <mat-icon matSuffix>search</mat-icon>
+          </div>
+          <input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor...">
+        </div>
       </div>
-      <div fxLayout="row">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha..."></div>
+      <div class="col-6 col-md-4 my-1">
+        <div class="input-group">
+          <div class="d-none d-sm-block">
+            <mat-icon matSuffix>search</mat-icon>
+          </div>
+          <input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha...">
+        </div>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row m-3">
       <form #f="ngForm" (ngSubmit)="searchDateRange(range.value)">
         <mat-form-field appearance="fill">
           <mat-label>Ingrese un rango de fechas</mat-label>
@@ -69,7 +83,7 @@
           <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
           <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
         </mat-form-field>
-        <button mat-raised-button style="margin:20px" type="submit" color="primary" >buscar por rango</button>
+        <button mat-raised-button type="submit" color="primary" >buscar por rango</button>
         <button #query mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
       </form>
     </div>
@@ -143,7 +157,7 @@
             </mat-expansion-panel>
           </mat-accordion>
         </td>
-        <td><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td *ngIf="this.ordersService.clients"><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
       </tr>
       <tr>

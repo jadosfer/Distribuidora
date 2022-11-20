@@ -1,13 +1,13 @@
-<div *ngIf="loading" class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
+<div *ngIf="loading || !this.ordersService.clients" class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
   <span class="visually-hidden"></span>
 </div>
 
-<div *ngIf="this.commissions" class="SCContainer ml-3">
-  <h1 style="display: inline; margin:10px;">COMISIONES</h1>
+<div *ngIf="this.commissions && this.ordersService.clients" class="SCContainer ml-3">
+  <h1>COMISIONES</h1>
   <hr>
   <!-- <div *ngIf="!loading && appUser && appUser.isAdmin"></div> -->
 
-  <div *ngIf="edit && commissions" fxLayout="row" fxLayout.xs="column">
+  <div *ngIf="edit && commissions">
     <form (ngSubmit)="save(myGroup.value)" [formGroup]="myGroup">
       <div>
         <input [formControlName]="'retailPercent'" required>
@@ -45,7 +45,7 @@
 
   <div *ngIf="!edit">
     <div class="row">
-      <div class="col">
+      <div class="col col-sm-4 col-lg-2">
         <button  *ngIf="!loading && appUser && appUser.isAdmin" class="left-btn mb-3" (click)="this.edit = !this.edit" mat-raised-button color="primary">Editar comisiones y límites </button>
       </div>
       <div class="col">

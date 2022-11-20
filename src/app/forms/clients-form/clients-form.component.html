@@ -1,106 +1,105 @@
-<div fxLayout="row" fxLayout.xs="column">
-  <div class="container-form" fxFlex="40%;" fxFlex.xs="80%">
-    <form #f="ngForm" (ngSubmit)="save(f.value)">
+ <div class="container-form">
+  <form #f="ngForm" (ngSubmit)="save(f.value)">
+    <p>
+      <mat-form-field appearance="legacy">
+        <mat-label>Razon Social</mat-label>
+        <input #businessName="ngModel" matInput [(ngModel)]="client.businessName" name="businessName" placeholder="" required>
+
+        <mat-hint>Campo requerido</mat-hint>
+        <div class="alert alert-danger" *ngIf="businessName.touched && businessName.invalid">La Razon Social es requerida</div>
+      </mat-form-field>
+
+      <mat-form-field appearance="legacy">
+        <mat-label>Nombre de Fantasía</mat-label>
+        <input #fantasyName="ngModel" matInput [(ngModel)]="client.fantasyName" name="fantasyName" placeholder="" required>
+
+        <mat-hint>Campo requerido</mat-hint>
+        <div class="alert alert-danger" *ngIf="fantasyName.touched && fantasyName.invalid">El Nombre de Fantasia es requerido</div>
+      </mat-form-field>
+    </p>
+
+
+
+      <mat-form-field appearance="fill">
+        <mat-label>Canal de venta</mat-label>
+        <mat-select #clientCategory="ngModel" [(ngModel)]="client.clientCategory" name="clientCategory" required>
+          <mat-option *ngFor="let c of clientsCategories | async" [value]="c.name">
+            {{c.name}}
+          </mat-option>
+        </mat-select>
+        <div class="alert alert-danger" *ngIf="clientCategory.touched && clientCategory.invalid">El canal de venta es requerido</div>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Condición de venta</mat-label>
+        <mat-select #sellCondition="ngModel" [(ngModel)]="client.sellCondition" name="sellCondition" required>
+          <mat-option *ngFor="let sc of sellConditions" [value]="sc">
+            {{sc}}
+          </mat-option>
+        </mat-select>
+        <div class="alert alert-danger" *ngIf="sellCondition.touched && sellCondition.invalid">La condición de venta es requerida</div>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Vendedor asignado</mat-label>
+        <mat-select #designatedSeller="ngModel" [(ngModel)]="client.designatedSeller" name="designatedSeller" required>
+          <mat-option *ngFor="let ds of sellers$ | async" [value]="ds.payload.val().name">
+            {{ds.payload.val().name}}
+          </mat-option>
+        </mat-select>
+        <div class="alert alert-danger" *ngIf="designatedSeller.touched && designatedSeller.invalid">La condición de venta es requerida</div>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Condición IVA</mat-label>
+        <mat-select #IVACondition="ngModel" [(ngModel)]="client.IVACondition" name="IVACondition">
+          <mat-option *ngFor="let IVACond of IVAConditions" [value]="IVACond">
+            {{IVACond}}
+          </mat-option>
+        </mat-select>
+        <div class="alert alert-danger" *ngIf="IVACondition.touched && IVACondition.invalid">La condición de IVA es requerida</div>
+      </mat-form-field>
+
       <p>
         <mat-form-field appearance="legacy">
-          <mat-label>Razon Social</mat-label>
-          <input #businessName="ngModel" matInput [(ngModel)]="client.businessName" name="businessName" placeholder="" required>
-
+          <mat-label>CUIT</mat-label>
+          <input #cuit="ngModel" matInput [(ngModel)]="client.cuit" name="cuit" placeholder="" required [min]="0">
+          <div class="alert alert-danger" *ngIf="cuit.touched && cuit.invalid">
+            <div *ngIf="cuit.errors?.required">El CUIT es requerido</div>
+            <div *ngIf="cuit.errors?.min">El CUIT debe ser mayor a 0 y sin guiones</div>
+          </div>
           <mat-hint>Campo requerido</mat-hint>
-          <div class="alert alert-danger" *ngIf="businessName.touched && businessName.invalid">La Razon Social es requerida</div>
         </mat-form-field>
 
         <mat-form-field appearance="legacy">
-          <mat-label>Nombre de Fantasía</mat-label>
-          <input #fantasyName="ngModel" matInput [(ngModel)]="client.fantasyName" name="fantasyName" placeholder="" required>
-
+          <mat-label>Dirección</mat-label>
+          <input #address="ngModel" matInput [(ngModel)]="client.address" name="address" placeholder="" required>
           <mat-hint>Campo requerido</mat-hint>
-          <div class="alert alert-danger" *ngIf="fantasyName.touched && fantasyName.invalid">El Nombre de Fantasia es requerido</div>
+          <div class="alert alert-danger" *ngIf="address.touched && address.invalid">La dirección es requerida</div>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="legacy">
+          <mat-label>Nombre de contacto</mat-label>
+          <input #contactName="ngModel" matInput [(ngModel)]="client.contactName" name="contactName" placeholder="" required>
+          <mat-hint>Campo requerido</mat-hint>
+          <div class="alert alert-danger" *ngIf="contactName.touched && contactName.invalid">El nombre de contacto es requerido</div>
+        </mat-form-field>
+
+        <mat-form-field appearance="legacy">
+          <mat-label>Teléfono</mat-label>
+          <input #phone="ngModel" matInput [(ngModel)]="client.phone" name="phone" placeholder="" required>
+          <mat-hint>Campo requerido</mat-hint>
+          <div class="alert alert-danger" *ngIf="phone.touched && phone.invalid">El teléfono es requerido</div>
         </mat-form-field>
       </p>
 
 
 
-        <mat-form-field appearance="fill">
-          <mat-label>Canal de venta</mat-label>
-          <mat-select #clientCategory="ngModel" [(ngModel)]="client.clientCategory" name="clientCategory" required>
-            <mat-option *ngFor="let c of clientsCategories | async" [value]="c.name">
-              {{c.name}}
-            </mat-option>
-          </mat-select>
-          <div class="alert alert-danger" *ngIf="clientCategory.touched && clientCategory.invalid">El canal de venta es requerido</div>
-        </mat-form-field>
+    <button class="me-2" mat-raised-button type="submit" color="primary" >Guardar</button>
+    <button (click)="delete()" mat-raised-button type="button" color="warn">Eliminar</button>
+  </form>
+</div>
 
-        <mat-form-field appearance="fill">
-          <mat-label>Condición de venta</mat-label>
-          <mat-select #sellCondition="ngModel" [(ngModel)]="client.sellCondition" name="sellCondition" required>
-            <mat-option *ngFor="let sc of sellConditions" [value]="sc">
-              {{sc}}
-            </mat-option>
-          </mat-select>
-          <div class="alert alert-danger" *ngIf="sellCondition.touched && sellCondition.invalid">La condición de venta es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Vendedor asignado</mat-label>
-          <mat-select #designatedSeller="ngModel" [(ngModel)]="client.designatedSeller" name="designatedSeller" required>
-            <mat-option *ngFor="let ds of sellers$ | async" [value]="ds.payload.val().name">
-              {{ds.payload.val().name}}
-            </mat-option>
-          </mat-select>
-          <div class="alert alert-danger" *ngIf="designatedSeller.touched && designatedSeller.invalid">La condición de venta es requerida</div>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Condición IVA</mat-label>
-          <mat-select #IVACondition="ngModel" [(ngModel)]="client.IVACondition" name="IVACondition">
-            <mat-option *ngFor="let IVACond of IVAConditions" [value]="IVACond">
-              {{IVACond}}
-            </mat-option>
-          </mat-select>
-          <div class="alert alert-danger" *ngIf="IVACondition.touched && IVACondition.invalid">La condición de IVA es requerida</div>
-        </mat-form-field>
-
-        <p>
-          <mat-form-field appearance="legacy">
-            <mat-label>CUIT</mat-label>
-            <input #cuit="ngModel" matInput [(ngModel)]="client.cuit" name="cuit" placeholder="" required [min]="0">
-            <div class="alert alert-danger" *ngIf="cuit.touched && cuit.invalid">
-              <div *ngIf="cuit.errors?.required">El CUIT es requerido</div>
-              <div *ngIf="cuit.errors?.min">El CUIT debe ser mayor a 0 y sin guiones</div>
-            </div>
-            <mat-hint>Campo requerido</mat-hint>
-          </mat-form-field>
-
-          <mat-form-field appearance="legacy">
-            <mat-label>Dirección</mat-label>
-            <input #address="ngModel" matInput [(ngModel)]="client.address" name="address" placeholder="" required>
-            <mat-hint>Campo requerido</mat-hint>
-            <div class="alert alert-danger" *ngIf="address.touched && address.invalid">La dirección es requerida</div>
-          </mat-form-field>
-        </p>
-
-        <p>
-          <mat-form-field appearance="legacy">
-            <mat-label>Nombre de contacto</mat-label>
-            <input #contactName="ngModel" matInput [(ngModel)]="client.contactName" name="contactName" placeholder="" required>
-            <mat-hint>Campo requerido</mat-hint>
-            <div class="alert alert-danger" *ngIf="contactName.touched && contactName.invalid">El nombre de contacto es requerido</div>
-          </mat-form-field>
-
-          <mat-form-field appearance="legacy">
-            <mat-label>Teléfono</mat-label>
-            <input #phone="ngModel" matInput [(ngModel)]="client.phone" name="phone" placeholder="" required>
-            <mat-hint>Campo requerido</mat-hint>
-            <div class="alert alert-danger" *ngIf="phone.touched && phone.invalid">El teléfono es requerido</div>
-          </mat-form-field>
-        </p>
-
-
-
-      <button mat-raised-button type="submit" color="primary" >Guardar</button>
-      <button (click)="delete()" mat-raised-button type="button" color="warn">Eliminar</button>
-    </form>
-  </div>
- </div>
 

@@ -1,4 +1,4 @@
-<!--div fxHide.xs fxHide.sm>
+<!--
   <mat-list >
     <div>
       <a mat-raised-button routerLink="./" routerLinkActive="mat-primary">Todas las categorias</a>
@@ -8,13 +8,12 @@
         <a mat-raised-button routerLink="./" [queryParams]="{prodsCategory: c.key}" color="basic" routerLinkActive="mat-accent">{{c.key}}</a>
       </mat-list-item>
     </div>
-  </mat-list>
-</div-->
+  </mat-list> -->
 
-<div style="margin:5px; margin-top:-20px; margin-left:-20px;">
-  <div fxLayout="row" style="margin:5px; margin-left:10px;">
-    <a mat-raised-button routerLink="./" style="max-width:170px" routerLinkActive="mat-primary">Todas las categorias</a>
-    <a *ngFor="let c of prodsCategories" style="max-width:120px" mat-raised-button routerLink="./"
+<div>
+  <div>
+    <a class="m-1" mat-raised-button routerLink="./" routerLinkActive="mat-primary">Todas las categorias</a>
+    <a class="m-1" *ngFor="let c of prodsCategories" mat-raised-button routerLink="./"
     [queryParams]="{prodsCategory: c.payload.val().name}" color="basic"
     routerLinkActive="mat-accent">{{c.payload.val().name}}</a>
   </div>

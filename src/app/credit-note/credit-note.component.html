@@ -1,58 +1,45 @@
-<div fxLayout.xs-sm="column" >
-  <div id='productsList'>
-    <h1>NOTA DE CRÉDITO</h1>
-    <hr>
-    <form #f="ngForm" (ngSubmit)="sendNote(f.value)" class="example-form" style="margin-top:20px;margin-left:0px;">
-      <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Cliente</mat-label>
-        <input name="clientFantasyName" type="text" placeholder="Elija uno" aria-label="Number" matInput required
-          [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName">
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
-            {{client.payload.val().fantasyName}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+<div id='productsList'>
+  <h1>NOTA DE CRÉDITO</h1>
+  <hr>
+  <form #f="ngForm" (ngSubmit)="sendNote(f.value)" class="example-form">
+    <mat-form-field class="me-1 example-full-width" appearance="fill">
+      <mat-label>Cliente</mat-label>
+      <input name="clientFantasyName" type="text" placeholder="Elija uno" aria-label="Number" matInput required
+        [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
+          {{client.payload.val().fantasyName}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
 
-      <mat-form-field class="example-full-width" appearance="fill" style="margin:10px;">
-        <mat-label>Ingrese el monto</mat-label>
-        <input name="amount" #amount="ngModel" [(ngModel)]="note.amount" type="number" matInput required>
-      </mat-form-field>
+    <mat-form-field class="me-1 example-full-width" appearance="fill">
+      <mat-label>Ingrese el monto</mat-label>
+      <input name="amount" #amount="ngModel" [(ngModel)]="note.amount" type="number" matInput required>
+    </mat-form-field>
 
-      <mat-form-field class="example-full-width" appearance="fill" style="margin:10px;">
-        <mat-label>Ingrese el núm. de factura asociado</mat-label>
-        <input name="orderNumber" #orderNumber="ngModel" [(ngModel)]="note.orderNumber" type="number" matInput required>
-      </mat-form-field>
+    <mat-form-field class="me-1 example-full-width" appearance="fill">
+      <mat-label>Ingrese el núm. de factura asociado</mat-label>
+      <input name="orderNumber" #orderNumber="ngModel" [(ngModel)]="note.orderNumber" type="number" matInput required>
+    </mat-form-field>
 
-      <!-- <mat-form-field class="example-full-width" appearance="fill" style="margin:10px;">
-        <mat-label>Ingrese la fecha</mat-label>
-        <input name="orderNumber" #orderNumber="ngModel" [(ngModel)]="note.date" type="number" matInput required>
-      </mat-form-field> -->
+    <mat-form-field class="" appearance="fill">
+      <mat-label>Ingrese la fecha</mat-label>
+      <input #date="ngModel" matInput [matDatepicker]="picker" name="date" [(ngModel)]="note.date" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
-      <mat-form-field appearance="fill" style="margin:10px;">
-        <mat-label>Ingrese la fecha</mat-label>
-        <input #date="ngModel" matInput [matDatepicker]="picker" name="date" [(ngModel)]="note.date" required>
-        <!-- <input #date="ngModel" matInput [(ngModel)]="payment.date" [matDatepicker]="picker" name="date" required> -->
-
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
-
-      <div class="row">
-        <div class="col-1">
-          <button class="left-btn" type="submit" mat-raised-button color="primary">Guardar</button>
-        </div>
-        <div class="col">
-          <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
-        </div>
+    <div class="row">
+      <div class="col-3 col-sm-2 col-lg-1">
+        <button class="left-btn" type="submit" mat-raised-button color="primary">Guardar</button>
       </div>
-    </form>
-    <div fxLayout="row" fxLayoutAlign="start center" style="margin-bottom:20px;margin-top:20px;">
-      <div>
-        <span *ngIf="!noteEmpty">Debe ingresar un valor!</span>
+      <div class="col">
+        <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
       </div>
     </div>
-
-
+  </form>
+  <div>
+    <span *ngIf="!noteEmpty">Debe ingresar un valor!</span>
   </div>
 </div>

@@ -19,12 +19,20 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   appUser: AppUser;
 
+  //paginator
+  actualPage: number = 0;
+  totalPages: number = 1;
+  itemsPerPage: number = 10;
+  //paginator bootstrap
+  currentItemsToShow: any[] = [];
+
   myControl = new FormControl();
   filteredOptions:  Observable<any[]>;
   disableSelect = new FormControl(false);
   filtrada: any[];
 
   clientFantasyName:string="";
+  clientCategory: string | null;
   date: any;
 
   clients:any[] = [];
@@ -32,7 +40,6 @@ export class OrderComponent implements OnInit, OnDestroy {
   showedProducts:any;
   prodsCategory: string | null;
   orderProducts:any[] = []
-  filteredProducts:any[];
   filteredOrder: any;
   prodQuery: string;
   order: any[] = [];
@@ -41,9 +48,6 @@ export class OrderComponent implements OnInit, OnDestroy {
   disc: number = 0;
   iva: number = 21;
   ivas: number[] = [0, 10.5, 21];
-
-  filteredProduct:any[];
-  breakpoint:any;
 
   title: string;
   quantity: number = 0;
@@ -55,6 +59,8 @@ export class OrderComponent implements OnInit, OnDestroy {
   negative: boolean = false;
   noStock: boolean = false;
   showOrder: boolean = false;
+  catNull: boolean = false;
+
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
   subscription: Subscription;
   subscription2: Subscription;
@@ -131,9 +137,55 @@ export class OrderComponent implements OnInit, OnDestroy {
           }
           this.showedProducts = this.filteredOrder;
           if (!this.prodsCategory) this.showedProducts = this.orderProducts;
+          this.actualPage = 0;
+          this.refreshPages();
         });
       });
     });
+  }
+
+  pickClient(clientCategory: string) {
+    // if(!this.clientCategory) {
+    //   this.catNull = true;
+    //   setTimeout(()=>{
+    //     this.catNull = false;
+    //   }, 2000)
+    // }
+
+    let price;
+    let products = [];
+    if (!this.orderProducts) return
+    for (let i=0;i<this.orderProducts.length;i++) {
+      // switch (this.clientCategory) {
+        switch (clientCategory) {
+        case null:
+          // this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
+          // this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
+          throw Error("Error en el canal de venta");
+            break;
+        case "Distribuidor":
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
+          break;
+        case "Comercio":
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
+          break;
+        case "Kiosko":
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
+          this.iva = 0;
+          break;
+        case "Gimnasio":
+          this.orderProducts[i].price = this.orderProducts[i].product.discPrice4;
+          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice4*(1-this.orderProducts[i].discount/100) ;
+          this.iva = 0;
+          break;
+      }
+    }
+    this.showedProducts = this.orderProducts;
+    if (this.clientFantasyName != null) this.router.navigateByUrl('/orders/order');
+
   }
 
   sortData(sort: Sort) {
@@ -156,10 +208,6 @@ export class OrderComponent implements OnInit, OnDestroy {
     });
   }
 
-  getClientCategory() {
-    return this.ordersService.getClientCategory(this.clientFantasyName);
-  }
-
   getTitle(item: any) {
     return item.title;
   }
@@ -177,9 +225,14 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   private _filter(value: any): any {
+    this.clientCategory = null;
     const filterValue = value.toLowerCase();
     if (!this.clients) return;
     let listFiltrada = this.clients.filter(client => client.payload.val().fantasyName.toLowerCase().includes(filterValue));
+    if (listFiltrada.length == 1) {
+      this.clientCategory = listFiltrada[0].payload.val().clientCategory;
+      this.pickClient(this.clientCategory!)
+    }
     return listFiltrada
   }
 
@@ -193,6 +246,8 @@ export class OrderComponent implements OnInit, OnDestroy {
     this.showedProducts = (prodQuery) ?
     this.showedProducts.filter((p: { product: { title: string; }; }) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
     this.showedProducts;
+    this.actualPage = 0;
+    this.refreshPages();
   }
 
   updateOrderItemQuantity(product: any, change: number, index: number){
@@ -237,7 +292,6 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     if (this.orderEmpty) return;
-
     if (this.clientFantasyName == "") {
       this.client = false;
       setTimeout(()=> {
@@ -272,12 +326,13 @@ export class OrderComponent implements OnInit, OnDestroy {
 
   reset() {
     if (confirm('Está segur@ que quiere anular el pedido que no ha creado?')) {
-      for (let i=0;i<this.orderProducts.length;i++) {
-        this.orderProducts[i].quantity = 0;
-      }
-      this.showOrder=false;
-      this.ordersService.resetOrder(this.orderIndex);
-
+      this.quantity = 0;
+    for (let i=0;i<this.orderProducts.length;i++) {
+      this.orderProducts[i].quantity = 0;
+    }
+    this.showOrder=false;
+    this.ordersService.resetOrder(this.orderIndex);
+    this.clientFantasyName = "";
     }
   }
 
@@ -293,39 +348,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   updatePrices() {
-    let clientCategory = this.getClientCategory();
-    let price;
-    let products = [];
-    if (!this.orderProducts) return
-    for (let i=0;i<this.orderProducts.length;i++) {
-      switch (clientCategory) {
-        case "":
-          // this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
-          // this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
-          throw Error("Error en el canal de venta");
-            break;
-        case "Distribuidor":
-          this.orderProducts[i].price = this.orderProducts[i].product.discPrice1;
-          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice1*(1-this.orderProducts[i].discount/100) ;
-          break;
-        case "Comercio":
-          this.orderProducts[i].price = this.orderProducts[i].product.discPrice2;
-          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice2*(1-this.orderProducts[i].discount/100) ;
-          break;
-        case "Kiosko":
-          this.orderProducts[i].price = this.orderProducts[i].product.discPrice3;
-          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice3*(1-this.orderProducts[i].discount/100) ;
-          this.iva = 0;
-          break;
-        case "Gimnasio":
-          this.orderProducts[i].price = this.orderProducts[i].product.discPrice4;
-          this.orderProducts[i].discountPrice = this.orderProducts[i].product.discPrice4*(1-this.orderProducts[i].discount/100) ;
-          this.iva = 0;
-          break;
-      }
-    }
-    this.showedProducts = this.orderProducts;
-    if (this.clientFantasyName != "") this.router.navigateByUrl('/orders/order');
+    // this.clientCategory = null;
   }
 
   getStock(product: any) {
@@ -336,6 +359,29 @@ export class OrderComponent implements OnInit, OnDestroy {
   unloadHandler(event: Event) {
     this.ordersService.clearOrder();
   }
+
+  //funciones paginator bootstrap
+  prevPage() {
+    if (this.actualPage == 0) return
+    this.actualPage -= 1;
+    this.refreshPages()
+  }
+
+  nextPage() {
+    if (this.actualPage == this.totalPages) return
+    this.actualPage += 1;
+    this.refreshPages();
+  }
+
+  refreshPages() {
+    this.totalPages = Math.ceil(this.showedProducts.length/this.itemsPerPage);
+    this.currentItemsToShow = []
+    for (let i = this.actualPage*this.itemsPerPage; i<this.actualPage*this.itemsPerPage + this.itemsPerPage; i++) {
+      if (i == this.showedProducts.length) return
+      this.currentItemsToShow.push(this.showedProducts[i])
+    }
+  }
+  //funciones paginator bootstrap
 
   ngOnDestroy() {
     this.ordersService.clearOrder();

@@ -9,86 +9,84 @@
   </div>
   <hr>
 
-  <div fxLayout="row" fxLayout.xs="column">
-    <table *ngIf="this.commissionsByMonth" class="table table-sm mat-elevation-z8">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th *ngIf="!prodCatDetails">Mín. Fact Minorista</th>
-          <th *ngIf="!prodCatDetails">Com. Min.</th>
-          <th *ngIf="!prodCatDetails">Com. May.</th>
-          <th *ngIf="!prodCatDetails">Tasa Mensual</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let commissionByMonth of this.commissionsByMonth">
-          <td>{{commissionByMonth.payload.val().month}}/{{commissionByMonth.payload.val().year}}</td>
-          <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().minRetailTotalSales}}</td>
-          <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().retailPercent}}</td>
-          <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().wholesalerPercent}}</td>
-          <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().monthlyRate}}</td>
-          <td>
-            <mat-accordion>
-              <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    <strong>Información vendedores</strong>
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <button *ngIf="!prodCatDetails" mat-raised-button (click)="this.prodCatDetails=true" color="primary" >Detalle</button>
-                <button *ngIf="prodCatDetails" mat-raised-button (click)="this.prodCatDetails=false" color="secondary" >Cerrar</button>
-                <table class="table table-sm mat-elevation-z8">
-                  <tr>
-                    <th>Vendedor</th>
-                    <th *ngIf="!prodCatDetails">Fact. Min.</th>
-                    <th *ngIf="!prodCatDetails">Com. Min. ({{commissionByMonth.payload.val().retailPercent*100}}%)</th>
-                    <th *ngIf="!prodCatDetails">Fact. May.</th>
-                    <th *ngIf="!prodCatDetails">Com. May. ({{commissionByMonth.payload.val().wholesalerPercent*100}}%)</th>
-                    <th *ngIf="!prodCatDetails">Total de Premios</th>
-                    <th *ngIf="!prodCatDetails">Cobranza</th>
-                    <th *ngIf="!prodCatDetails">Comisión final</th>
-                    <th *ngIf="!prodCatDetails">Deuda en mora</th>
-                  </tr>
+  <table *ngIf="this.commissionsByMonth" class="table table-sm mat-elevation-z8">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th *ngIf="!prodCatDetails">Mín. Fact Minorista</th>
+        <th *ngIf="!prodCatDetails">Com. Min.</th>
+        <th *ngIf="!prodCatDetails">Com. May.</th>
+        <th *ngIf="!prodCatDetails">Tasa Mensual</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let commissionByMonth of this.commissionsByMonth">
+        <td>{{commissionByMonth.payload.val().month}}/{{commissionByMonth.payload.val().year}}</td>
+        <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().minRetailTotalSales}}</td>
+        <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().retailPercent}}</td>
+        <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().wholesalerPercent}}</td>
+        <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().monthlyRate}}</td>
+        <td>
+          <mat-accordion>
+            <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <strong>Información vendedores</strong>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <button *ngIf="!prodCatDetails" mat-raised-button (click)="this.prodCatDetails=true" color="primary" >Detalle</button>
+              <button *ngIf="prodCatDetails" mat-raised-button (click)="this.prodCatDetails=false" color="secondary" >Cerrar</button>
+              <table class="table table-sm mat-elevation-z8">
+                <tr>
+                  <th>Vendedor</th>
+                  <th *ngIf="!prodCatDetails">Fact. Min.</th>
+                  <th *ngIf="!prodCatDetails">Com. Min. ({{commissionByMonth.payload.val().retailPercent*100}}%)</th>
+                  <th *ngIf="!prodCatDetails">Fact. May.</th>
+                  <th *ngIf="!prodCatDetails">Com. May. ({{commissionByMonth.payload.val().wholesalerPercent*100}}%)</th>
+                  <th *ngIf="!prodCatDetails">Total de Premios</th>
+                  <th *ngIf="!prodCatDetails">Cobranza</th>
+                  <th *ngIf="!prodCatDetails">Comisión final</th>
+                  <th *ngIf="!prodCatDetails">Deuda en mora</th>
+                </tr>
 
-                  <tr *ngFor="let sellersCommissionInfo of commissionByMonth.payload.val().sellersCommissionsInfo">
-                    <td>{{sellersCommissionInfo.sellerName}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.retailSalesPMonth}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.retailCommission}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.wholesalerSalesPMonth}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.wholesalerCommission}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.TotalRewards}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.sellerPenalty}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalIncome}}</td>
-                    <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalSellerDebtDelayed}}</td>
+                <tr *ngFor="let sellersCommissionInfo of commissionByMonth.payload.val().sellersCommissionsInfo">
+                  <td>{{sellersCommissionInfo.sellerName}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.retailSalesPMonth}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.retailCommission}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.wholesalerSalesPMonth}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.wholesalerCommission}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.TotalRewards}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.sellerPenalty}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalIncome}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalSellerDebtDelayed}}</td>
 
-                      <div *ngIf="prodCatDetails" class="row">
-                        <div class="col" *ngFor="let prodCategoryReward of sellersCommissionInfo.prodCategoryRewards">
-                          <table class="table table-sm mat-elevation-z8">
-                            <thead>
-                              <th>Categoría</th>
-                              <th>Objetivo</th>
-                              <th>Ventas</th>
-                              <th>Premio</th>
-                            </thead>
-                            <tbody>
-                              <td>{{prodCategoryReward.prodCategory}}</td>
-                              <td>{{prodCategoryReward.categoryAim}}</td>
-                              <td>{{prodCategoryReward.prodCategorySales}}</td>
-                              <td [ngClass]="{
-                                'text-primary':prodCategoryReward.prodCategorySales >= prodCategoryReward.categoryAim,
-                                'font-weight-bold':prodCategoryReward.prodCategorySales >= prodCategoryReward.categoryAim
-                              }">{{prodCategoryReward.categoryReward}}</td>
-                            </tbody>
-                          </table>
-                        </div>
+                    <div *ngIf="prodCatDetails" class="row">
+                      <div class="col" *ngFor="let prodCategoryReward of sellersCommissionInfo.prodCategoryRewards">
+                        <table class="table table-sm mat-elevation-z8">
+                          <thead>
+                            <th>Categoría</th>
+                            <th>Objetivo</th>
+                            <th>Ventas</th>
+                            <th>Premio</th>
+                          </thead>
+                          <tbody>
+                            <td>{{prodCategoryReward.prodCategory}}</td>
+                            <td>{{prodCategoryReward.categoryAim}}</td>
+                            <td>{{prodCategoryReward.prodCategorySales}}</td>
+                            <td [ngClass]="{
+                              'text-primary':prodCategoryReward.prodCategorySales >= prodCategoryReward.categoryAim,
+                              'font-weight-bold':prodCategoryReward.prodCategorySales >= prodCategoryReward.categoryAim
+                            }">{{prodCategoryReward.categoryReward}}</td>
+                          </tbody>
+                        </table>
                       </div>
-                  </tr>
-                </table>
-              </mat-expansion-panel>
-            </mat-accordion>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                    </div>
+                </tr>
+              </table>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

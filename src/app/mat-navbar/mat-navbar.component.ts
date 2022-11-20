@@ -12,12 +12,14 @@ import { Subscription } from 'rxjs';
 })
 export class MatNavbarComponent implements OnInit{
 
+  VERSION = "V201128"
   appUser: AppUser;
   sellers: any;
   production = true;
 
   subscription: Subscription;
   subscription2: Subscription;
+
 
   constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router) {
   }

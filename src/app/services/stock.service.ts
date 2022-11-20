@@ -196,7 +196,7 @@ export class StockService {
 
     for (let i=0;i<buy[0].payload.val().products.length;i++) {
       if  (this.buy[0].payload.val().products[i].quantity != 0) {
-        prods.push({"title": buy[0].payload.val().products[i].product.title, "quantity": buy[0].payload.val().products[i].quantity, "price": buy[0].payload.val().products[i].product.discPrice1} )
+        prods.push({"title": buy[0].payload.val().products[i].product.title, "quantity": buy[0].payload.val().products[i].quantity, "price": buy[0].payload.val().products[i].product.buyPrice} )
       }
     }
 

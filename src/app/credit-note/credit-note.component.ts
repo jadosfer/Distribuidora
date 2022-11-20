@@ -52,11 +52,6 @@ export class CreditNoteComponent implements OnInit {
     });
   }
 
-
-  getClientCategory() {
-    return this.ordersService.getClientCategory(this.clientFantasyName);
-  }
-
   private _filter(value: any): any {
     const filterValue = value.toLowerCase();
     if (!this.filteredClients) return;

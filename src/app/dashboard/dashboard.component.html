@@ -3,7 +3,7 @@
 </div>
 
 <div class="SCContainer" *ngIf="!loading && appUser">
-  <div style="margin:30px" *ngIf="showGraph">
+  <div *ngIf="showGraph">
     <table class="mat-elevation-z8">
       <tr>
         <th *ngFor="let label of pieChartLabels">{{label}}</th>
@@ -27,30 +27,44 @@
   </div>
 
 
-  <div fxLayout="row" style="margin:10px">
-    <div><h1 style="display: inline; margin:10px;">GRÁFICOS&nbsp;&nbsp;</h1></div>
-    <div><button style="display: inline; margin-right:10px;" mat-raised-button color="accent" (click)="graphic()">Graficar</button></div>
-    <div><button mat-raised-button color="basic" (click)="showGraph = false">Ocultar</button></div>
+  <div class="row">
+    <div class="col-12 mx-2 mt-1 mt-sm-2 col-sm-2 me-sm-2 col-lg-2"><h1>GRÁFICOS&nbsp;&nbsp;</h1></div>
+    <div class="col-12 m-2 col-sm-2 col-lg-1"><button mat-raised-button color="accent" (click)="graphic()">Graficar</button></div>
+    <div class="col m-2"><button mat-raised-button color="basic" (click)="showGraph = false">Ocultar</button></div>
   </div>
   <hr>
 
-  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutAlign="center" style="margin:10px">
-    <div fxLayout="row" fxLayoutAlign="space-around center">
-      <div><mat-icon matSuffix>search</mat-icon></div>
-      <div fxLayout="row">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
-      </div>
-      <div fxLayout="row" *ngIf="appUser.isAdmin">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
-      </div>
-      <div fxLayout="row">
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha..."></div>
+  <div class="row">
+    <div class="col-12 col-md-4 my-1">
+      <div class="input-group">
+        <div class="d-none d-sm-block">
+          <mat-icon matSuffix>search</mat-icon>
+        </div>
+        <input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía...">
       </div>
     </div>
+    <div class="col-12 col-md-4 my-1">
+      <div class="input-group">
+        <div class="d-none d-sm-block">
+          <mat-icon matSuffix>search</mat-icon>
+        </div>
+        <input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor...">
+      </div>
+    </div>
+    <div class="col-6 col-md-4 my-1">
+      <div class="input-group">
+        <div class="d-none d-sm-block">
+          <mat-icon matSuffix>search</mat-icon>
+        </div>
+        <input class="border-end-0 border rounded-pill" [(ngModel)]="dateValue" #Datequery (keyup)="filterByDate(Datequery.value)" type="text" placeholder="   Fecha...">
+      </div>
+    </div>
+  </div>
 
-    <div fxLayout="row" fxLayoutAlign="space-evenly center" class="ms-4">
-      <form #f="ngForm" style="margin-right:0px" (ngSubmit)="searchDateRange(range.value)">
-        <mat-form-field appearance="fill">
+  <form #f="ngForm" (ngSubmit)="searchDateRange(range.value)">
+    <div class="row">
+      <div class="col-12 ms-t col-md-4 my-1">
+        <mat-form-field appearance="fill" class="m-1">
           <mat-label>Ingrese un rango de fechas</mat-label>
           <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
             <input matStartDate formControlName="start" placeholder="fecha inicio">
@@ -63,15 +77,17 @@
           <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
           <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
         </mat-form-field>
-
-        <button mat-raised-button style="margin:10px" type="submit" color="primary" >buscar por rango</button>
-        <button #query style="margin:0px" mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
-      </form>
-
+      </div>
+      <div class="col-12 col-md-4 my-1">
+        <button class="m-1" mat-raised-button type="submit" color="primary" >buscar por rango</button>
+      </div>
+      <div class="col my-1">
+        <button class="m-1" #query mat-raised-button color="accent" (click)="clearRange()">borrar búsqueda</button>
+      </div>
     </div>
-  </div>
+  </form>
 
-  <table class="table table-striped mat-elevation-z8" mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
+  <table class="mt-2 table table-striped mat-elevation-z8" mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
     <!-- client Column -->
     <ng-container matColumnDef="client">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="client"><h3> Cliente </h3></th>
