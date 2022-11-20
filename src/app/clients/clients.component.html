@@ -32,7 +32,7 @@
       <tr>
         <th mat-sort-header="businessName">Razón social</th>
         <th mat-sort-header="fantasyName">Nombre de Fantasía</th>
-        <th mat-sort-header="fantasyName">Categoría</th>
+        <th mat-sort-header="clientCategory">Categoría</th>
         <th mat-sort-header="seller">Vendedor</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
@@ -44,7 +44,7 @@
       <tr *ngFor="let client of currentItemsToShow; let i = index">
         <td>{{client.payload.val().businessName}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().fantasyName}}&nbsp;&nbsp;</td>
-        <td>{{client.payload.val().clientCategorye}}&nbsp;&nbsp;</td>
+        <td>{{client.payload.val().clientCategory}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().designatedSeller}}</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>

@@ -46,12 +46,12 @@ export class ClientsComponent implements OnInit {
         this.includedClients = [];
         this.currentItemsToShow = [];
 
-        for (let i=0;i<this.clients.length;i++) {
-          let isUserClient = this.clients[i].payload.val().designatedSeller == this.appUser.name;
+        this.clients.forEach((client: any)=>{
+          let isUserClient = client.payload.val().designatedSeller == this.appUser.name;
           if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserClient)) {
-            this.includedClients.push(this.clients[i]);
+            this.includedClients.push(client);
           }
-        }
+        });
 
         this.filteredClients = this.includedClients;
         this.currentItemsToShow = this.filteredClients;
@@ -66,11 +66,11 @@ export class ClientsComponent implements OnInit {
   filter(query: string) {
     this.query.client = query;
     this.filteredClients = [];
-    for (let i=0;i<this.includedClients.length;i++) {
-      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
-      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
-      this.filteredClients.push(this.includedClients[i]);
-    }
+    this.includedClients.forEach((client) =>{
+      if (client.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && client.payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+      this.filteredClients.push(client);
+    });
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
     if (this.paginator) this.paginator.pageIndex = 0;
   }
@@ -78,12 +78,12 @@ export class ClientsComponent implements OnInit {
   filterBySeller(query: string) {
     this.query.seller = query;
     this.filteredClients = [];
-    for (let i=0;i<this.includedClients.length;i++) {
-      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
-        this.filteredClients.push(this.includedClients[i])
+    this.includedClients.forEach((client)=> {
+      if (client.payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && client.payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
+        this.filteredClients.push(client)
       }
-    }
+    });
 
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredClients.length});
     if (this.paginator) this.paginator.pageIndex = 0;

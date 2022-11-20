@@ -17,9 +17,7 @@
         <div class="alert alert-danger" *ngIf="fantasyName.touched && fantasyName.invalid">El Nombre de Fantasia es requerido</div>
       </mat-form-field>
     </p>
-
-
-
+    
       <mat-form-field appearance="fill">
         <mat-label>Canal de venta</mat-label>
         <mat-select #clientCategory="ngModel" [(ngModel)]="client.clientCategory" name="clientCategory" required>
@@ -52,7 +50,7 @@
 
       <mat-form-field appearance="fill">
         <mat-label>Condición IVA</mat-label>
-        <mat-select #IVACondition="ngModel" [(ngModel)]="client.IVACondition" name="IVACondition">
+        <mat-select #IVACondition="ngModel" [(ngModel)]="client.IVACondition" name="IVACondition" required>
           <mat-option *ngFor="let IVACond of IVAConditions" [value]="IVACond">
             {{IVACond}}
           </mat-option>

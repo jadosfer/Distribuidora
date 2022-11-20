@@ -63,24 +63,32 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
       this.appUser = appUser;
       this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
+
         this.includedClients = [];
         this.filteredClients = [];
 
-        for (let i=0;i<this.clients.length;i++) {
+        this.clients.forEach((client)=>{
           if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager)) {
-            this.includedClients.push(this.clients[i]);
+            this.includedClients.push(client);
           }
-        }
+        });
 
         this.filteredClients = this.includedClients;
+        // this.ordersService.setFilteredClients(this.filteredClients)
 
         if (this.ordersService.getFromEditing()) {
-
-          this.filteredClients = this.ordersService.getFilteredClients();
           this.actualPage = this.ordersService.getClientsActualPage();
           this.totalPages = this.ordersService.getClientsTotalPages();
           this.itemsPerPage = this.ordersService.getClientItemsPerPage();
+          this.query = this.ordersService.getQuery();
+          this.filter(this.query.client);
+          this.filterBySeller(this.query.seller)
+          this.clientValue = this.query.client;
+          this.sellerValue = this.query.seller;
         }
+
+        //this.filteredClients.forEach((client)=>{console.log('subscription2', client.payload.val().fantasyName);})
+
 
         this.refreshPages();
 
@@ -89,11 +97,10 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
           this.subscription4 = this.ordersService.getAllOrders().subscribe(orders => {
             this.orders = orders;
             this.clientsInDebt = this.ordersService.getClientsInDebt(this.clients, this.orders);
-            for (let i=0;i<this.clientsInDebt.length;i++) {
-              this.clientsInDebt[i].paymentDate = this.getClientLastPayment(this.clientsInDebt[i].payload.val().fantasyName).payload.val().date;
-              //this.clientsInDebt[i].ordersDebt = this.ordersService.calcDebtGreatherThan30(this.clientsInDebt[i].payload.val().fantasyName);
-              this.clientsInDebt[i].debt = this.ordersService.calcDebt(this.clientsInDebt[i].payload.val().fantasyName);
-            }
+            this.clientsInDebt.forEach((client)=>{
+              client.paymentDate = this.getClientLastPayment(client.payload.val().fantasyName).payload.val().date;
+              client.debt = this.ordersService.calcDebt(client.payload.val().fantasyName);
+            });
             this.loading = false;
           });
         });
@@ -112,11 +119,11 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
     else {
       this.query.client = query;
       this.filteredClients = [];
-      for (let i=0;i<this.includedClients.length;i++) {
-        if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
-        && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
-        this.filteredClients.push(this.includedClients[i]);
-      }
+      this.includedClients.forEach((client)=>{
+        if (client.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+        && client.payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+        this.filteredClients.push(client);
+      });
     }
     this.actualPage = 0;
     this.refreshPages();
@@ -125,12 +132,12 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   filterBySeller(query: string) {
     this.query.seller = query;
     this.filteredClients = [];
-    for (let i=0;i<this.includedClients.length;i++) {
-      if (this.includedClients[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.includedClients[i].payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
-        this.filteredClients.push(this.includedClients[i])
+    this.includedClients.forEach((client)=>{
+      if (client.payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && client.payload.val().designatedSeller.toLowerCase().includes(query.toLowerCase())) {
+        this.filteredClients.push(client)
       }
-    }
+    });
     this.actualPage = 0;
     this.refreshPages();
   }
@@ -174,9 +181,9 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   savePagination() {
     this.ordersService.setClientsActualPage(this.actualPage);
     this.ordersService.setClientsTotalPages(this.totalPages);
-    this.ordersService.setFilteredClients(this.filteredClients);
     this.ordersService.setClientItemsPerPage(this.itemsPerPage);
     this.ordersService.setFromEditing(false);
+    this.ordersService.setQuery(this.query)
   }
 
   //funciones paginator bootstrap
@@ -194,7 +201,8 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
   refreshPages() {
     this.totalPages = Math.ceil(this.filteredClients.length/this.itemsPerPage);
-    this.currentItemsToShow = []
+    this.currentItemsToShow = [];
+
     for (let i = this.actualPage*this.itemsPerPage; i<this.actualPage*this.itemsPerPage + this.itemsPerPage; i++) {
       if (i == this.filteredClients.length) return
       this.currentItemsToShow.push(this.filteredClients[i])
@@ -204,10 +212,10 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
 
   ngOnDestroy() {
-    // this.subscription.unsubscribe();
-    // this.subscription2.unsubscribe();
-    // this.subscription3.unsubscribe();
-    // this.subscription4.unsubscribe();
+    this.subscription.unsubscribe();
+    this.subscription2.unsubscribe();
+    this.subscription3.unsubscribe();
+    this.subscription4.unsubscribe();
   }
 }
 

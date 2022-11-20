@@ -17,6 +17,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   private filteredClients: any[];
   private clientsCurrentItemsToShow: any[];
   private fromEditing: boolean;
+  private query: any;
   private clientPageIndex: number;
   private clientPageSize: number;
   private itemsPerPage: number;
@@ -98,7 +99,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
         // for (let i=0;i<this.orders.length;i++) {
         //   console.log('i = ', i);
         //   if (this.orders[i].payload.val().date > this.orders[i].payload.val().fullPaymentDate) {
-        //     this.updateOrder(this.orders[i].key, {"fullPaymentDate": null})
+        //     this.updateOrder(this.ordsaveers[i].key, {"fullPaymentDate": null})
         //   }
         // }
       });
@@ -426,6 +427,14 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   update(clientId: any, client:any) {
     return this.db.object('/clients/' + clientId).update(client);
+  }
+
+  updateFilteredClients(clientId: any, client:any) {
+    for (let i=0; i< this.filteredClients.length;i++) {
+      if (this.filteredClients[i].key == clientId) {
+        // this.filteredClients[i].payload.val().fantasyName = client.fantasyName;
+      }
+    }
   }
 
   delete(clientId:any) {
@@ -829,14 +838,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     return sellerPayments
   }
 
-  setFilteredClients(filteredClients: any[]) {
-    this.filteredClients = filteredClients;
-  }
-
-  getFilteredClients() {
-    return this.filteredClients;
-  }
-
   setClientsCurrentItemsToShow(clientsCurrentItemsToShow: any[]) {
     this.clientsCurrentItemsToShow = clientsCurrentItemsToShow;
   }
@@ -851,6 +852,14 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   getFromEditing() {
     return this.fromEditing;
+  }
+
+  setQuery(query: any) {
+    this.query = query;
+  }
+
+  getQuery() {
+    return this.query;
   }
 
   setClientsActualPage(clientPageIndex: number) {
