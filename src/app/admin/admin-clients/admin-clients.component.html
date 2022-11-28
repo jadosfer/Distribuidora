@@ -57,7 +57,7 @@
       <div class="row" *ngIf="appUser && (appUser.isAdmin || appUser.isSalesManager)">
         <div class="col col-md-3 ms-2 my-2">
           <div class="input-group">
-            <div class="d-none d-sm-block">
+            <div>
               <mat-icon matSuffix>search</mat-icon>
             </div>
             <div><input class="border-end-0 border rounded-pill" [(ngModel)]="clientValue" #query (ngModelChange)="filter(query.value)" (keyup)="filter(query.value)" type="text" placeholder="   Nombre de Fantasía..."></div>
@@ -66,7 +66,7 @@
 
         <div class="col col-md-3 ms-2 my-2">
           <div class="input-group">
-            <div class="d-none d-sm-block">
+            <div>
               <mat-icon matSuffix>search</mat-icon>
             </div>
             <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
