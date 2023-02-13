@@ -1,8 +1,10 @@
 
-<div *ngIf="saving">
-  <br><br><br><br><br><br><br><br><br><br><h1>GUARDANDO DATOS</h1>
-</div>
-<div class="SCContainer" *ngIf="!saving">
+<!-- <div *ngIf="!screenOn">
+  <div class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
+    <span class="visually-hidden"></span>
+  </div>
+</div> -->
+<div class="SCContainer" *ngIf="true">
   <div><h1 style="display: inline; margin:10px;">ADMINISTRAR PRODUCTOS</h1></div>
   <hr>
   <div>
@@ -70,7 +72,7 @@
         <span><b><u>Remarcación de precios:</u></b>&nbsp;&nbsp;(para modificar debe completar los 4 campos)</span>
       </div>
       <div>
-        <form #f="ngForm" (ngSubmit)="save(f.value)">
+        <form #f="ngForm" (ngSubmit)="saveRecharges(f.value)">
           <p *ngIf="this.recharges">
             <mat-form-field appearance="legacy">
               <input #dist="ngModel" matInput [(ngModel)]="rechargeDelForm.dist" name="dist" placeholder="distribuidor: {{this.recharges[0].payload.val().distRecharge}}%" required>

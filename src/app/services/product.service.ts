@@ -79,6 +79,7 @@ export class ProductService implements OnInit{
   }
 
   update(productId: any, product:any) {
+    console.log('product an pdId', product, productId);
     return this.db.object('/products/' + productId).update(product);
   }
 
@@ -87,6 +88,7 @@ export class ProductService implements OnInit{
   }
 
   recharge(products:any, distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
+    let result = new Promise(() => {});
     for (let i=0;i<products.length;i++) {
       let prod = {
         "disc1": products[i].payload.val().disc1,
@@ -98,30 +100,35 @@ export class ProductService implements OnInit{
         "price2": products[i].payload.val().buyPrice * (1 + comRecharge/100),
         "price3": products[i].payload.val().buyPrice * (1 + kiosRecharge/100),
         "price4": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
-        "discPrice1": products[i].payload.val().discPrice1,
-        "discPrice2": products[i].payload.val().discPrice2,
-        "discPrice3": products[i].payload.val().discPrice3,
-        "discPrice4": products[i].payload.val().discPrice4,
+        "discPrice1": 0,
+        "discPrice2": 0,
+        "discPrice3": 0,
+        "discPrice4": 0,
         "prodsCategory": products[i].payload.val().prodsCategory,
         "title": products[i].payload.val().title
       }
-      this.db.object('/products/' + products[i].key).update(prod);
-      let product = prod;
-      product.discPrice1 = prod.price1*(1-product.disc1/100);
-      product.discPrice2 = prod.price2*(1-product.disc2/100);
-      product.discPrice3 = prod.price3*(1-product.disc3/100);
-      product.discPrice4 = prod.price4*(1-product.disc4/100);
-      this.db.object('/products/' + products[i].key).update(product);
+      prod.discPrice1 = prod.price1*(1-prod.disc1/100);
+      prod.discPrice2 = prod.price2*(1-prod.disc2/100);
+      prod.discPrice3 = prod.price3*(1-prod.disc3/100);
+      prod.discPrice4 = prod.price4*(1-prod.disc4/100);
+      result = this.db.object('/products/' + products[i].key).update(prod);
     }
+    return result;
 
-    this.recharges = {
-      "distRecharge": distRecharge,
-      "comRecharge": comRecharge,
-      "kiosRecharge": kiosRecharge,
-      "gymRecharge": gymRecharge
-    }
-    let result = this.getAllRecharges().subscribe(result => {
-      this.db.object('/recharges/' + result[0].key).update(this.recharges);
+    // this.recharges = {
+    //   "distRecharge": distRecharge,
+    //   "comRecharge": comRecharge,
+    //   "kiosRecharge": kiosRecharge,
+    //   "gymRecharge": gymRecharge
+    // }
+    // let result = this.getAllRecharges().subscribe(result => {
+    //   this.db.object('/recharges/' + result[0].key).update(this.recharges);
+    // });
+  }
+
+  saveRecharges(recharges: any) {
+    this.getAllRecharges().subscribe(result => {
+      this.db.object('/recharges/' + result[0].key).update(recharges);
     });
   }
 

@@ -265,7 +265,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     }
     updatedDebt = Math.round(updatedDebt * 10) / 10
 
-    if (iva != 21 && clientCategory!="Gimnasio") isAproved = false;
+    if (iva != 21 && clientCategory!="Gimnasio" && clientCategory!="Kiosko") isAproved = false;
     if (date == null) {
       date = time.getTime();
     }

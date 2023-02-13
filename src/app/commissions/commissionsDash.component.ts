@@ -7,7 +7,6 @@ import { Router} from '@angular/router';
 import { CategoryService } from '../services/category.service';
 import { Subscription } from 'rxjs';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { AngularFireDatabase } from '@angular/fire/database';
 
 @Component({
   selector: 'app-commissions',
@@ -16,7 +15,6 @@ import { AngularFireDatabase } from '@angular/fire/database';
 })
 export class CommissionsDashComponent implements OnInit {
 
-  //prodsCateg = ["barras", "protes", "quemadores"]
   rewards = [1500, 1000, 500]
   retailPercent: any;
   wholesalerPercent: any;
@@ -47,7 +45,7 @@ export class CommissionsDashComponent implements OnInit {
 
   constructor(public ordersService: OrdersService, private auth: AuthService, public router: Router,
     public commissionsService: CommissionsService, public catService: CategoryService,
-    private formBuilder: FormBuilder, private db: AngularFireDatabase) {
+    private formBuilder: FormBuilder) {
     }
 
   ngOnInit(){
@@ -226,9 +224,16 @@ export class CommissionsDashComponent implements OnInit {
   saveCommissionsByMonth() {
     let sellersCommissionsInfo = this.getSellersCommissionsInfo();
     let date = new Date();
+    //let date = new Date('2023-01-01T03:24:00');
+    let month =  date.getMonth();
+    let year = date.getFullYear();
+    if (month == 0) {
+      month = 12;
+      year -= 1;
+    }
     let monthCommissions = {
-      'month': date.getMonth(),
-      'year' : date.getFullYear(),
+      'month': month,
+      'year' : year,
       "minRetailTotalSales": this.commissions[0].payload.val().minRetailTotalSales,
       "retailPercent": this.commissions[0].payload.val().retailPercent,
       "wholesalerPercent": this.commissions[0].payload.val().wholesalerPercent,
@@ -242,7 +247,6 @@ export class CommissionsDashComponent implements OnInit {
   }
 
   getSellersCommissionsInfo() {
-    // this.lastFullMonthOrders = this.ordersBorrar //borrar esta linea
     let sellersCommissionsInfo = [];
     for (let i=0;i<this.sellers.length;i++) {
       let retailSalesPMonth = this.retailSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
@@ -276,13 +280,19 @@ export class CommissionsDashComponent implements OnInit {
   getLastFullMonthOrders() {
     let lastFullMonthOrders = [];
     let today = new Date();
+    let lastMonth = today.getMonth() - 1;
+    let lastMonthYear = today.getFullYear();
+    if (today.getMonth() == 0) {
+      lastMonth = 11;
+      lastMonthYear -= 1;
+    }
     for (let i=0;i<this.ordersService.orders.length;i++) {
       // var date = new Date(this.ordersService.orders[i].payload.val().date); cambio por ordenes completadas el mes anterior
       var date = new Date(this.ordersService.orders[i].payload.val().fullPaymentDate);
       //miro el mes anterior, today.getMonth() me da el mes anterior porque me da el mes -1
       // if (date.getMonth() == today.getMonth() -1 && date.getFullYear() == today.getFullYear()
       // && parseFloat(this.ordersService.orders[i].payload.val().debt) < 10 ){ no hace flata chequear la deuda por lo anterior
-      if (date.getMonth() == today.getMonth() - 1 && date.getFullYear() == today.getFullYear()) {
+      if (date.getMonth() == lastMonth && date.getFullYear() == lastMonthYear) {
         lastFullMonthOrders.push(this.ordersService.orders[i]);
       }
     }

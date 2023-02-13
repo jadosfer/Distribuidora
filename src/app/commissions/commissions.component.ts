@@ -34,21 +34,22 @@ export class CommissionsComponent implements OnInit {
       });
     });
   }
-  
+
   clearCommissionsByMonth(commissionsByMonth: any[]) {
     let lastMonth = commissionsByMonth[0].payload.val().month;
     let lastYear = commissionsByMonth[0].payload.val().year;
-    commissionsByMonth.forEach((commision) => {
-      if (commision.payload.val().month == lastMonth
-        && commision.payload.val().year == lastYear) {
+
+    for (let i=1; i<commissionsByMonth.length; i++) {
+      if (commissionsByMonth[i].payload.val().month == lastMonth
+        && commissionsByMonth[i].payload.val().year == lastYear) {
           console.log('cleaning 1 repited');
-          this.db.object('/commissionsByMonth/' +  commision.key).remove();
+          this.db.object('/commissionsByMonth/' +  commissionsByMonth[i].key).remove();
         }
       else {
-        lastMonth = commision.payload.val().month;
-        lastYear = commision.payload.val().year;
+        lastMonth = commissionsByMonth[i].payload.val().month;
+        lastYear = commissionsByMonth[i].payload.val().year;
       }
-    });
+    }
   }
 
   ngOnDestroy() {

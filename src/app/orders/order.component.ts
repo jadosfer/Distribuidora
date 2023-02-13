@@ -110,7 +110,7 @@ export class OrderComponent implements OnInit, OnDestroy {
           this.filteredClients = clients;
           this.clients = [];
           for (let i=0;i<this.filteredClients.length;i++) {
-            if (this.filteredClients[i].payload.val().designatedSeller == this.appUser.name || this.appUser.isAdmin == true)  {
+            if (this.filteredClients[i].payload.val().designatedSeller == this.appUser.name || this.appUser?.isAdmin == true)  {
               this.clients.push(this.filteredClients[i]);
             }
           }
@@ -229,7 +229,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     const filterValue = value.toLowerCase();
     if (!this.clients) return;
     let listFiltrada = this.clients.filter(client => client.payload.val().fantasyName.toLowerCase().includes(filterValue));
-    if (listFiltrada.length == 1) {
+    if (listFiltrada.length > 0) {
       this.clientCategory = listFiltrada[0].payload.val().clientCategory;
       this.pickClient(this.clientCategory!)
     }

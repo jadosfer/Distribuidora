@@ -1,13 +1,11 @@
-import { Product } from './../models/product';
 import { Component, OnInit } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
-import { AngularFireDatabase } from '@angular/fire/database';
 
 
 @Component({
@@ -35,38 +33,35 @@ export class BuyComponent implements OnInit {
   constructor(public stockService: StockService,
     private productService: ProductService,
     private route: ActivatedRoute,
-    private auth: AuthService, public db: AngularFireDatabase) {
+    private auth: AuthService) {
     }
 
   ngOnInit() {
-    //this.filter("");
-
-
-      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
-        this.appUser = appUser;
-        this.subscription3 = this.productService.getAll().subscribe(products => {
-          this.products = products;
-          this.subscription = this.stockService.getBuy().subscribe(buy => {
-          this.buy = buy;
-          this.subscription4 = this.route.queryParamMap.subscribe(params => {
-            this.prodsCategory = params.get('prodsCategory');
-            this.filteredBuy = [];
-            if (this.buy[0]) {
-              for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-                if (this.buy[0].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
-                  this.filteredBuy.push(this.buy[0].payload.val().products[i]);
-                }
-              }
-              if (this.filteredBuy.length == 0) {
-                for (let i=0;i<this.buy[0].payload.val().products.length;i++)
-                  this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+    this.subscription2 = this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
+      this.subscription3 = this.productService.getAll().subscribe(products => {
+        this.products = products;
+        this.subscription = this.stockService.getBuy().subscribe(buy => {
+        this.buy = buy;
+        this.subscription4 = this.route.queryParamMap.subscribe(params => {
+          this.prodsCategory = params.get('prodsCategory');
+          this.filteredBuy = [];
+          if (this.buy[0]) {
+            for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
+              if (this.buy[0].payload.val().products[i].product.prodsCategory == this.prodsCategory)  {
+                this.filteredBuy.push(this.buy[0].payload.val().products[i]);
               }
             }
-          });
+            if (this.filteredBuy.length == 0) {
+              for (let i=0;i<this.buy[0].payload.val().products.length;i++)
+                this.filteredBuy.push(this.buy[0].payload.val().products[i]);
+            }
+          }
         });
-        })
       });
-    }
+      })
+    });
+  }
 
     updateBuyItemQuantity(buy: any, product: any, change: number){
       this.stockService.updateBuyItemQuantity(buy, product, change);

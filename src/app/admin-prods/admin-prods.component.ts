@@ -48,9 +48,12 @@ export class AdminProdsComponent implements OnInit {
   mobile: boolean = false;
   prodAdded: boolean = false;
   saving: boolean = false;
+  screenOn: boolean;
 
   constructor(private productService: ProductService, private commissionsService: CommissionsService,
     private router: Router, private categoryService: CategoryService) {
+      console.log('constructor');
+
       this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
         this.clientCategories = clientCategories;
       })
@@ -67,9 +70,10 @@ export class AdminProdsComponent implements OnInit {
         this.subscription3 = this.productService.getAllRecharges().subscribe(recharges => {
           this.recharges = recharges;
           if (!recharges) {
-            this.productService.createRecharge();
-          }
-          this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
+            this.productService.createRecharge();          }
+
+          this.productService.recharge(this.products, this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge).then(()=> {this.screenOn = true})
+          //this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
         });
       });
 
@@ -116,7 +120,9 @@ export class AdminProdsComponent implements OnInit {
         "prodsCategory": productForm.prodsCategory,
         "title": productForm.title
       }
-      this.productService.update(product.key, prod);
+      //this.screenOn = false;
+      this.productService.update(product.key, prod)
+      //this.productService.recharge(this.products, this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge)?.then(()=>this.screenOn = true).then(() => this.screenOn = true);
       //this.toSave.push({"key": product.key, "prod": prod})
       //location.reload();
       //this.router.navigate(['/admin/prods']);
@@ -129,18 +135,27 @@ export class AdminProdsComponent implements OnInit {
     }
   }
 
-  save(recharge:any) {
+  saveRecharges(recharge:any) {
     if (confirm('Está segur@ que quiere cambiar la remarcación?')) {
-      this.recharge(Number(recharge.dist), Number(recharge.com), Number(recharge.kios), Number(recharge.gym))
+      this.screenOn = false;
+      let recharges = {
+      "distRecharge": recharge.dist,
+      "comRecharge": recharge.com,
+      "kiosRecharge": recharge.kios,
+      "gymRecharge": recharge.gym
     }
+    this.productService.saveRecharges(recharges);
+    }
+    this.productService.recharge(this.products, recharge.dist, recharge.com, recharge.kios, recharge.gym);
+    location.reload();
   }
 
   recharge(distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
     if (this.recharges) {
-      this.recharged=true;
-      setTimeout(()=> {
-        this.recharged = false;
-       }, 800);
+      //this.recharged=true;
+      // setTimeout(()=> {
+      //   this.recharged = false;
+      //  }, 800);
       this.productService.recharge(this.products, distRecharge, comRecharge, kiosRecharge, gymRecharge);
       return
     }
