@@ -34,18 +34,19 @@ export class CommissionsService {
     }
     // rewardsStrObj = rewardsStrObj.slice(0, -1) + '}';
     // let rewardsObj = JSON.parse(rewardsStrObj)
+    let today = new Date();
 
     let result = this.db.list('/commissions/').push({
-      "minRetailTotalSales": 400000,
+      "minRetailTotalSales": 700000,
       "retailPercent": 0.05,
       "wholesalerPercent": 0.01,
-      "monthlyRate": 0.01,
+      "monthlyRate": 0.07,
       "productsCategories" : prodsCat,
       "rewardsGoals": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
       "rewards": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
       "monthCommissionsSavedDate" : {
-        'month' : 7,
-        'year' : 2022
+        'month' : today.getMonth() + 1,
+        'year' : today.getFullYear()
       }
     });
   }
@@ -94,6 +95,12 @@ export class CommissionsService {
 
   saveCommissionsByMonth(monthCommissions: any, commissions: any[]) {
     let today = new Date();
+    let month = today.getMonth();
+    let year = today.getFullYear();
+    if (month == 0) {
+      month = 12;
+      year -= 1;
+    }
     let result = this.db.object('/commissions/' + commissions[0].key).update({
       "minRetailTotalSales": commissions[0].payload.val().minRetailTotalSales,
       "retailPercent": commissions[0].payload.val().retailPercent,
@@ -103,8 +110,8 @@ export class CommissionsService {
       "rewardsGoals": commissions[0].payload.val().rewardsGoals,
       "rewards": commissions[0].payload.val().rewards,
       "monthCommissionsSavedDate" : {
-        'month' : today.getMonth(),
-        'year' : today.getFullYear()
+        'month' : month,
+        'year' : year
       }
     });
     this.db.list('/commissionsByMonth/').push(monthCommissions);
@@ -115,8 +122,11 @@ export class CommissionsService {
     let monthPenalty = 0;
     this.totalSellerDebtDelayed = 0
     for (let i=0;i<orders.length;i++) {
+
+      if (orders[i].payload.val().clientFantasyName.toLowerCase().includes("red line constituci")) continue;
       if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
         let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
+        if (delay > 366) continue;
         if (delay > 30 && delay < 60) {
           monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(orders[i].payload.val().debt) / (1 + (parseFloat(orders[i].payload.val().iva)/100));
           this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);

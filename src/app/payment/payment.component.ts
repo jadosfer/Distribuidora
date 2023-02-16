@@ -68,6 +68,7 @@ export class PaymentComponent implements OnInit {
     if (confirm('Está segur@ que quiere guardar este cobro?')) {
       payment.sellerName = this.appUser.name;
       payment.client = this.clientFantasyName;
+      console.log('payment', payment);
       this.ordersService.createPayment(payment, this.clients);
       this.router.navigate(['/payments/payments']);
     }

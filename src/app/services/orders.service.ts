@@ -40,7 +40,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
-  TOLERATED_DEBT = 100;
+  TOLERATED_DEBT = 200;
   payment: any;
   payments: any[];
   paymentId: any;
@@ -251,19 +251,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let time = new Date();
     time.getHours();
     //time.getMinutes();
-    let debt = false;
-    if (this.isClientInDebt(clientFantasyName, this.orders)) {
-      debt = true;
-    }
-    let isAproved = !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
-    let updatedDebt = amount;
-    if (clientDebt < 0) {
-      if (amount + clientDebt <=0) {
-        updatedDebt = 0;
-      }
-      else updatedDebt = amount + clientDebt;
-    }
-    updatedDebt = Math.round(updatedDebt * 10) / 10
+    let isAproved = clientDebt <= 0 && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
 
     if (iva != 21 && clientCategory!="Gimnasio" && clientCategory!="Kiosko") isAproved = false;
     if (date == null) {
@@ -283,9 +271,8 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       "clientFantasyName": clientFantasyName,
       "aproved": isAproved,
       "amount": amount,
-      "debt": updatedDebt,
       "hasDiscount": this.hasDiscount,
-      "clientInDebt": debt,
+      "clientInDebt": clientDebt > 0,
       "orderNumber": this.orderNumber[0].payload.val().orderNumber,
       "sended": false
     })
@@ -389,14 +376,12 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a 30
   getClientOrdersAmount(fantasyName: string, inDebt: boolean) {
     let amount = 0;
-
     if (this.orders) {
       for (let i=0;i<this.orders.length;i++) {
-        if (this.orders[i].payload.val().clientFantasyName == fantasyName && (!inDebt || this.isOrderInDebt(this.orders[i]))) {
+        if (this.orders[i].payload.val().clientFantasyName.includes(fantasyName) && (!inDebt || this.isOrderInDebt(this.orders[i]))) {
           amount += parseFloat(this.orders[i].payload.val().amount)
         }
       }
-
     }
     return amount
   }
@@ -561,7 +546,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   getTotalPayments(payment: any) {
     let totalPayments = 0;
     this.payments.forEach((pay) => {
-      if (pay.payload.val().client == payment.client) {
+      if (pay.payload.val().client.includes(payment.client)) {
         totalPayments += parseFloat(pay.payload.val().amount);
       }
     });

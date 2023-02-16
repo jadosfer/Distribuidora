@@ -5,7 +5,7 @@
   </div>
 
   <hr>
-  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
+  <h3>*IMPORTANTE VENDEDORES: La deuda que figura es el monto de lo/s pedido/s con mas de 30 días y que no quedaron pagos en su totalidad. Por ejemplo si el pedido era de 1000 y se cobró 500, la deuda va a ser de 1000, hasta que se paguen esos 500 y ahí la deuda será de cero. Por eso puede suceder que la deuda real de un cliente sea poco pero va a figurar como deuda el valor total del pedido.</h3>
 
   <div class="row" *ngIf="appUser && (appUser.isAdmin || appUser.isSalesManager)">
     <div class="col col-md-3 ms-2 my-2">
@@ -48,7 +48,7 @@
         <td>{{client.payload.val().designatedSeller}}</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <td>{{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <td>{{this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>

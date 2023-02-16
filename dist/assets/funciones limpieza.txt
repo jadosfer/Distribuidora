@@ -16,3 +16,25 @@ permite eliminar elementos salvados. Elminar a partir de la ubicacion i = 4
             }
           }
         });
+
+
+        Para hacer un cobro de 0 pesos a todos los clientes:
+
+
+          // if (this.clients) {
+          //   this.clients.forEach((element: { payload: { val: () => { (): any; new(): any; fantasyName: any; }; }; }) => {
+          //     let payment = {
+          //       amount: "0",
+          //       client: element.payload.val().fantasyName,
+          //       date: 1676257200000,
+          //       orderNumber: 0,
+          //       payWay: "Deposito",
+          //       sellerName: "Tecnología & Programación"
+          //     }
+          //     this.ordersService.createPayment(payment, this.clients);
+          //   });
+          // }
+      tambien hay que comentar esta linea:
+        payment.date = payment.date.unix()*1000;
+        que esta en orders.service.ts linea 529 en el metodo createPayment
+
