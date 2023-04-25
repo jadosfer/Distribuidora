@@ -5,14 +5,17 @@
   <div><h1>ADMINISTRAR CLIENTES</h1></div>
   <hr>
   <div class="col row-ms">
-    <div class="col-12 col-ms-5">
-    <p>
-      <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
-      <button class="m-1" mat-raised-button (click)="hideTable()" color="primary" >Mostrar/Ocultar clientes en mora</button>
-    </p>
+    <div class="col-12 col-ms-5 row">
+      <div class="col-12">
+        <a mat-raised-button color="accent" routerLink="/admin/clients/new">Nuevo Cliente</a>
+        <button *ngIf="clientsInDebt && clientsInDebt.length > 0" class="m-1" mat-raised-button (click)="hideTable()" color="primary" >Mostrar/Ocultar clientes en mora</button>
+        <div *ngIf="!clientsInDebt" class="spinner-border ms-3 text-primary spinner-border-sm" role="status">
+        </div>
+      </div>
   </div>
+
   <div>
-    <div *ngIf="showClientsInDebt" class="row">
+    <div *ngIf="showClientsInDebt" class="row my-3">
       <div>CLIENTES EN MORA: &nbsp;&nbsp;
         <span *ngIf="clientsInDebt" matBadge="{{clientsInDebt.length}}" matBadgeSize="large"></span>&nbsp;&nbsp;&nbsp;&nbsp;
       </div>
@@ -22,8 +25,8 @@
             <tr>
               <th>Cliente</th>
               <th>Vendedor</th>
-              <!-- <th>Monto Pedidos en Deuda</th> -->
-              <th>Deuda a 30d</th>
+              <th>Deuda a 21d</th>
+              <th>Saldo hoy</th>
               <th>Último Pago</th>
             </tr>
           </thead>
@@ -31,9 +34,13 @@
             <tr *ngFor="let client of this.clientsInDebt; let i = index">
               <td>{{client.payload.val().fantasyName}}</td>
               <td>{{client.payload.val().designatedSeller}}</td>
-              <!-- <td>{{client.ordersDebt | number:'1.1-1'}}</td> -->
-              <td>{{this.ordersService.getClientOrdersAmount(client.payload.val().fantasyName, true) | number:'1.1-1'}}</td>
-              <td>{{client.paymentDate | date:"dd/MM/yyyy"}}&nbsp;</td>
+              <td>${{this.ordersService.getDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+              <td>${{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+              <td>{{client.paymentDate | date:"dd/MM/yyyy"}}</td>
+            </tr>
+            <tr>
+              <td>TOTAL:</td>
+              <td>$ {{totalDebt | number:'1.1-1'}}</td>
             </tr>
           </tbody>
         </table>
@@ -85,7 +92,8 @@
         <th mat-sort-header="cuit">CUIT</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
-        <th mat-sort-header="debt">Deuda a 30d*</th>
+        <th mat-sort-header="debt">Deuda a 21d*</th>
+        <th mat-sort-header="debt_today">Deuda hoy</th>
         <th mat-sort-header="resume">Estado de cuenta</th>
         <th mat-sort-header="edit">Editar</th>
       </tr>
@@ -98,7 +106,8 @@
         <td>{{client.payload.val().cuit}}</td>
         <td>{{client.payload.val().address}}</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <td>{{this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <td>$ {{this.ordersService.getDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <td>${{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a (click)="savePagination()" [routerLink]="['/admin/clients', client.key]">Editar</a></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>

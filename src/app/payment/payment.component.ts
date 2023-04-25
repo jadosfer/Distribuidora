@@ -91,7 +91,7 @@ export class PaymentComponent implements OnInit {
   onChooseClient() {
     this.filteredOrders = [];
       for (let i=0;i<this.ordersService.orders.length;i++) {
-        if (this.ordersService.orders[i].payload.val().clientFantasyName == this.payment.client) this.filteredOrders.push(this.ordersService.orders[i])
+        if (this.ordersService.orders[i].payload.val().clientFantasyName.toLowerCase().includes(this.payment.client.toLowerCase())) this.filteredOrders.push(this.ordersService.orders[i])
     }
   }
 

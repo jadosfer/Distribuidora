@@ -77,13 +77,13 @@ export class CommissionsDashComponent implements OnInit {
         });
 
         this.subscription3 = this.ordersService.getAllOrders().subscribe(orders => {
-          this.ordersService.orders = orders;
+          this.orders = this.ordersService.orders = orders;
 
           //Me permite calcular y setear fecha de pago completo de pedidos de un vendedor!!!-------------------------
           //this.calculateFullPaymentDates();
 
           this.monthOrders = this.getThisMonthOrders();
-
+          // IMPORTANTE!!!! .month es el mes salvado, si guardé febrero vale 2
           this.subscription4 = this.auth.appUser$.subscribe(appUser => {
             this.appUser = appUser;
             //manipulo USER
@@ -93,7 +93,7 @@ export class CommissionsDashComponent implements OnInit {
               this.sellers = sellers;
               if (this.month != today.getMonth() ||
               this.year != today.getFullYear()) {
-                if (this.commissions[0].payload.val().monthCommissionsSavedDate.month != (today.getMonth() + 1 - 1))
+                if (this.commissions[0].payload.val().monthCommissionsSavedDate.month != (today.getMonth()))
                 //|| this.commissions[0].payload.val().monthCommissionsSavedDate.year != today.getFullYear()
                 {
                   this.month = today.getMonth();

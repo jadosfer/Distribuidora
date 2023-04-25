@@ -32,6 +32,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   orderOrPayment: boolean;
   pos: number;
   query: {client: string, seller: string} = {client: "", seller: ""}
+  totalDebt: number = 0;
 
   //ordersInDebt: any[];
   clientsInDebt: any[];
@@ -99,7 +100,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
             this.clientsInDebt = this.ordersService.getClientsInDebt(this.clients, this.orders);
             this.clientsInDebt.forEach((client)=>{
               client.paymentDate = this.getClientLastPayment(client.payload.val().fantasyName).payload.val().date;
-              client.debt = this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName);
+              this.totalDebt += this.ordersService.getDebt(client.payload.val().fantasyName);
             });
             this.loading = false;
           });

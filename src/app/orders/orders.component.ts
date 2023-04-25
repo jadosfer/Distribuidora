@@ -92,7 +92,7 @@ export class OrdersComponent implements OnInit {
           for (let i=0;i<this.ordersService.orders.length;i++) {
             let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
             let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
-            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 30*24*60*60*1000; //7 dias
+            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 21*24*60*60*1000; //7 dias
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
               this.userOrders.push(this.ordersService.orders[i]);
               if (this.ordersService.orders[i].payload.val().aproved == false) {
@@ -354,7 +354,7 @@ export class OrdersComponent implements OnInit {
 
   isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (clientFantasyName == userClients[i]) {
+      if (clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
         return true;
       }
     }

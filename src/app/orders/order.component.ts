@@ -184,7 +184,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     this.showedProducts = this.orderProducts;
-    if (this.clientFantasyName != null) this.router.navigateByUrl('/orders/order');
+    if (this.clientFantasyName) this.router.navigateByUrl('/orders/order');
 
   }
 
@@ -307,7 +307,8 @@ export class OrderComponent implements OnInit, OnDestroy {
   createOrder() {
     let clientOk = false;
     for (let i=0;i<this.clients.length;i++) {
-      if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)
+      if (this.clientFantasyName.toLowerCase().includes(this.clients[i].payload.val().fantasyName.toLowerCase()))
+
       clientOk = true;
     }
     if (clientOk) {

@@ -177,7 +177,7 @@ export class PaymentsComponent implements OnInit {
 
   isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (clientFantasyName == userClients[i]) {
+      if (clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
         return true;
       }
     }
@@ -255,7 +255,7 @@ export class PaymentsComponent implements OnInit {
 
   remove(pay: any) {
     if (confirm('Está segur@ que quiere eliminar este cobro?')) {
-      if (pay.payload.val().orderNumber > 0) this.ordersService.restoreOrderAmount(pay);
+      //if (pay.payload.val().orderNumber > 0) this.ordersService.restoreOrderAmount(pay);
       this.ordersService.removePayment(pay.key);
       //this.ordersService.addPaymentAmount(pay.payload.val().client, -1*pay.payload.val().amount, this.clients)
     }

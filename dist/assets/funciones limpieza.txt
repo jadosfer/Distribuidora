@@ -38,3 +38,13 @@ permite eliminar elementos salvados. Elminar a partir de la ubicacion i = 4
         payment.date = payment.date.unix()*1000;
         que esta en orders.service.ts linea 529 en el metodo createPayment
 
+
+como generar la comision de un mes en particular:
+1-poner como fechas en commissions-monthCommissionsSavedDate el mes anterior al que quiero
+2-today tiene que ser un dia del mes siguiente al que le quiero calcular las comisiones https://www.epochconverter.com/
+3-en commissionsDash hacer que tenga las ordenes completadas del mes que quiero this.lastFullMonthOrders = this.getLastFullMonthOrders() )
+3.2-en el metodo getLastFullMonthOrders asegurar qeu today tiene que ser un dia del mes siguiente al que le quiero calcular las comisiones (linea 202 poner let today = new Date(timestamp) )
+4-corregir en commissions-monthCommissionsSavedDate el valor correcto es decir va el mes del calculo
+5-en commisssions service cambiar el today de saveCommissionsByMonth y de getSellerPenalty (linea 97 y 115) usando el timestamp lo mismo en commissionsDash (linea 227)
+
+

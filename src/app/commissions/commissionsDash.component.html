@@ -84,7 +84,7 @@
             this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))
              + this.getProdCategoryRewards(seller.payload.val().name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate,
              seller.payload.val().name, this.ordersService.orders) | number:'1.1-1'}}  </td>
-          <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
+             <td>{{this.commissionsService.getTotalSellerDebtDelayed(seller.payload.val().name, this.orders)}}</td>
         </tr>
       </tbody>
     </table>
@@ -142,7 +142,7 @@
           this.wholesalerSalesPMonth(appUser.name, this.monthOrders), this.retailSalesPMonth(appUser.name, this.monthOrders))
            + this.getProdCategoryRewards(appUser.name).totalRewards -
            this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, appUser.name, this.ordersService.orders) | number:'1.1-1'}}  </td>
-        <td>{{this.commissionsService.totalSellerDebtDelayed}}</td>
+        <td>{{this.commissionsService.getTotalSellerDebtDelayed(appUser.name, this.orders)}}</td>
       </tr>
     </tbody>
   </table>
