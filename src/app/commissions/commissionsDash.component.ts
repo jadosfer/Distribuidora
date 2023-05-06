@@ -49,7 +49,6 @@ export class CommissionsDashComponent implements OnInit {
     }
 
   ngOnInit(){
-
     let today = new Date();
     this.subscription = this.catService.getAllProdsCategories().subscribe(prodsCategories => {
       this.prodsCategories = prodsCategories;

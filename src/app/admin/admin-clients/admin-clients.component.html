@@ -25,7 +25,7 @@
             <tr>
               <th>Cliente</th>
               <th>Vendedor</th>
-              <th>Deuda a 21d</th>
+              <th>Deuda a {{TOLERATED_DAYS}}d</th>
               <th>Saldo hoy</th>
               <th>Último Pago</th>
             </tr>
@@ -92,7 +92,7 @@
         <th mat-sort-header="cuit">CUIT</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
-        <th mat-sort-header="debt">Deuda a 21d*</th>
+        <th mat-sort-header="debt">Deuda a {{TOLERATED_DAYS}}d*</th>
         <th mat-sort-header="debt_today">Deuda hoy</th>
         <th mat-sort-header="resume">Estado de cuenta</th>
         <th mat-sort-header="edit">Editar</th>

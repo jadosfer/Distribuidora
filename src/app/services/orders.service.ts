@@ -6,6 +6,7 @@ import 'rxjs/add/operator/take';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
+import { TOLERATED_DAYS, TOLERATED_DEBT } from '../constants';
 
 
 @Injectable({
@@ -40,7 +41,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
-  TOLERATED_DEBT = 300;
   payment: any;
   payments: any[];
   paymentId: any;
@@ -369,7 +369,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
 
 
-  //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a 21, sino trae el monto total de pedidos
+  //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a dias tolerados, sino trae el monto total de pedidos
   getClientOrdersAmount(fantasyName: string, inDebt: boolean) {
     let amount = 0;
     if (this.orders) {
@@ -452,7 +452,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   isOrderInDebt(order: any) {
     let today = new Date();
-    if((Date.parse(today.toString()) - order.payload.val().date > 21*24*60*60*1000) && !order.payload.val().fullPaymentDate) { //que pasen 21 dias
+    if((Date.parse(today.toString()) - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) { //que pasen los dias tolerados
       return true;
     }
     return false;
@@ -540,7 +540,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     this.orders.forEach((order) =>{
       if (order.payload.val().clientFantasyName.toLowerCase().includes(payment.client.toLowerCase())) {
         amounts += parseFloat(order.payload.val().amount);
-        if (!order.payload.val().fullPaymentDate && totalPayments > amounts - this.TOLERATED_DEBT) {
+        if (!order.payload.val().fullPaymentDate && totalPayments > amounts - TOLERATED_DEBT) {
           this.updateOrder(order.key, {
             "amount": order.payload.val().amount,
             "aproved": order.payload.val().aproved,
@@ -570,6 +570,19 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       totalPayments += payment.amount;
     }
     return totalPayments
+  }
+
+  setPaymentsToAll() {
+    const today = new Date().getTime();
+    this.clients.forEach((client)=> {
+      let payment = {
+        client: client.payload.val().fantasyName,
+	      amount: 0,
+        payWay: "Efectivo",
+	      date: today
+      }
+      this.setOrdersPaymentDate(payment);
+    });
   }
 
 
@@ -834,7 +847,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   // ................................................common methods................................................
-  // deuda mayor a 21 dias
+  // deuda mayor a los dias tolerados
   getDebt(clientFantasyName: string) {
     let today = new Date().getTime();
     let totalPayments = this.getTotalPayments({"client": clientFantasyName })
@@ -844,10 +857,10 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     this.orders.forEach((order) => {
       if (order.payload.val().clientFantasyName.toLowerCase().includes(clientFantasyName.toLowerCase())) {
         amounts += parseFloat(order.payload.val().amount);
-        if (keepAdding && (today - order.payload.val().date > 21*24*60*60*1000) && !order.payload.val().fullPaymentDate) result += parseFloat(order.payload.val().amount);
+        if (keepAdding && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) result += parseFloat(order.payload.val().amount);
         else;
-        if (totalPayments < amounts - this.TOLERATED_DEBT && !order.payload.val().fullPaymentDate && result == 0
-        && (today - order.payload.val().date > 21*24*60*60*1000)) {
+        if (totalPayments < amounts - TOLERATED_DEBT && !order.payload.val().fullPaymentDate && result == 0
+        && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000)) {
           result = amounts - totalPayments;
           keepAdding = true;
         }

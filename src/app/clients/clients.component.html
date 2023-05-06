@@ -5,7 +5,7 @@
   </div>
 
   <hr>
-  <h3>*IMPORTANTE VENDEDORES: La deuda que figura es el remanente del monto de lo/s pedido/s con mas de 21 días y que no quedaron pagos en su totalidad. Por ejemplo si el pedido era de 1000 y se cobró 300, la deuda va a ser de 700.</h3>
+  <h3>*IMPORTANTE VENDEDORES: La deuda que figura es el remanente del monto de lo/s pedido/s con mas de {{TOLERATED_DAYS}} días y que no quedaron pagos en su totalidad. Por ejemplo si el pedido era de 1000 y se cobró 300, la deuda va a ser de 700.</h3>
 
   <div class="row">
     <div class="col col-md-3 ms-2 my-2">
@@ -36,7 +36,7 @@
         <th mat-sort-header="seller">Vendedor</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
-        <th mat-sort-header="debt">Deuda 21d</th>
+        <th mat-sort-header="debt">Deuda {{TOLERATED_DAYS}}d</th>
         <th mat-sort-header="presentDebt">Saldo hoy</th>
         <th mat-sort-header="resume">Estado de cuenta</th>
       </tr>

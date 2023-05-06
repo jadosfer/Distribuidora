@@ -68,8 +68,9 @@ export class PaymentComponent implements OnInit {
     if (confirm('Está segur@ que quiere guardar este cobro?')) {
       payment.sellerName = this.appUser.name;
       payment.client = this.clientFantasyName;
-      console.log('payment', payment);
       this.ordersService.createPayment(payment, this.clients);
+      // IMPORTANTE LO DE ABAJO!!!!!!!!!!!!!!!!!!!!!!!!!
+      this.ordersService.setPaymentsToAll(); // aca aseguro que los pedidos pagos queden con fecha de pago.
       this.router.navigate(['/payments/payments']);
     }
   }

@@ -7,6 +7,7 @@ import { AppUser } from 'src/app/models/app-user';
 import { AuthService } from 'src/app/services/auth.service';
 import { UtilityService } from 'src/app/services/utility.service';
 import { Subscription } from 'rxjs';
+import {TOLERATED_DAYS} from 'src/app/constants'
 
 @Component({
   selector: 'admin-clients',
@@ -20,8 +21,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   totalPages: number = 1;
   itemsPerPage: number = 10;
 
-  //paginator bootstrap
-
+  TOLERATED_DAYS = TOLERATED_DAYS;
   appUser: AppUser;
   dataSource: any;
   clients:any[];
