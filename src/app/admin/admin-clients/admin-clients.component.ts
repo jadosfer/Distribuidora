@@ -213,10 +213,10 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
-    this.subscription4.unsubscribe();
+    this.subscription?.unsubscribe();
+    this.subscription2?.unsubscribe();
+    this.subscription3?.unsubscribe();
+    this.subscription4?.unsubscribe();
   }
 }
 

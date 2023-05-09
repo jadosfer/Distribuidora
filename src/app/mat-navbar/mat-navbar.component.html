@@ -1,9 +1,9 @@
 <h1 *ngIf="!production">-----SITIO EN MANTENIMIENTO DISCULPE LAS MOLESTIAS - REINTENTE MAÑANA SÁBADO POR LA TARDE----</h1>
 <mat-toolbar color="primary" *ngIf="production">
-  <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-button routerLink="/dashboard">Gráficos</a>
+  <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-button class="foc" routerLink="/dashboard">Gráficos</a>
   <div class="spacer"></div>
   <ng-template #anonymousUser>
-    <a mat-button routerLink="/login">Login</a>
+    <a mat-button routerLink="/login" class="foc">Login</a>
   </ng-template>
   <a mat-button class="foc" routerLink="orders/orders" *ngIf="appUser">Pedidos</a>
   <a mat-button class="foc" routerLink="payments/payments" *ngIf="appUser">Cobros</a>
@@ -14,7 +14,7 @@
 
   <a mat-menu-item></a>
 
-  <button class="me-5" mat-button *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser.name}}<mat-icon>expand_more</mat-icon></button>
+  <button class="me-5" mat-button class="foc" *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser.name}}<mat-icon>expand_more</mat-icon></button>
   <mat-menu #appMenu="matMenu" >
     <ng-container *ngIf="appUser!=undefined && (appUser.isAdmin || appUser.isSalesManager)">
       <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>
@@ -25,7 +25,7 @@
     <a mat-menu-item routerLink="commissions/commissionsDash">Comisiones</a>
     <a mat-menu-item (click)="logout()">Log Out</a>
   </mat-menu>
-  <div class="ms-5">
+  <div class="ms-5 d-none d-md-block">
     <h2 *ngIf="appUser">GENTECH - MAR DEL PLATA</h2>
   </div>
 

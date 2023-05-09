@@ -83,6 +83,7 @@ export class OrdersComponent implements OnInit {
             if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
           this.ordersService.orders =  orders;
+          this.redesignOrders(this.ordersService.orders) //borrar luego
           this.recentUserOrders = [];
           this.userOrders = [];
           this.debtors = [];
@@ -150,6 +151,10 @@ export class OrdersComponent implements OnInit {
     // this.ordersService.getAll().subscribe(clients => {
     //   this.clients = clients;
     // });
+  }
+  redesignOrders(orders: any[]) { //borrar metodo redisenio
+    let order = this.ordersService.orders[0];
+    this.ordersService.createOrdersdetails([order])
   }
 
   filter(query: string) {
@@ -246,6 +251,7 @@ export class OrdersComponent implements OnInit {
 
   aprove(order: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
+      if (order.payload.val().clientInDebt && !this.appUser.isOwner) return
       this.stockService.aprove(order);
       this.ordersService.aproveOrder(order);
     }
@@ -267,6 +273,21 @@ export class OrdersComponent implements OnInit {
 
   isOrderInDebt(order: any) {
     return this.ordersService.isOrderInDebt(order);
+  }
+
+  toggleAccordion(order: any) {
+    this.dateValue = "";
+    this.query.client = "";
+    this.query.date = "";
+    let result = this.userOrders.filter((o) => {
+      return o.payload.val().date == order.date
+    });
+    console.log('this.userOrders', this.userOrders);
+    this.currentItemsToShow = result
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
   }
 
   exportAsPDF(order: any)  {
@@ -335,10 +356,6 @@ export class OrdersComponent implements OnInit {
     // Save the PDF
     doc.save(`${order.payload.val().clientFantasyName} ${date}.pdf`);
 
-  }
-
-  updateSendedStatus(order: any) {
-    this.ordersService.updateSendedStatus(order);
   }
 
   remove(order: any) {

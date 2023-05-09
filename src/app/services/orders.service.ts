@@ -15,6 +15,10 @@ import { TOLERATED_DAYS, TOLERATED_DEBT } from '../constants';
 //...........concentra operaciones de pedidos, pagos, clientes y vendedores..............
 export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
+  createOrdersdetails(orders: any[]) { //borrar metodo redisenio
+
+  }
+
   private filteredClients: any[];
   private clientsCurrentItemsToShow: any[];
   private fromEditing: boolean;
@@ -274,7 +278,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       "hasDiscount": this.hasDiscount,
       "clientInDebt": clientDebt > 0,
       "orderNumber": this.orderNumber[0].payload.val().orderNumber,
-      "sended": false
     })
     this.incrementOrderNumber();
     //this.addPaymentAmount(clientFantasyName, -amount)
@@ -387,10 +390,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     return this.db.object('/orderNumber/' + this.orderNumber[0].key).update({"orderNumber": orderNumb});
   }
 
-  updateSendedStatus(order: any) {
-    this.db.object('/orders/' + order.key).update({"sended": !order.payload.val().sended});
-  }
-
   // ................................................clients methods................................................
 
   createClient(client: any) {
@@ -498,7 +497,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     return result
   }
 
-  calcDebtGreatherThan30(fantasyName: any) {
+  calcDebtGreatherThanToleratedDays(fantasyName: any) {
     let ordersAmount = this.getClientOrdersAmount(fantasyName, true);
     return ordersAmount
   }
@@ -551,7 +550,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
             "iva": order.payload.val().iva,
             "order": order.payload.val().order,
             "orderNumber": order.payload.val().orderNumber,
-            "sended": order.payload.val().sended,
             "fullPaymentDate": Date.now()
           })
         }
@@ -723,7 +721,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
               "iva": orders[j].payload.val().iva,
               "order": orders[j].payload.val().order,
               "orderNumber": orders[j].payload.val().orderNumber,
-              "sended": orders[j].payload.val().sended,
               "fullPaymentDate": payments[i].payload.val().date
             })
             j++
