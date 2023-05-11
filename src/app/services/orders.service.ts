@@ -274,7 +274,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       "hasDiscount": this.hasDiscount,
       "clientInDebt": clientDebt > 0,
       "orderNumber": this.orderNumber[0].payload.val().orderNumber,
-      "sended": false
     })
     this.incrementOrderNumber();
     //this.addPaymentAmount(clientFantasyName, -amount)
@@ -385,10 +384,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   incrementOrderNumber() {
     let orderNumb = parseInt(this.orderNumber[0].payload.val().orderNumber) + 1;
     return this.db.object('/orderNumber/' + this.orderNumber[0].key).update({"orderNumber": orderNumb});
-  }
-
-  updateSendedStatus(order: any) {
-    this.db.object('/orders/' + order.key).update({"sended": !order.payload.val().sended});
   }
 
   // ................................................clients methods................................................
@@ -545,13 +540,12 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
             "amount": order.payload.val().amount,
             "aproved": order.payload.val().aproved,
             "clientFantasyName": order.payload.val().clientFantasyName,
-            "clientInDebt": order.payload.val().clientInDebt,
+            "clientInDebt": this.isClientInDebt(order.payload.val().clientFantasyName, this.orders),
             "date": order.payload.val().date,
-            "hasDiscount": order.payload.val().hasDiscount,
+            "hasDiscount": order.payload.val().hasOwnProperty('hasDiscount') ? order.payload.val().hasDiscount : false,
             "iva": order.payload.val().iva,
             "order": order.payload.val().order,
-            "orderNumber": order.payload.val().orderNumber,
-            "sended": order.payload.val().sended,
+            "orderNumber": order.payload.val().hasOwnProperty('orderNumber') ? order.payload.val().orderNumber : 0,
             "fullPaymentDate": Date.now()
           })
         }
@@ -723,7 +717,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
               "iva": orders[j].payload.val().iva,
               "order": orders[j].payload.val().order,
               "orderNumber": orders[j].payload.val().orderNumber,
-              "sended": orders[j].payload.val().sended,
               "fullPaymentDate": payments[i].payload.val().date
             })
             j++

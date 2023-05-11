@@ -269,6 +269,20 @@ export class OrdersComponent implements OnInit {
     return this.ordersService.isOrderInDebt(order);
   }
 
+  filterNotAprovedOrder(order: any) {
+    this.dateValue = "";
+    this.query.client = "";
+    this.query.date = "";
+    let result = this.userOrders.filter((o) => {
+      return o.payload.val().date == order.date
+    });
+    this.currentItemsToShow = result
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  }
+
   exportAsPDF(order: any)  {
 
     let myDate = new Date(order.payload.val().date);
@@ -335,10 +349,6 @@ export class OrdersComponent implements OnInit {
     // Save the PDF
     doc.save(`${order.payload.val().clientFantasyName} ${date}.pdf`);
 
-  }
-
-  updateSendedStatus(order: any) {
-    this.ordersService.updateSendedStatus(order);
   }
 
   remove(order: any) {
