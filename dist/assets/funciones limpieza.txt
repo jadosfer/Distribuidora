@@ -29,7 +29,7 @@ permite eliminar elementos salvados. Elminar a partir de la ubicacion i = 4
           //       date: 1676257200000,
           //       orderNumber: 0,
           //       payWay: "Deposito",
-          //       sellerName: "Tecnología & Programación"
+          //       seller: "Tecnología & Programación"
           //     }
           //     this.ordersService.createPayment(payment, this.clients);
           //   });

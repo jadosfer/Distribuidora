@@ -10,8 +10,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
 import { MatPaginator } from '@angular/material/paginator';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, from } from 'rxjs';
 import { TOLERATED_DAYS } from '../constants';
+import { Order } from '../models/order';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'orders',
@@ -63,7 +65,7 @@ export class OrdersComponent implements OnInit {
   subscription: Subscription;
   subscription2: Subscription;
   subscription3: Subscription;
-
+  orderDetail: any
   constructor(public ordersService: OrdersService,
   private auth: AuthService, public datepipe: DatePipe,
   public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
@@ -71,7 +73,6 @@ export class OrdersComponent implements OnInit {
   }
 
   ngOnInit(){
-
     this.filter("");
     this.subscription = this.ordersService.getAllOrders().subscribe(orders => {
       this.subscription2 = this.auth.appUser$.subscribe(appUser => {
@@ -83,7 +84,13 @@ export class OrdersComponent implements OnInit {
             if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
           this.ordersService.orders =  orders;
-          this.redesignOrders(this.ordersService.orders) //borrar luego
+          //---------------------------------------------------------
+          // if (this.ordersService.orders[0].payload.val().order) { //borrar luego
+          //   this.ordersService.createOrdersdetails(this.ordersService.orders)
+          // }
+          //---------------------------------------------------------
+
+
           this.recentUserOrders = [];
           this.userOrders = [];
           this.debtors = [];
@@ -92,9 +99,9 @@ export class OrdersComponent implements OnInit {
           this.notAprovedOrders = [];
           this.ordersNotAproved = 0;
           for (let i=0;i<this.ordersService.orders.length;i++) {
-            let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
-            let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
-            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //7 dias
+            let isUserOrder = this.ordersService.orders[i].payload.val().seller == this.appUser.name;
+            let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().fantasyName, this.userClients);
+            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //dias mora
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
               this.userOrders.push(this.ordersService.orders[i]);
               if (this.ordersService.orders[i].payload.val().aproved == false) {
@@ -108,14 +115,13 @@ export class OrdersComponent implements OnInit {
           }
 
           for (let i=0;i<this.recentUserOrders.length;i++) {
-            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().clientFantasyName, this.recentUserOrders)) {
+            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().fantasyName, this.recentUserOrders)) {
               this.debtors = [];
               let date = new Date(this.recentUserOrders[i].payload.val().date)
-              let debt = Math.round(this.recentUserOrders[i].payload.val().debt * 10) / 10;
               this.debtors.push({
-                "debtorName": this.recentUserOrders[i].payload.val().clientFantasyName,
+                "debtorName": this.recentUserOrders[i].payload.val().fantasyName,
                 "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
-                "orderDebt": debt
+                "orderDebt": this.recentUserOrders[i].payload.val().amount
               });
               this.debtWarning = true;
             }
@@ -136,11 +142,11 @@ export class OrdersComponent implements OnInit {
           this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
 
           this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
-          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
             this.dateValue = "";
-            this.clientValue = this.ordersService.clientFantasyName; // idem
-            this.filter(this.ordersService.clientFantasyName); // idem
-            this.ordersService.clientFantasyName = ""; // idem
+            this.clientValue = this.ordersService.fantasyName; // idem
+            this.filter(this.ordersService.fantasyName); // idem
+            this.ordersService.fantasyName = ""; // idem
             this.filterByDate("");
           }
           this.currentItemsToShow = this.filteredOrders;
@@ -152,17 +158,19 @@ export class OrdersComponent implements OnInit {
     //   this.clients = clients;
     // });
   }
-  redesignOrders(orders: any[]) { //borrar metodo redisenio
-    let order = this.ordersService.orders[0];
-    this.ordersService.createOrdersdetails([order])
+
+  expandOrderDetail(order: any) {
+    this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).take(1).subscribe(o => {
+      this.orderDetail = o.payload.val();
+    });
   }
 
   filter(query: string) {
     this.query.client = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
       //this.filteredOrders.push(this.ordersService.orders[i]);
       this.filteredOrders.push(this.userOrders[i]);
@@ -177,8 +185,8 @@ export class OrdersComponent implements OnInit {
     this.query.seller = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(query.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) ) {
         this.filteredOrders.push(this.userOrders[i])
       }
@@ -193,8 +201,8 @@ export class OrdersComponent implements OnInit {
     this.query.date = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query) )
       this.filteredOrders.push(this.userOrders[i]);
     }
@@ -208,8 +216,8 @@ export class OrdersComponent implements OnInit {
     if (range.start) {
       this.filteredOrders = [];
       for (let i=0;i<this.userOrders.length;i++) {
-        if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-        && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+        if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+        && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
         && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
         this.filteredOrders.push(this.userOrders[i]);
       }
@@ -282,7 +290,6 @@ export class OrdersComponent implements OnInit {
     let result = this.userOrders.filter((o) => {
       return o.payload.val().date == order.date
     });
-    console.log('this.userOrders', this.userOrders);
     this.currentItemsToShow = result
     window.scrollBy({
       top: window.innerHeight,
@@ -301,7 +308,7 @@ export class OrdersComponent implements OnInit {
     const line1 = 30
     const line2 = line1 + 10
     const line3 = line2 + 10
-    let address = this.ordersService.getAddress(order.payload.val().clientFantasyName, this.clients);
+    let address = this.ordersService.getAddress(order.payload.val().fantasyName, this.clients);
 
     var doc = new jsPDF();
     doc.setFontSize(10);
@@ -309,15 +316,15 @@ export class OrdersComponent implements OnInit {
     doc.text('FECHA DEL PEDIDO: ' + date, 70, 20);
     doc.text('FACT Nº: ' +  order.payload.val().orderNumber, 140, 20);
     doc.setFontSize(7);
-    doc.text('CLIENTE: ' + order.payload.val().clientFantasyName, 10, line1);
-    doc.text('VENDEDOR: ' + order.payload.val().order.sellerName, 70, line1);
+    doc.text('CLIENTE: ' + order.payload.val().fantasyName, 10, line1);
+    doc.text('VENDEDOR: ' + order.payload.val().seller, 70, line1);
     doc.text('DIRECCIÓN: ' +  address, 140, line1);
     doc.setFontSize(10);
     doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, line1+5);
     doc.text('Cantidad', 10, line2);
     doc.text('Producto', 30, line2);
     let posX = 0;
-    if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
+    if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
       doc.text('Importe+iva', 185, line2);
     }
     else {
@@ -328,13 +335,13 @@ export class OrdersComponent implements OnInit {
 
 
     let cont = 0;
-    for (let i=0;i<order.payload.val().order.products.length;i++) {
+    for (let i=0;i<order.payload.val().order.products.length;i++) { // arreglar products
       if (order.payload.val().order.products[i].quantity != 0) {
         let total = order.payload.val().order.products[i].discountPrice * order.payload.val().order.products[i].quantity
         doc.text(order.payload.val().order.products[i].quantity.toString(), 10, line3 + 10*cont);
         doc.text(order.payload.val().order.products[i].product.title, 30, line3 + 10*cont);
         posX = 0;
-        if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
+        if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
           doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
         }
         else {
@@ -348,13 +355,13 @@ export class OrdersComponent implements OnInit {
 
     let footerVertPos = line3 + 10 * cont + 10;
     doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
-    if (this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().clientFantasyName) != "Kiosko") {
+    if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
       doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
     }
     else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
     // Save the PDF
-    doc.save(`${order.payload.val().clientFantasyName} ${date}.pdf`);
+    doc.save(`${order.payload.val().fantasyName} ${date}.pdf`);
 
   }
 
@@ -370,9 +377,9 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
+  isClientInUserClients(fantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
+      if (fantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
         return true;
       }
     }

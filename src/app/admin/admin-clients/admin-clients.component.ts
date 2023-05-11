@@ -162,12 +162,12 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  searchPayments(clientFantasyName: string) {
-    this.ordersService.clientFantasyName = clientFantasyName;
+  searchPayments(fantasyName: string) {
+    this.ordersService.fantasyName = fantasyName;
   }
 
-  searchOrders(clientFantasyName: string) {
-    this.ordersService.clientFantasyName = clientFantasyName;
+  searchOrders(fantasyName: string) {
+    this.ordersService.fantasyName = fantasyName;
   }
 
   getClientLastPayment(fantasyName: string) {

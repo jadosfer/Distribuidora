@@ -110,12 +110,12 @@ export class ClientsComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-  searchPayments(clientFantasyName: string) {
-    this.ordersService.clientFantasyName = clientFantasyName;
+  searchPayments(fantasyName: string) {
+    this.ordersService.fantasyName = fantasyName;
   }
 
-  searchOrders(clientFantasyName: string) {
-    this.ordersService.clientFantasyName = clientFantasyName;
+  searchOrders(fantasyName: string) {
+    this.ordersService.fantasyName = fantasyName;
   }
 
   onPageChange($event: any) {

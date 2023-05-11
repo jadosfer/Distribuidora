@@ -11,7 +11,7 @@
         <mat-form-field class="example-full-width me-1" appearance="fill">
           <mat-label>Cliente</mat-label>
           <input type="text" placeholder="Elija uno" aria-label="Number" matInput
-            [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName">
+            [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="fantasyName">
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
               {{client.payload.val().fantasyName}}

@@ -136,7 +136,7 @@ export class CommissionsDashComponent implements OnInit {
       let timeAfterOrder = (Date.now() - orderDate)/(1000*3600*24);
       const d = new Date(Date.now());
       let day = d.getDate()
-      if(this.ordersService.orders[i].payload.val().order.sellerName == name && timeAfterOrder <= day + 1) {
+      if(this.ordersService.orders[i].payload.val().seller == name && timeAfterOrder <= day + 1) {
         return true;
       }
     }
@@ -147,7 +147,7 @@ export class CommissionsDashComponent implements OnInit {
     let amount = 0;
     if (orders) {
       for (let i=0;i<orders.length;i++) {
-        if (orders[i].payload.val().order.sellerName == seller
+        if (orders[i].payload.val().seller == seller
         && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor") {
           amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
         }
@@ -158,10 +158,10 @@ export class CommissionsDashComponent implements OnInit {
     return amount;
   }
 
-  wholesalerSalesPMonth(sellerName: string, orders: any[]) {
+  wholesalerSalesPMonth(seller: string, orders: any[]) {
     let amount = 0;
     for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().order.sellerName == sellerName
+      if (orders[i].payload.val().seller == seller
       && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor") {
         amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
@@ -170,14 +170,15 @@ export class CommissionsDashComponent implements OnInit {
     return amount;
   }
 
-  prodCategorySales(orders: any, category: string, sellerName: string) {
+  prodCategorySales(orders: any, category: string, seller: string) {
     let sales = 0;
     if (orders) {
       for (let i=0;i<orders.length;i++) {
-        if (orders[i].payload.val().order.sellerName == sellerName) {
-          for (let j=0;j<orders[i].payload.val().order.products.length;j++) {
-            if (orders[i].payload.val().order.products[j].product.prodsCategory == category)
-            sales += parseFloat(orders[i].payload.val().order.products[j].discountPrice)*orders[i].payload.val().order.products[j].quantity;
+        if (orders[i].payload.val().seller == seller) {
+          //arreglar!!!
+          for (let j=0;j<orders[i].payload.val().products.length;j++) {
+            if (orders[i].payload.val().products[j].product.prodsCategory == category)
+            sales += parseFloat(orders[i].payload.val().products[j].discountPrice)*orders[i].payload.val().order.products[j].quantity;
           }
         }
       }
@@ -212,10 +213,10 @@ export class CommissionsDashComponent implements OnInit {
     this.edit = false;
   }
 
-  rewardCalc(indexx: number, prodCategory: string, sellerName: string, orders: any[]) {
-    let prodCategorySales = this.prodCategorySales(orders, prodCategory, sellerName);
+  rewardCalc(indexx: number, prodCategory: string, seller: string, orders: any[]) {
+    let prodCategorySales = this.prodCategorySales(orders, prodCategory, seller);
     if (prodCategorySales >= this.commissions[0].payload.val().rewardsGoals[indexx]
-    && this.retailSalesPMonth(sellerName, orders) >= this.commissions[0].payload.val().minRetailTotalSales)
+    && this.retailSalesPMonth(seller, orders) >= this.commissions[0].payload.val().minRetailTotalSales)
       return this.commissions[0].payload.val().rewards[indexx]
     return 0;
   }
@@ -301,17 +302,17 @@ export class CommissionsDashComponent implements OnInit {
   hasSellerSalesInLastMonth(seller: string) {
     let orders = this.lastFullMonthOrders;
     for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().order.sellerName == seller) return true
+      if (orders[i].payload.val().seller == seller) return true
     }
     return false
   }
-  getProdCategoryRewards(sellerName: string) {
+  getProdCategoryRewards(seller: string) {
     let prodCategoryRewards = [];
     let totalRewards = 0;
     for (let j=0;j<this.prodsCategories.length;j++) {
-      totalRewards += parseFloat(this.rewardCalc(j, this.prodsCategories[j].payload.val().name, sellerName, this.lastFullMonthOrders));
+      totalRewards += parseFloat(this.rewardCalc(j, this.prodsCategories[j].payload.val().name, seller, this.lastFullMonthOrders));
       let categoryReward = 0;
-      if (this.retailSalesPMonth(sellerName, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales
+      if (this.retailSalesPMonth(seller, this.lastFullMonthOrders) > this.commissions[0].payload.val().minRetailTotalSales
       && this.commissions[0].payload.val().rewards[j]) {
         categoryReward = this.commissions[0].payload.val().rewards[j];
       };
@@ -320,7 +321,7 @@ export class CommissionsDashComponent implements OnInit {
       this.commissions[0].payload.val().rewardsGoals[j] ? categoryAim = this.commissions[0].payload.val().rewardsGoals[j] : "0"
       prodCategoryRewards.push({
         'prodCategory': this.prodsCategories[j].payload.val().name,
-        'prodCategorySales': this.prodCategorySales(this.lastFullMonthOrders, this.prodsCategories[j].payload.val().name, sellerName),
+        'prodCategorySales': this.prodCategorySales(this.lastFullMonthOrders, this.prodsCategories[j].payload.val().name, seller),
         'categoryAim': parseFloat(categoryAim),
         'categoryReward': categoryReward
       })

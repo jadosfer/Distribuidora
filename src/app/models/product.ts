@@ -1,8 +1,7 @@
-import { NumberSymbol } from "@angular/common";
-
 export interface Product {
-  $key: string,
-  title: string;
-  price: number;
-  prodsCategory: string;
+  title: string
+  category: string;
+  discountPrice: string;
+  discount?: number,
+  quantity: number;
 }

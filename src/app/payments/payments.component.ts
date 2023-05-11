@@ -88,18 +88,18 @@ export class PaymentsComponent implements OnInit {
 
           this.dateRangefilteredPayments = this.datefilteredPayments = this.filteredPayments = this.userPayments; //ver que hace??
 
-          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-            this.filter(this.ordersService.clientFantasyName); // idem
-            this.clientValue = this.ordersService.clientFantasyName; // idem
-            this.ordersService.clientFantasyName = ""; // idem
+          if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+            this.filter(this.ordersService.fantasyName); // idem
+            this.clientValue = this.ordersService.fantasyName; // idem
+            this.ordersService.fantasyName = ""; // idem
           }
 
           //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredPayments.length})
-          if (this.ordersService.clientFantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
             // this.dateValue = "";
-            this.clientValue = this.ordersService.clientFantasyName; // idem
-            this.filter(this.ordersService.clientFantasyName); // idem
-            this.ordersService.clientFantasyName = ""; // idem
+            this.clientValue = this.ordersService.fantasyName; // idem
+            this.filter(this.ordersService.fantasyName); // idem
+            this.ordersService.fantasyName = ""; // idem
             this.filterByDate("");
           }
           this.currentItemsToShow = this.filteredPayments;
@@ -175,9 +175,9 @@ export class PaymentsComponent implements OnInit {
     if (this.paginator) this.paginator.pageIndex = 0;
   }
 
-  isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
+  isClientInUserClients(fantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
+      if (fantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
         return true;
       }
     }

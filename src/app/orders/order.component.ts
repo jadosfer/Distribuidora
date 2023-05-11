@@ -31,7 +31,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   disableSelect = new FormControl(false);
   filtrada: any[];
 
-  clientFantasyName:string="";
+  fantasyName:string="";
   clientCategory: string | null;
   date: any;
 
@@ -96,7 +96,7 @@ export class OrderComponent implements OnInit, OnDestroy {
 
         this.orderIndex = -1
         for (let i=0;i<this.order.length;i++) {
-          if (this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
+          if (this.appUser && this.order[i].payload.val().seller == this.appUser.name) {
             this.orderIndex = i
             this.orderProducts = this.order[this.orderIndex].payload.val().products;
             break
@@ -184,7 +184,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     this.showedProducts = this.orderProducts;
-    if (this.clientFantasyName) this.router.navigateByUrl('/orders/order');
+    if (this.fantasyName) this.router.navigateByUrl('/orders/order');
 
   }
 
@@ -278,13 +278,36 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   beforeShowOrder() {
-    if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
+    this.ordersService.getOrderDetail(this.order[this.orderIndex].key).take(1).subscribe((orderDetail:any) => {
+      for (let i=0;i<orderDetail.products.length;i++) {
+        if (this.orderProducts[i].quantity > 0 && !this.ordersService.isProductStock(this.orderProducts[i])) {
+          return
+        }
+      }
       this.noStock = true;
-      setTimeout(()=> {
-        this.noStock = false;
-       }, 1600);
-      return
-    }
+        setTimeout(()=> {
+          this.noStock = false;
+         }, 1600);
+        return
+    });
+
+    this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts).subscribe(result => {
+      if (result) {
+        this.noStock = true;
+        setTimeout(()=> {
+          this.noStock = false;
+         }, 1600);
+        return
+      }
+    });
+
+    // if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
+    //   this.noStock = true;
+    //   setTimeout(()=> {
+    //     this.noStock = false;
+    //    }, 1600);
+    //   return
+    // }
     this.orderEmpty = true;
     for (let i=0;i<this.orderProducts.length;i++) {
       if (this.orderProducts[i].quantity != 0) {
@@ -292,7 +315,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     if (this.orderEmpty) return;
-    if (this.clientFantasyName == "") {
+    if (this.fantasyName == "") {
       this.client = false;
       setTimeout(()=> {
          this.client = true;
@@ -307,16 +330,15 @@ export class OrderComponent implements OnInit, OnDestroy {
   createOrder() {
     let clientOk = false;
     for (let i=0;i<this.clients.length;i++) {
-      if (this.clientFantasyName.toLowerCase().includes(this.clients[i].payload.val().fantasyName.toLowerCase()))
-
+      if (this.fantasyName.toLowerCase().includes(this.clients[i].payload.val().fantasyName.toLowerCase()))
       clientOk = true;
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        let debt = this.ordersService.calcDebtGreatherThanToleratedDays(this.clientFantasyName);
-        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName,
-          this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
-        this.clientFantasyName = "";
+        let debt = this.ordersService.calcDebtGreatherThanToleratedDays(this.fantasyName);
+        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().seller,
+          this.fantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
+        this.fantasyName = "";
         this.router.navigateByUrl('/orders/orders');
         this.ordersService.resetOrder(this.orderIndex);
       }
@@ -333,7 +355,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     this.showOrder=false;
     this.ordersService.resetOrder(this.orderIndex);
-    this.clientFantasyName = "";
+    this.fantasyName = "";
     }
   }
 

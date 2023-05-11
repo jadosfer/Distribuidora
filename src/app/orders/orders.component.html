@@ -28,8 +28,8 @@
             <tbody>
               <tr *ngFor="let order of notAprovedOrders; let i = index">
                 <td>{{order.date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;</td>
-                <td><a (click)="toggleAccordion(order)" routerLink="/orders/orders">{{order.clientFantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</a></td>
-                <td>{{order.order.sellerName}}</td>
+                <td><a (click)="toggleAccordion(order)" routerLink="/orders/orders">{{order.fantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</a></td>
+                <td>{{order.seller}}</td>
               </tr>
             </tbody>
           </table>
@@ -95,67 +95,74 @@
         <th>Cliente</th>
         <th>Vendedor</th>
         <th *ngIf="!isExpanded">Fecha</th>
-        <th>Pago Completo</th>
-        <th> Importe c/iva</th>
-        <th >IVA</th>
+        <th *ngIf="!isExpanded">Monto c/IVA</th>
         <th *ngIf="!isExpanded">¿aprobado?</th>
-        <!-- <th *ngIf="!isExpanded && appUser.isAdmin">¿env?</th> -->
-        <!-- <th *ngIf="!isExpanded">Debe</th> -->
+        <th *ngIf="!isExpanded">IVA</th>
+        <th *ngIf="!isExpanded">Pagado</th>
+        <th *ngIf="!isExpanded">Desc?</th>
+        <th *ngIf="!isExpanded">Deudor?</th>
+        <!-- <th>Pago Completo</th>
+        <th> Importe c/iva</th> -->
+        <!-- <th >IVA</th>
+        <th *ngIf="!isExpanded">¿aprobado?</th>
         <th *ngIf="!isExpanded">Desc?</th>
         <th *ngIf="!isExpanded">Deudor</th>
-        <th *ngIf="!isExpanded">Nro. Fact</th>
+        <th *ngIf="!isExpanded">Nro. Fact</th> -->
         <th>Detalle</th>
-        <th>PDF</th>
-        <th *ngIf ="appUser.isAdmin">Eliminar</th>
+        <!-- <th>PDF</th>
+        <th *ngIf ="appUser.isAdmin">Eliminar</th> -->
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let order of currentItemsToShow; let i = index" >
-        <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().clientFantasyName}}&nbsp;&nbsp;</td>
-        <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().order.sellerName}}&nbsp;&nbsp;</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().fullPaymentDate | date:"dd/MM/yyyy"}}</td>
-        <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
-        <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">NO</span><span *ngIf="ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">SI</span>&nbsp;</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().orderNumber}}&nbsp;</td>
+        <td>{{order.payload.val().fantasyName}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().seller}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().amountWithIva}}&nbsp;&nbsp;</td>
+        <!-- <td *ngIf="!isExpanded"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td> -->
+        <td>{{order.payload.val().aproved ? "SI" : "NO"}}&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+        <td>%{{order.payload.val().iva}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().fullPaymentDate ? (order.payload.val().fullPaymentDate | date:"dd/MM/yyyy") : "NO"}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().hasDiscount ? "SI" : "NO"}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().clientInDebt ? "SI" : "NO"}}&nbsp;&nbsp;</td>
+
+        <!-- <td>{{order.payload.val().fullPaymentDate | date:"dd/MM/yyyy"}}</td>
+        <td>${{order.payload.val().amount | number:'1.1-1'}}</td> -->
+        <!-- <td>{{order.payload.val().iva}}%</td>
+        <td *ngIf="!isExpanded"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+        <td *ngIf="!isExpanded"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
+        <td *ngIf="!isExpanded"><span *ngIf="!ordersService.isClientInDebt(order.payload.val().fantasyName, userOrders)">NO</span><span *ngIf="ordersService.isClientInDebt(order.payload.val().fantasyName, userOrders)">SI</span>&nbsp;</td>
+        <td *ngIf="!isExpanded">{{order.payload.val().orderNumber}}&nbsp;</td> -->
 
         <td>
-          <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
-            <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
+          <mat-accordion>
+            <mat-expansion-panel hideToggle (opened)="expandOrderDetail(order)" (closed)="isExpanded = false">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   Detalle
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <table class="table table-striped table-sm mat-elevation-z8">
+              <table *ngIf="orderDetail" class="table table-striped table-sm mat-elevation-z8">
                 <tr>
-                  <th>Cantidad</th>
+                  <th>Unid</th>
                   <th>Producto</th>
-                  <th>Importe/unid s/iva</th>
+                  <th>Importe/unid</th>
                   <th>Importe</th>
-                  <th>Descuento</th>
+                  <th>Desc</th>
                 </tr>
-                <tr *ngFor="let item of order.payload.val().order.products; let i = index">
-                  <td *ngIf="item.quantity !=0">{{item.quantity}}&nbsp;&nbsp;</td>
-                  <td *ngIf="item.quantity !=0">{{item.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td *ngIf="item.quantity !=0">${{item.discountPrice | number:'1.1-1'}}</td>
-                  <td *ngIf="item.quantity !=0">${{item.discountPrice * item.quantity | number:'1.1-1'}}</td>
-                  <td *ngIf="item.quantity !=0">%{{item.discount | number:'1.1-1'}}</td>
-                </tr>
-                <tr>
-                  <th>Total s/iva:</th>
-                  <td>${{this.ordersService.getTotalAmount(order.payload.val().order.products) | number:'1.1-1'}}</td>
-                  <td></td><td></td><td></td>
+                <tr *ngFor="let prod of orderDetail.products">
+                  <td>{{prod.quantity}}</td>
+                  <td>{{prod.title}}</td>
+                  <td>${{ prod.discountPrice | number:'1.1-1'}}</td>
+                  <td>${{ prod.quantity * prod.discountPrice | number:'1.1-1'}}&nbsp;&nbsp;</td>
+                  <td>{{ prod.discount ? "%" + prod.discount: "-" }}</td>
                 </tr>
               </table>
             </mat-expansion-panel>
           </mat-accordion>
         </td>
-        <td *ngIf="this.ordersService.clients"><button [disabled]="!order.payload.val().aproved" mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
+        <!-- <td *ngIf="this.ordersService.clients"><button [disabled]="!order.payload.val().aproved" mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td> -->
       </tr>
       <tr>
         <th>TOTAL</th>
@@ -174,7 +181,7 @@
       <tr>
         <th>Cliente</th>
         <th>Fecha del pedido en deuda</th>
-        <th>Deuda del pedido</th>
+        <th>Monto del pedido</th>
       </tr>
       <tr *ngFor="let client of debtors">
         <td>{{client.debtorName}}</td>
@@ -185,9 +192,3 @@
     <button mat-raised-button style="margin:20px" (click)="debtWarning=!debtWarning" color="primary" >Aceptar</button>
   </div>
 </ng-template>
-
-
-
-
-
-

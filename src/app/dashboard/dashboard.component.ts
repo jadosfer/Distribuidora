@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
         this.ordersService.orders = orders;
         this.userOrders = [];
         for (let i=0;i<this.ordersService.orders.length;i++) {
-          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name) {
+          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().seller == this.appUser.name) {
             this.userOrders.push(this.ordersService.orders[i]);
           }
         }
@@ -92,8 +92,8 @@ export class DashboardComponent implements OnInit {
     this.query.client = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(query.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
       this.filteredOrders.push(this.userOrders[i]);
     }
@@ -108,8 +108,8 @@ export class DashboardComponent implements OnInit {
     this.query.seller = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(query.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(query.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) ) {
         this.filteredOrders.push(this.userOrders[i])
       }
@@ -126,8 +126,8 @@ export class DashboardComponent implements OnInit {
     this.query.date = query;
     this.filteredOrders = [];
     for (let i=0;i<this.userOrders.length;i++) {
-      if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-      && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+      if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+      && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(query) )
       this.filteredOrders.push(this.userOrders[i]);
     }
@@ -143,8 +143,8 @@ export class DashboardComponent implements OnInit {
     if (range.start) {
       this.filteredOrders = [];
       for (let i=0;i<this.userOrders.length;i++) {
-        if (this.userOrders[i].payload.val().clientFantasyName.toLowerCase().includes(this.query.client.toLowerCase())
-        && this.userOrders[i].payload.val().order.sellerName.toLowerCase().includes(this.query.seller.toLowerCase())
+        if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(this.query.client.toLowerCase())
+        && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
         && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
         this.filteredOrders.push(this.userOrders[i]);
       }
@@ -243,9 +243,10 @@ export class DashboardComponent implements OnInit {
     let categories: string[] = []
     let colors = []
     for (let i=0;i<orders.length;i++) {
-      for (let j=0;j<orders[i].payload.val().order.products.length; j++) {
-        if (!this.isCategoryIncluded(categories, orders[i].payload.val().order.products[j].product.prodsCategory)) {
-          categories.push(orders[i].payload.val().order.products[j].product.prodsCategory)
+      for (let j=0;j<orders[i].payload.val().products.length; j++) {
+        // arreglar products
+        if (!this.isCategoryIncluded(categories, orders[i].payload.val().products[j].product.prodsCategory)) {
+          categories.push(orders[i].payload.val().products[j].product.prodsCategory)
           let col = this.color.pop()
           if (col) {
             this.pieChartColors[0].backgroundColor.push(col);
@@ -298,13 +299,13 @@ export class DashboardComponent implements OnInit {
   produceDashData(dataArray: any) {
     this.dashData = [];
     for (let i=0;i<dataArray.length;i++) {
-      if (!this.isClientInDashData(dataArray[i].payload.val().clientFantasyName)) {
+      if (!this.isClientInDashData(dataArray[i].payload.val().fantasyName)) {
         this.dashData.push({
-          "client": dataArray[i].payload.val().clientFantasyName, "seller" : dataArray[i].payload.val().order.sellerName, "amount": dataArray[i].payload.val().amount
+          "client": dataArray[i].payload.val().fantasyName, "seller" : dataArray[i].payload.val().seller, "amount": dataArray[i].payload.val().amount
         })
       }
       else {
-        this.adAmount(dataArray[i].payload.val().clientFantasyName, dataArray[i].payload.val().amount);
+        this.adAmount(dataArray[i].payload.val().fantasyName, dataArray[i].payload.val().amount);
       }
     }
   }

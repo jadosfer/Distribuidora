@@ -126,7 +126,7 @@ export class CommissionsService {
     for (let i=0;i<orders.length;i++) {
 
       if (orders[i].payload.val().clientFantasyName.toLowerCase().includes("red line constituci")) continue;else;
-      if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
+      if (orders[i].payload.val().seller == seller && !orders[i].payload.val().fullPaymentDate) {
         let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
         if (delay > 366) continue; else;
         if (delay > 30 && delay < 60) {
@@ -141,7 +141,7 @@ export class CommissionsService {
         else;
       }
       else;
-      //if (orders[i].payload.val().order.sellerName == "Enrique Oyhamburu") console.log('totalSellerDebtDelayed ', this.totalSellerDebtDelayed);
+      //if (orders[i].payload.val().seller == "Enrique Oyhamburu") console.log('totalSellerDebtDelayed ', this.totalSellerDebtDelayed);
     }
     this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
     monthPenalty = Math.round(monthPenalty * 10) / 10;
@@ -152,7 +152,7 @@ export class CommissionsService {
     let today = new Date();
     let totalSellerDebtDelayed = 0;
     for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
+      if (orders[i].payload.val().seller == seller && !orders[i].payload.val().fullPaymentDate) {
         let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
         if (delay > 366) continue; else;
         if (delay > 30) {
