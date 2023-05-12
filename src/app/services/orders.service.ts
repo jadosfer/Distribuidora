@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import 'rxjs/add/operator/take';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
@@ -29,6 +29,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   clients: any[];
   clients$: any;
+  sellers$: any;
   order: any;
   orders: any[];
   sellers: any[];
@@ -60,6 +61,20 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   constructor(private db: AngularFireDatabase, private productService: ProductService,
     private auth: AuthService, private route: ActivatedRoute) {
+
+      this.clients$ = this.db.list('/clients').snapshotChanges();
+      this.sellers$ = this.db.list('/sellers').valueChanges();
+
+    forkJoin([this.clients$, this.sellers$]).subscribe(
+      ([clients, sellers]) => {
+        // Aquí puedes trabajar con los arrays obtenidos
+        console.log('Array 1:', clients);
+        console.log('Array 2:', sellers);
+      },
+      (error) => {
+        console.error(error);
+      }
+    )
 
       this.clients$ = this.getAllClients();
       this.subscription = this.getAllSellers().subscribe(sellers => {

@@ -291,23 +291,14 @@ export class OrderComponent implements OnInit, OnDestroy {
         return
     });
 
-    this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts).subscribe(result => {
-      if (result) {
-        this.noStock = true;
-        setTimeout(()=> {
-          this.noStock = false;
-         }, 1600);
-        return
-      }
-    });
-
-    // if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
-    //   this.noStock = true;
-    //   setTimeout(()=> {
-    //     this.noStock = false;
-    //    }, 1600);
-    //   return
-    // }
+    //if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
+    if (true) {
+      this.noStock = true;
+      setTimeout(()=> {
+        this.noStock = false;
+       }, 1600);
+      return
+    }
     this.orderEmpty = true;
     for (let i=0;i<this.orderProducts.length;i++) {
       if (this.orderProducts[i].quantity != 0) {

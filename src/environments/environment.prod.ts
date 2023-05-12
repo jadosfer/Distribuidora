@@ -1,12 +1,12 @@
 export const environment = {
   production: true,
   firebase: {
-    apiKey: "AIzaSyBzHzW1kMlgLbPUM3cYy1B9UZRHbV98IIE",
-    authDomain: "distrib-42bdb.firebaseapp.com",
-    databaseURL: "https://distrib-42bdb-default-rtdb.firebaseio.com",
-    projectId: "distrib-42bdb",
-    storageBucket: "distrib-42bdb.appspot.com",
-    messagingSenderId: "1032461943463",
-    appId: "1:1032461943463:web:ea663acb33dfc7be1f9182"
+    apiKey: "AIzaSyDQFsWCl9FGxEr0BB6f-Bhp9h3eRQsCbHY",
+    authDomain: "distribuidora-nb.firebaseapp.com",
+    databaseURL: "https://distribuidora-nb-default-rtdb.firebaseio.com",
+    projectId: "distribuidora-nb",
+    storageBucket: "distribuidora-nb.appspot.com",
+    messagingSenderId: "763137673585",
+    appId: "1:763137673585:web:f9194415b214fddd014ed0"
   }
 };
