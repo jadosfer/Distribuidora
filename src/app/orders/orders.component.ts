@@ -66,6 +66,8 @@ export class OrdersComponent implements OnInit {
   subscription2: Subscription;
   subscription3: Subscription;
   orderDetail: any
+  openAccordion: number = -1;
+
   constructor(public ordersService: OrdersService,
   private auth: AuthService, public datepipe: DatePipe,
   public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
@@ -121,7 +123,7 @@ export class OrdersComponent implements OnInit {
               this.debtors.push({
                 "debtorName": this.recentUserOrders[i].payload.val().fantasyName,
                 "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
-                "orderDebt": this.recentUserOrders[i].payload.val().amount
+                "orderDebt": this.recentUserOrders[i].payload.val().amountWithIva
               });
               this.debtWarning = true;
             }
@@ -157,12 +159,12 @@ export class OrdersComponent implements OnInit {
     // this.ordersService.getAll().subscribe(clients => {
     //   this.clients = clients;
     // });
+
   }
 
-  expandOrderDetail(order: any) {
-    this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).take(1).subscribe(o => {
-      this.orderDetail = o.payload.val();
-    });
+  expandOrderDetail(order: any, i: number) {
+    this.openAccordion = (this.openAccordion === i) ? -1 : i
+    this.orderDetail = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val();
   }
 
   filter(query: string) {
@@ -251,7 +253,7 @@ export class OrdersComponent implements OnInit {
     if (this.filteredOrders) {
       this.filteredOrders.forEach(order => {
         //total += this.ordersService.getTotalAmount(order.payload.val().order.products);
-        total += parseFloat(order.payload.val().amount);
+        total += parseFloat(order.payload.val().amountWithIva);
       });
     }
     return total;
@@ -298,7 +300,7 @@ export class OrdersComponent implements OnInit {
   }
 
   exportAsPDF(order: any)  {
-
+    let orderDetail = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey)
     let myDate = new Date(order.payload.val().date);
     var dd = String(myDate.getDate()).padStart(2, '0');
     var mm = String(myDate.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -333,13 +335,12 @@ export class OrdersComponent implements OnInit {
     doc.text('Importe/uni', 125 + posX, line2);
     doc.text('Importe', 155 + posX, line2);
 
-
     let cont = 0;
-    for (let i=0;i<order.payload.val().order.products.length;i++) { // arreglar products
-      if (order.payload.val().order.products[i].quantity != 0) {
-        let total = order.payload.val().order.products[i].discountPrice * order.payload.val().order.products[i].quantity
-        doc.text(order.payload.val().order.products[i].quantity.toString(), 10, line3 + 10*cont);
-        doc.text(order.payload.val().order.products[i].product.title, 30, line3 + 10*cont);
+    for (let i=0;i<orderDetail.payload.val().products.length;i++) {
+      if (orderDetail.payload.val().products[i].quantity != 0) {
+        let total = orderDetail.payload.val().products[i].discountPrice * orderDetail.payload.val().products[i].quantity
+        doc.text(orderDetail.payload.val().products[i].quantity.toString(), 10, line3 + 10*cont);
+        doc.text(orderDetail.payload.val().products[i].title, 30, line3 + 10*cont);
         posX = 0;
         if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
           doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
@@ -347,7 +348,7 @@ export class OrdersComponent implements OnInit {
         else {
           posX = 30
         }
-        doc.text("$"+order.payload.val().order.products[i].discountPrice.toFixed(1), 125 + posX, line3 + 10*cont);
+        doc.text("$"+orderDetail.payload.val().products[i].discountPrice.toFixed(1), 125 + posX, line3 + 10*cont);
         doc.text("$"+total.toFixed(1), 155 + posX, line3 + 10*cont);
         cont +=1;
       }
@@ -356,9 +357,9 @@ export class OrdersComponent implements OnInit {
     let footerVertPos = line3 + 10 * cont + 10;
     doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
     if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
-      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(orderDetail.payload.val().products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
     }
-    else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(order.payload.val().order.products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+    else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(orderDetail.payload.val().products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
     // Save the PDF
     doc.save(`${order.payload.val().fantasyName} ${date}.pdf`);

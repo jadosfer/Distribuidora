@@ -277,26 +277,23 @@ export class OrderComponent implements OnInit, OnDestroy {
     return result
   }
 
-  beforeShowOrder() {
-    this.ordersService.getOrderDetail(this.order[this.orderIndex].key).take(1).subscribe((orderDetail:any) => {
-      for (let i=0;i<orderDetail.products.length;i++) {
-        if (this.orderProducts[i].quantity > 0 && !this.ordersService.isProductStock(this.orderProducts[i])) {
-          return
-        }
-      }
-      this.noStock = true;
-        setTimeout(()=> {
-          this.noStock = false;
-         }, 1600);
-        return
-    });
+   // buscarUsuario(criterio: string) {
+    //   for (const usuario of this.tuServicio.usuarios) {
+    //     if (usuario.algunAtributo === criterio) {
+    //       const mensajeId = usuario.mensajeId;
+    //       const mensaje = this.tuServicio.getMensajes().find(m => m.id === mensajeId);
+    //       return mensaje;
+    //     }
+    //   }
+    //   return null; // si no se encuentra el usuario o el mensaje, devuelve null
+    // }
 
-    //if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
-    if (true) {
+  beforeShowOrder() {
+    if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
       this.noStock = true;
       setTimeout(()=> {
         this.noStock = false;
-       }, 1600);
+        }, 1600);
       return
     }
     this.orderEmpty = true;
@@ -309,14 +306,13 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (this.fantasyName == "") {
       this.client = false;
       setTimeout(()=> {
-         this.client = true;
+          this.client = true;
         }, 900);
       return;
     }
 
     this.showOrder= !this.showOrder;
   }
-
 
   createOrder() {
     let clientOk = false;

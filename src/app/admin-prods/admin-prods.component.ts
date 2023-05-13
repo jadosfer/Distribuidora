@@ -52,7 +52,6 @@ export class AdminProdsComponent implements OnInit {
 
   constructor(private productService: ProductService, private commissionsService: CommissionsService,
     private router: Router, private categoryService: CategoryService) {
-      console.log('constructor');
 
       this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
         this.clientCategories = clientCategories;

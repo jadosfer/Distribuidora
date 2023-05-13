@@ -118,7 +118,7 @@
         <td>{{order.payload.val().fantasyName}}&nbsp;&nbsp;</td>
         <td>{{order.payload.val().seller}}&nbsp;&nbsp;</td>
         <td>{{order.payload.val().date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td>{{order.payload.val().amountWithIva}}&nbsp;&nbsp;</td>
+        <td>{{order.payload.val().amountWithIva | number:'1.1-1'}}&nbsp;&nbsp;</td>
         <!-- <td *ngIf="!isExpanded"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td> -->
         <td>{{order.payload.val().aproved ? "SI" : "NO"}}&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
         <td>%{{order.payload.val().iva}}&nbsp;&nbsp;</td>
@@ -136,7 +136,7 @@
 
         <td>
           <mat-accordion>
-            <mat-expansion-panel hideToggle (opened)="expandOrderDetail(order)" (closed)="isExpanded = false">
+            <mat-expansion-panel hideToggle (opened)="expandOrderDetail(order, i)" (closed)="isExpanded = false"  [expanded]="openAccordion === i">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   Detalle

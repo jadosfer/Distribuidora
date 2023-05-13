@@ -16,7 +16,7 @@ import { Product } from '../models/product';
   providedIn: 'root'
 })
 //...........concentra operaciones de pedidos, pagos, clientes y vendedors..............
-export class OrdersService implements OnDestroy, OnInit, OnChanges {
+export class OrdersService implements OnDestroy {
 
   private filteredClients: any[];
   private clientsCurrentItemsToShow: any[];
@@ -28,8 +28,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
 
   clients: any[];
-  clients$: any;
-  sellers$: any;
   order: any;
   orders: any[];
   sellers: any[];
@@ -42,6 +40,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   fantasyName: string;
   hasDiscount: boolean = false;
   orderNumber: any = [];
+  ordersDetail: any[]
 
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
@@ -49,43 +48,20 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   payments: any[];
   paymentId: any;
   paymentIndex: number;
-
-  subscription: Subscription;
-  subscription2: Subscription;
-  subscription3: Subscription;
-  subscription4: Subscription;
-  subscription5: Subscription;
-  subscription6: Subscription;
-  subscription7: Subscription;
-  subscription8: Subscription;
+  subscriptions: Subscription[] = [];
 
   constructor(private db: AngularFireDatabase, private productService: ProductService,
     private auth: AuthService, private route: ActivatedRoute) {
-
-      this.clients$ = this.db.list('/clients').snapshotChanges();
-      this.sellers$ = this.db.list('/sellers').valueChanges();
-
-    forkJoin([this.clients$, this.sellers$]).subscribe(
-      ([clients, sellers]) => {
-        // Aquí puedes trabajar con los arrays obtenidos
-        console.log('Array 1:', clients);
-        console.log('Array 2:', sellers);
-      },
-      (error) => {
-        console.error(error);
-      }
-    )
-
-      this.clients$ = this.getAllClients();
-      this.subscription = this.getAllSellers().subscribe(sellers => {
+      const sub = this.getAllSellers().subscribe(sellers => {
         this.sellers = sellers;
       });
-      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
+      this.subscriptions.push(sub)
+      const sub2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
         this.filteredProducts = [];
-        this.subscription3 = this.productService.getAll().subscribe(products => {
+        const sub3 = this.productService.getAll().subscribe(products => {
           this.filteredProducts = this.products = products;
-          this.subscription4 = this.route.queryParamMap.subscribe(params => {
+          const sub4 = this.route.queryParamMap.subscribe(params => {
             this.prodsCategory = params.get('prodsCategory');
             if (this.products) {
               this.filteredProducts = (this.prodsCategory) ?
@@ -94,8 +70,9 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
               this.products;
             }
           });
+          this.subscriptions.push(sub4)
 
-          this.subscription5 = this.getOrder().subscribe(order => {
+          const sub5 = this.getOrder().subscribe(order => {
             if (!order) this.createOrderEmpty(); // pruebo esto
             this.order = order;
               this.orderIndex = -1
@@ -107,12 +84,16 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
                 }
               }
           });
+          this.subscriptions.push(sub5)
         });
+        this.subscriptions.push(sub3)
       });
-      this.subscription6 = this.getAllClients().subscribe(clients => {
+      this.subscriptions.push(sub2)
+      const sub6 = this.getAllClients().subscribe(clients => {
         this.clients = clients;
       });
-      this.subscription7 = this.getAllOrders().subscribe(orders => {
+      this.subscriptions.push(sub6)
+      const sub7 = this.getAllOrders().subscribe(orders => {
         this.orders = orders;
         // for (let i=0;i<this.orders.length;i++) {
         //   console.log('i = ', i);
@@ -121,14 +102,22 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
         //   }
         // }
       });
-      this.subscription8 = this.getAllPayments().subscribe(payments => {
+      this.subscriptions.push(sub7)
+      const sub8 = this.getAllPayments().subscribe(payments => {
         this.payments = payments;
       });
+      this.subscriptions.push(sub8)
+      const sub9 = this.getAllOrdersDetail().subscribe(ordersDetail => {
+        this.ordersDetail = ordersDetail;
+        console.log('asigna ordesDetail');
+      });
+      this.subscriptions.push(sub9)
     }
 
     //---------------------------------------------------------
 
   createOrdersdetails(orders: any[]): void { //borrar luego metodo redisenio
+    console.log('crea ordersDetail solo para migrar');
     orders.forEach((order)=>{
       if (!order.payload.val().fantasyName) {
         let products: Product[]= []
@@ -170,30 +159,24 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
         else console.log('la operacion fallo');
       }
       else console.log('');
-      console.log('order ', order);
     })
   }
-  //---------------------------------------------------------
 
-   ngOnChanges() {
-    console.log('onchanges');
-   }
-
-   ngOnInit() {
-    console.log('onInit');
-   }
 
   // ................................................orders methods................................................
 
   isStock(order: any, products: any) { //ver este metodo
-    this.getOrderDetail(order.key).take(1).subscribe((orderDetail:any) => {
-      for (let i=0;i<orderDetail.products.length;i++) {
-        if (products[i].quantity > 0 && !this.isProductStock(products[i])) {
-          return false
-        }
+    let orderDetail = this.getOrderDetail(order.payload.val().orderDetailKey);
+    for (let i=0;i<orderDetail.payload.val().products.length;i++) {
+      if (products[i].quantity > 0 && !this.isProductStock(products[i])) {
+        return false
       }
-      return true
-    });
+    }
+    return true
+  }
+
+  getOrderDetail(key: string) {
+    return this.ordersDetail.find(od => od.key === key);
   }
 
   isProductStock(product: any) {
@@ -274,10 +257,9 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     return this.db.list('/orders').snapshotChanges();
   }
 
-  getOrderDetail(key: any) {
-    return this.db.object('/ordersDetail/' + key).snapshotChanges();
+  getAllOrdersDetail() {
+    return this.db.list('/ordersDetail').snapshotChanges();
   }
-
 
   updateOrderItemQuantity(order:any, product:any, change: number, orderIndex: number){
     for (let i=0;i<this.products.length;i++) {
@@ -933,13 +915,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
-    this.subscription4.unsubscribe();
-    this.subscription5.unsubscribe();
-    this.subscription6.unsubscribe();
-    this.subscription7.unsubscribe();
-    this.subscription8.unsubscribe();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

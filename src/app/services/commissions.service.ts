@@ -24,16 +24,12 @@ export class CommissionsService {
    }
 
   createCommissions() {
-    console.log('creando commissions');    //let rewardsStrObj = '{';
     let rewardsArray = []
     let prodsCat = []
     for (let i=0; i<this.prodsCategories.length; i++) {
-      //rewardsStrObj += '"' + this.prodsCategories[i].payload.val().name + '": 0,';
       rewardsArray.push("0");
       prodsCat.push(this.prodsCategories[i].payload.val().name)
     }
-    // rewardsStrObj = rewardsStrObj.slice(0, -1) + '}';
-    // let rewardsObj = JSON.parse(rewardsStrObj)
     let today = new Date();
 
     //SavedMonth is
