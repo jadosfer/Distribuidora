@@ -9,4 +9,5 @@ export interface Order {
   iva: number;
   orderDetailKey: string;
   seller: string;
+  orderNumber?: number
 }

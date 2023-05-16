@@ -60,8 +60,8 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.subscription = this.auth.appUser$.subscribe(appUser => {
-
       this.appUser = appUser;
+      this.ordersService.clients
       this.subscription2 = this.ordersService.getAllClients().subscribe(clients => {
         this.clients = clients;
 
@@ -121,8 +121,8 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
       this.query.client = query;
       this.filteredClients = [];
       this.includedClients.forEach((client)=>{
-        if (client.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
-        && client.payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase()))
+        if (client.payload.val().fantasyName.toLowerCase().includes(query.toLowerCase().trim())
+        && client.payload.val().designatedSeller.toLowerCase().includes(this.query.seller.toLowerCase().trim()))
         this.filteredClients.push(client);
       });
     }

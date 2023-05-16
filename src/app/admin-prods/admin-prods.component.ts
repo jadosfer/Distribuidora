@@ -48,7 +48,6 @@ export class AdminProdsComponent implements OnInit {
   mobile: boolean = false;
   prodAdded: boolean = false;
   saving: boolean = false;
-  screenOn: boolean;
 
   constructor(private productService: ProductService, private commissionsService: CommissionsService,
     private router: Router, private categoryService: CategoryService) {
@@ -59,7 +58,7 @@ export class AdminProdsComponent implements OnInit {
       categoryService.getAllProdsCategories().subscribe((prodsCategories)=>{
         this.prodsCategories = prodsCategories;
       });
-      this.subscription2 = this.productService.getAll().subscribe(products => {
+      this.subscription2 = this.productService.getAllProducts().subscribe(products => {
         this.filteredProducts = this.products = products;
         this.filteredProducts.sort(this.compareTitle);
         this.filteredProducts.sort(this.compareCategory);
@@ -71,7 +70,7 @@ export class AdminProdsComponent implements OnInit {
           if (!recharges) {
             this.productService.createRecharge();          }
 
-          this.productService.recharge(this.products, this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge).then(()=> {this.screenOn = true})
+          this.productService.recharge(this.products, this.recharges[0].payload.val());
           //this.recharge(this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge);
         });
       });
@@ -101,27 +100,37 @@ export class AdminProdsComponent implements OnInit {
 
   saveProd(productForm: any, product: any) {
     // if (confirm('Está segur@ que quiere guardar estos valores?')) {
+      this.recharged = true;
+      let recharges = this.recharges[0].payload.val()
       let prod = {
         "disc1": productForm.disc1,
         "disc2": productForm.disc2,
         "disc3": productForm.disc3,
         "disc4": productForm.disc4,
         "buyPrice": productForm.buyPrice,
-        "price1": product.payload.val().price1,
-        "price2": product.payload.val().price2,
-        "price3": product.payload.val().price3,
-        "price4": product.payload.val().price4,
-        "discPrice1": product.payload.val().discPrice1,
-        "discPrice2": product.payload.val().discPrice2,
-        "discPrice3": product.payload.val().discPrice3,
-        "discPrice4": product.payload.val().discPrice4,
+        // "price1": product.payload.val().price1,
+        // "price2": product.payload.val().price2,
+        // "price3": product.payload.val().price3,
+        // "price4": product.payload.val().price4,
+        "price1": product.payload.val().buyPrice * (1 + recharges.distRecharge/100),
+        "price2": product.payload.val().buyPrice * (1 + recharges.comRecharge/100),
+        "price3": product.payload.val().buyPrice * (1 + recharges.kiosRecharge/100),
+        "price4": product.payload.val().buyPrice * (1 + recharges.gymRecharge/100),
+        "discPrice1": 0,
+        "discPrice2":0,
+        "discPrice3": 0,
+        "discPrice4": 0,
         "stock": productForm.stock,
         "prodsCategory": productForm.prodsCategory,
         "title": productForm.title
       }
-      //this.screenOn = false;
-      this.productService.update(product.key, prod)
-      //this.productService.recharge(this.products, this.recharges[0].payload.val().distRecharge, this.recharges[0].payload.val().comRecharge, this.recharges[0].payload.val().kiosRecharge, this.recharges[0].payload.val().gymRecharge)?.then(()=>this.screenOn = true).then(() => this.screenOn = true);
+      prod.discPrice1 = prod.price1*(1-prod.disc1/100);
+      prod.discPrice2 = prod.price2*(1-prod.disc2/100);
+      prod.discPrice3 = prod.price3*(1-prod.disc3/100);
+      prod.discPrice4 = prod.price4*(1-prod.disc4/100);
+
+      this.productService.update(product.key, prod).then(()=>{this.recharged = false})
+      //this.productService.recharge(this.products, this.recharges[0].payload.val())
       //this.toSave.push({"key": product.key, "prod": prod})
       //location.reload();
       //this.router.navigate(['/admin/prods']);
@@ -136,30 +145,29 @@ export class AdminProdsComponent implements OnInit {
 
   saveRecharges(recharge:any) {
     if (confirm('Está segur@ que quiere cambiar la remarcación?')) {
-      this.screenOn = false;
       let recharges = {
-      "distRecharge": recharge.dist,
-      "comRecharge": recharge.com,
-      "kiosRecharge": recharge.kios,
-      "gymRecharge": recharge.gym
+        "distRecharge": recharge.dist,
+        "comRecharge": recharge.com,
+        "kiosRecharge": recharge.kios,
+        "gymRecharge": recharge.gym
+      }
+      this.productService.saveRecharges(recharges);
+      this.productService.recharge(this.products, recharges);
+      location.reload();
     }
-    this.productService.saveRecharges(recharges);
-    }
-    this.productService.recharge(this.products, recharge.dist, recharge.com, recharge.kios, recharge.gym);
-    location.reload();
   }
 
-  recharge(distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
-    if (this.recharges) {
-      //this.recharged=true;
-      // setTimeout(()=> {
-      //   this.recharged = false;
-      //  }, 800);
-      this.productService.recharge(this.products, distRecharge, comRecharge, kiosRecharge, gymRecharge);
-      return
-    }
-    this.productService.createRecharge();
-  }
+  // recharge(distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
+  //   if (this.recharges) {
+  //     this.recharged=true;
+  //     setTimeout(()=> {
+  //       this.recharged = false;
+  //      }, 1000);
+  //     this.productService.recharge(this.products, distRecharge, comRecharge, kiosRecharge, gymRecharge);
+  //     return
+  //   }
+  //   this.productService.createRecharge();
+  // }
 
   applyDiscount(p: any, priceNumber: any, disc: number){
     this.productService.applyDiscount(p, priceNumber, disc);

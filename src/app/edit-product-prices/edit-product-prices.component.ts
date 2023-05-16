@@ -21,7 +21,7 @@ export class EditProductPricesComponent implements OnInit {
 
 
   constructor(private productService: ProductService, private categoryService: CategoryService ) {
-    this.subscription = this.productService.getAll().subscribe(products => {
+    this.subscription = this.productService.getAllProducts().subscribe(products => {
       this.filteredProducts = this.products = products;
       this.filteredProducts.sort(this.compareTitle)
       this.filteredProducts.sort(this.compareCategory)

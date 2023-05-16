@@ -42,7 +42,7 @@ export class ProductFormComponent {
       }
       else {
         this.productService.create(product);
-        this.productService.getAll().subscribe(products => {
+        this.productService.getAllProducts().subscribe(products => {
           this.products = products;
           this.stockService.updateBuy(this.products);
         })

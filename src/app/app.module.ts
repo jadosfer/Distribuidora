@@ -37,7 +37,6 @@ import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DatePipe } from '@angular/common';
 import { BuysComponent } from './buys/buys.component';
-import { CategoryService } from './services/category.service';
 import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
@@ -49,27 +48,23 @@ import { PaymentComponent } from './payment/payment.component';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
 import { CommissionsDashComponent } from './commissions/commissionsDash.component';
 import { CommissionsComponent } from './commissions/commissions.component';
-import { UtilityService } from './services/utility.service';
 import { ReplacesComponent } from './replaces/replaces.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
+import { UtilityService } from './services/utility.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     OrdersComponent,
     MatNavbarComponent,
-    OrderComponent,
     AdminClientsComponent,
     LoginComponent,
     ProductFormComponent,
-    ProductFilterComponent,
-    ClientsComponent,
     ClientsFormComponent,
     AdminSellersComponent,
     SellersFormComponent,
     StockComponent,
-    BuyComponent,
     DashboardComponent,
     BuysComponent,
     PieChartComponent,
@@ -83,6 +78,7 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
     ReplacesComponent,
     PruebaComponent,
     EditProductPricesComponent,
+    PaymentsComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -98,8 +94,8 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
     ReactiveFormsModule,
     ChartsModule
   ],
-  providers: [AuthGuard, UserService, AdminAuthGuard, CategoryService, ProductService, AuthService, OrdersService,
-    DatePipe, PieChartComponent, PaymentsComponent, UtilityService, {
+  providers: [AuthGuard, AdminAuthGuard, ProductService, AuthService, UtilityService, UserService, OrdersService,
+    DatePipe, PieChartComponent, {
       provide: MAT_RADIO_DEFAULT_OPTIONS,
       useValue: { color: 'primary' },
   }],

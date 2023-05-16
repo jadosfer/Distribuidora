@@ -161,8 +161,8 @@
             </mat-expansion-panel>
           </mat-accordion>
         </td>
-        <!-- <td *ngIf="this.ordersService.clients"><button [disabled]="!order.payload.val().aproved" mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
-        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td> -->
+        <td *ngIf="this.ordersService.clients"><button [disabled]="!order.payload.val().aproved" mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
       </tr>
       <tr>
         <th>TOTAL</th>
@@ -170,8 +170,8 @@
       </tr>
     </tbody>
   </table>
-  <button *ngIf="currentItemsToShow.length > 0" mat-raised-button (click)="downloadAll(currentItemsToShow)" color="primary" >Descargar todos <mat-icon>picture_as_pdf</mat-icon></button>
-  <mat-paginator (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="10" [pageSizeOptions]="[10, 20]"></mat-paginator>
+  <button *ngIf="currentItemsToShow" mat-raised-button (click)="downloadAll(currentItemsToShow)" color="primary" >Descargar todos <mat-icon>picture_as_pdf</mat-icon></button>
+  <mat-paginator *ngIf="this.filteredOrders" (page)="onPageChange($event)" [length]="this.filteredOrders.length" [pageSize]="10" [pageSizeOptions]="[10, 20]"></mat-paginator>
 
 </div>
 <ng-template #elseBlock>

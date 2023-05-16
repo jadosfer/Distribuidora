@@ -26,7 +26,6 @@ export class MatNavbarComponent implements OnInit{
 
   logout() {
     //this.router.navigateByUrl('/checkout');
-    this.ordersService.clearOrder();
     this.auth.logout()
     this.router.navigate(['/checkout/']);
   }

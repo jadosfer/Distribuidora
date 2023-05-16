@@ -1,3 +1,4 @@
+import { OrdersService } from 'src/app/services/orders.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { ChartOptions, ChartType } from 'chart.js';
 
@@ -38,7 +39,7 @@ export class PieChartComponent implements OnInit {
   //   },
   // ];
 
-  constructor() { }
+  constructor(private ordersService: OrdersService) { }
 
   ngOnInit(): void {
     this.pieChartLabels = [];
@@ -72,9 +73,10 @@ export class PieChartComponent implements OnInit {
   getCategories(orders: any) {
     let categories: string[] = []
     for (let i=0;i<orders.length;i++) {
-      for (let j=0;j<orders[i].payload.val().order.products.length; j++) {
-        if (!this.isCategoryIncluded(categories, orders[i].payload.val().order.products[j].product.prodsCategory)) {
-          categories.push(orders[i].payload.val().order.products[j].product.prodsCategory)
+      let products = this.ordersService.getOrderDetail(orders[i].key).payload.val().products;
+      for (let j=0;j<products.length; j++) {
+        if (!this.isCategoryIncluded(categories, products[j].category)) {
+          categories.push(products[j].category)
         }
       }
     }
@@ -93,9 +95,10 @@ export class PieChartComponent implements OnInit {
     for (let i=0;i<categories.length;i++) {
       let amount = 0;
       for (let j=0;j<orders.length;j++) {
-        for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
-          if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
-            amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)
+        let products = this.ordersService.getOrderDetail(orders[j].key).payload.val().products;
+        for (let k=0;k<products.length; k++) {
+          if (products[k].category == categories[i]) {
+            amount += parseFloat(products[k].discountPrice)
           }
         }
       }

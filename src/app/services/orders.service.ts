@@ -7,9 +7,6 @@ import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
 import { TOLERATED_DAYS, TOLERATED_DEBT } from '../constants';
-import { OrderDetail } from '../models/order-detail';
-import { Order } from '../models/order';
-import { Product } from '../models/product';
 
 
 @Injectable({
@@ -18,73 +15,55 @@ import { Product } from '../models/product';
 //...........concentra operaciones de pedidos, pagos, clientes y vendedors..............
 export class OrdersService implements OnDestroy {
 
-  private filteredClients: any[];
-  private clientsCurrentItemsToShow: any[];
-  private fromEditing: boolean;
-  private query: any;
-  private clientPageIndex: number;
-  private clientPageSize: number;
-  private itemsPerPage: number;
-
-
-  clients: any[];
-  order: any;
-  orders: any[];
-  sellers: any[];
-  orderId: any;
   appUser: AppUser;
-  products:any[];
-  prodsCategory: any;
-  filteredProducts:any[];
-  orderIndex: number;
-  fantasyName: string;
-  hasDiscount: boolean = false;
-  orderNumber: any = [];
-  ordersDetail: any[]
-
+  clientPageIndex: number;
+  clientPageSize: number;
+  clients: any[] = [];
+  clientsCurrentItemsToShow: any[];
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
-
+  fantasyName: string;
+  filteredClients: any[];
+  filteredProducts: any[];
+  fromEditing: boolean;
+  itemsPerPage: number;
+  orders: any[];
+  ordersDetail: any[];
   payment: any;
-  payments: any[];
   paymentId: any;
   paymentIndex: number;
+  payments: any[];
+  products: any[];
+  prodsCategory: any;
+  query: any;
+  sellers: any[] = [];
   subscriptions: Subscription[] = [];
 
-  constructor(private db: AngularFireDatabase, private productService: ProductService,
-    private auth: AuthService, private route: ActivatedRoute) {
+  constructor(
+    private db: AngularFireDatabase,
+    private productService: ProductService,
+    private auth: AuthService,
+    private route: ActivatedRoute
+    ) {
       const sub = this.getAllSellers().subscribe(sellers => {
         this.sellers = sellers;
       });
       this.subscriptions.push(sub)
       const sub2 = this.auth.appUser$.subscribe(appUser => {
         this.appUser = appUser;
+        //this.appUser = {name : "Natalia Guevara"}
         this.filteredProducts = [];
-        const sub3 = this.productService.getAll().subscribe(products => {
+        const sub3 = this.productService.getAllProducts().subscribe(products => {
           this.filteredProducts = this.products = products;
           const sub4 = this.route.queryParamMap.subscribe(params => {
             this.prodsCategory = params.get('prodsCategory');
             if (this.products) {
               this.filteredProducts = (this.prodsCategory) ?
-              this.products.filter((p: { payload: { val: () => { (): any; new(): any; prodsCategory: string | null; }; }; }) =>
+              this.products.filter((p: any) =>
                 p.payload.val().prodsCategory == this.prodsCategory) :
               this.products;
             }
           });
           this.subscriptions.push(sub4)
-
-          const sub5 = this.getOrder().subscribe(order => {
-            if (!order) this.createOrderEmpty(); // pruebo esto
-            this.order = order;
-              this.orderIndex = -1
-              for (let i=0;i<this.order.length;i++) {
-                if (this.order && this.appUser && this.order[i].payload.val().seller == this.appUser.name) {
-                  this.orderIndex = i
-                  this.orderId =  this.order[i].key;
-                  break
-                }
-              }
-          });
-          this.subscriptions.push(sub5)
         });
         this.subscriptions.push(sub3)
       });
@@ -109,148 +88,75 @@ export class OrdersService implements OnDestroy {
       this.subscriptions.push(sub8)
       const sub9 = this.getAllOrdersDetail().subscribe(ordersDetail => {
         this.ordersDetail = ordersDetail;
-        console.log('asigna ordesDetail');
       });
       this.subscriptions.push(sub9)
-    }
-
+  }
     //---------------------------------------------------------
 
-  createOrdersdetails(orders: any[]): void { //borrar luego metodo redisenio
-    console.log('crea ordersDetail solo para migrar');
-    orders.forEach((order)=>{
-      if (!order.payload.val().fantasyName) {
-        let products: Product[]= []
-        order.payload.val().order.products.forEach((p: any) => {
-          let product: Product = {
-            title: p.product.title,
-            category: p.product.prodsCategory,
-            discountPrice: p.discountPrice,
-            quantity: p.quantity
-          }
-          p.discount ? product.discount = p.discount: 0;
-          products.push(product)
-        });
-          //console.log('orders[0].payload.val() ', order.payload.val());
+    //NO BORRAR********************************************************
+  // createOrdersdetails(orders: any[]): void { //borrar luego metodo redisenio
+  //   console.log('crea ordersDetail solo para migrar');
+  //   orders.forEach((order)=>{
+  //     if (!order.payload.val().fantasyName) {
+  //       let products: Product[]= []
+  //       order.payload.val().order.products.forEach((p: any) => {
+  //         let product: Product = {
+  //           title: p.product.title,
+  //           category: p.product.prodsCategory,
+  //           discountPrice: p.discountPrice,
+  //           quantity: p.quantity
+  //         }
+  //         p.discount ? product.discount = p.discount: 0;
+  //         products.push(product)
+  //       });
+  //         //console.log('orders[0].payload.val() ', order.payload.val());
 
-        let orderDetail: OrderDetail = {
-          products: products
-        }
-        let result = this.db.list('/ordersDetail/').push(orderDetail);
+  //       let orderDetail: OrderDetail = {
+  //         products: products
+  //       }
+  //       let result = this.db.list('/ordersDetail/').push(orderDetail);
 
-        if (result.key) {
-          let ord: Order = {
-            amountWithIva: order.payload.val().amount,
-            aproved: order.payload.val().aproved,
-            date: order.payload.val().date,
-            fantasyName: order.payload.val().clientFantasyName,
-            iva: order.payload.val().iva,
-            orderDetailKey: result.key,
-            seller: order.payload.val().order.sellerName
-          }
+  //       if (result.key) {
+  //         let ord: Order = {
+  //           amountWithIva: order.payload.val().amount,
+  //           aproved: order.payload.val().aproved,
+  //           date: order.payload.val().date,
+  //           fantasyName: order.payload.val().clientFantasyName,
+  //           iva: order.payload.val().iva,
+  //           orderDetailKey: result.key,
+  //           seller: order.payload.val().order.sellerName
+  //         }
 
-          order.payload.val().fullPaymentDate ? ord.fullPaymentDate = order.payload.val().fullPaymentDate: undefined;
-          order.payload.val().hasDiscount ? ord.hasDiscount = order.payload.val().hasDiscount: undefined;
-          order.payload.val().clientInDebt ? ord.clientInDebt = order.payload.val().clientInDebt: undefined;
+  //         order.payload.val().fullPaymentDate ? ord.fullPaymentDate = order.payload.val().fullPaymentDate: undefined;
+  //         order.payload.val().hasDiscount ? ord.hasDiscount = order.payload.val().hasDiscount: undefined;
+  //         order.payload.val().clientInDebt ? ord.clientInDebt = order.payload.val().clientInDebt: undefined;
 
-          this.db.object('/orders/' + order.key).remove();
-          this.db.object('/orders/' + order.key).update(ord);
-        }
-        else console.log('la operacion fallo');
-      }
-      else console.log('');
-    })
-  }
+  //         this.db.object('/orders/' + order.key).remove();
+  //         this.db.object('/orders/' + order.key).update(ord);
+  //       }
+  //       else console.log('la operacion fallo');
+  //     }
+  //     else console.log('');
+  //   })
+  // }
+  //NO BORRAR********************************************************
 
 
   // ................................................orders methods................................................
 
-  isStock(order: any, products: any) { //ver este metodo
-    let orderDetail = this.getOrderDetail(order.payload.val().orderDetailKey);
-    for (let i=0;i<orderDetail.payload.val().products.length;i++) {
-      if (products[i].quantity > 0 && !this.isProductStock(products[i])) {
-        return false
-      }
-    }
-    return true
-  }
 
   getOrderDetail(key: string) {
     return this.ordersDetail.find(od => od.key === key);
   }
 
-  isProductStock(product: any) {
-    for (let i=0;i<this.products.length;i++) {
-      if (this.products[i].payload.val().title == product.product.title && this.products[i].payload.val().stock < product.quantity) return false
-    }
-    return true
-  }
-
-  getStock(product: any) {
-    if (this.products) {
-      for (let i=0;i<this.products.length;i++) {
-        if (this.products[i].payload.val().title == product.product.title) return this.products[i].payload.val().stock
-      }
-    }
-    return 0;
-  }
-
-  createOrderEmpty() {
-    if (!this.appUser) return;
-    if (!this.products) return;
-    let products = []
-    for (let i=0;i<this.products.length;i++) {
-      products.push({
-        "price": this.products[i].payload.val().discPrice1,
-        "discountPrice": this.products[i].payload.val().discPrice1,
-        "product": this.products[i].payload.val(),
-        "productId":this.products[i].key,
-        "quantity": 0,
-        "discount": 0
-      })
-    }
-    let result = this.db.list('/order/').push({
-      "seller": this.appUser.name,
-      "products": products
-    });
-  }
-
-  public createOrderNumber() {
-    let result = this.db.list('/orderNumber/').push({
-      "orderNumber": 0
-    });
-  }
-
-  updateOrder(key: any, order:any) {
-    return this.db.object('/orders/' + key).update(order);
-  }
-
   async removeOrder(order: any) {
+    let orderProducts = this.getOrderDetail(order.payload.val().orderDetailKey).payload.val().products;
+    await this.productService.restoreStock(order, this.products, orderProducts);
+    await this.db.object('/ordersDetail/' + order.payload.val().orderDetailKey).remove();
     await this.db.object('/orders/' + order.key).remove();
-    await this.productService.restoreStock(order, this.products);
+
+
     //this.addPaymentAmount(order.payload.val().fantasyName, order.payload.val().debt, this.clients);
-  }
-
-  resetOrder(orderIndex: any){
-    this.db.object('/order/'+ this.order[orderIndex].key).remove();
-  }
-
-  clearOrder() {
-    //this.db.object('/order/').remove(); elimina todo "order" de la base
-    if (!this.order) return;
-    for (let i=0;i<this.order.length;i++) {
-      if (this.order[i].payload.val().seller == this.appUser.name) this.db.object('/order/'+ this.order[i].key).remove();
-    }
-  }
-
-  getOrder() {
-    let result = this.db.list('/order').snapshotChanges();
-    return result;
-  }
-
-  getOrderNumber() {
-    let result = this.db.list('/orderNumber').snapshotChanges();
-    return result;
   }
 
   getAllOrders() {
@@ -261,126 +167,20 @@ export class OrdersService implements OnDestroy {
     return this.db.list('/ordersDetail').snapshotChanges();
   }
 
-  updateOrderItemQuantity(order:any, product:any, change: number, orderIndex: number){
-    for (let i=0;i<this.products.length;i++) {
-      if (product.productId == order[orderIndex].payload.val().products[i].productId) {
-        this.db.object('/order/' + order[orderIndex].key +'/products/' + i).update({
-          "quantity": order[orderIndex].payload.val().products[i].quantity + change
-        });
-        break;
-      }
-    }
-  }
 
-  discount(order:any, product:any, discount: number, orderIndex: number) {
-    let products = []
-      for (let i=0;i<order[this.orderIndex].payload.val().products.length;i++) {
-        if (product.productId == order[this.orderIndex].payload.val().products[i].productId) {
-          this.db.object('/order/' + order[orderIndex].key +'/products/' + i).update({
-            "discountPrice": order[this.orderIndex].payload.val().products[i].price * (1 - discount/100),
-            "discount": discount
-          });
-          break;
-        }
-      }
-  }
 
-  createOrder(seller: string, fantasyName: string, iva: number, products: any, quantity: number, date: any, clientDebt: number) {
-    let prods = [];
-    let clientCategory = this.getClientCategory(fantasyName);
-    let amount = 0;
-    for (let i=0;i<products.length;i++) {
-      if (parseInt(products[i].quantity) != 0) { //solo guardo los prod con quant > 0
-        prods.push({"discount" : products[i].discount, "discountPrice": products[i].discountPrice, "quantity": products[i].quantity,
-        "product": {"title": products[i].product.title, "prodsCategory": products[i].product.prodsCategory}});
-        amount += parseInt(products[i].quantity) * parseFloat(products[i].discountPrice) * (1 + iva/100);
-        if (parseFloat(products[i].discount) != 0) this.hasDiscount = true;
-      }
-    }
-    let time = new Date();
-    time.getHours();
-    //time.getMinutes();
-    let isAproved = clientDebt <= 0 && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
-
-    if (iva != 21 && clientCategory!="Gimnasio" && clientCategory!="Kiosko") isAproved = false;
-    if (date == null) {
-      date = time.getTime();
-    }
-    else date = date.unix()*1000;
-    if (amount) amount = Math.round(amount * 10) / 10;
-
-    let result = this.db.list('/orders/').push({
-      "order": {
-        "products":prods,
-        "seller": seller,
-      },
-      "date": date,
-      "iva": iva,
-      "fantasyName": fantasyName,
-      "aproved": isAproved,
-      "amount": amount,
-      "hasDiscount": this.hasDiscount,
-      "clientInDebt": clientDebt > 0,
-      "orderNumber": this.orderNumber[0].payload.val().orderNumber,
-    })
-    this.incrementOrderNumber();
-    //this.addPaymentAmount(fantasyName, -amount)
-    this.productService.updateStocks(prods, this.products, false);
-  }
-
-  //volarlo si resuevo quitar debt en orders
-  restoreOrderAmount(payment: any) {
-    let rest = 0;
-    if (payment.payload) rest = payment.payload.val().amount;
-    else rest = payment.amount;
-    for (let i=0;i<this.orders.length;i++) {
-      if (payment.payload && payment.payload.val().orderNumber > 0 && this.orders[i].payload.val().orderNumber == payment.payload.val().orderNumber) {
-        if (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.payload.val().amount) {
-          rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
-          let debt = Math.round((parseFloat(this.orders[i].payload.val().amount)) * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": debt})
-          if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.payload.val().client})
-          break
-        }
-        else if (parseFloat(this.orders[i].payload.val().debt)) {
-          let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
-          debt = Math.round(debt * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": debt});
-          break
-        }
-      }
-    }
-    for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().fantasyName.toLowerCase().includes(payment.client.toLowerCase()) ) {
-        if (parseFloat(this.orders[i].payload.val().amount) && parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
-          rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
-          let amount = Math.round(this.orders[i].payload.val().amount * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": amount})
-          if (rest > 10) this.restoreOrderAmount({"orderNumber": 0, "amount": rest, "client": payment.client})
-          break
-        }
-        else if (parseFloat(this.orders[i].payload.val().debt)) {
-          let debt = parseFloat(this.orders[i].payload.val().debt) + rest;
-          debt = Math.round(debt * 10) / 10
-          this.updateOrder(this.orders[i].key, {"debt": debt});
-          break
-        }
-      }
-    }
-  }
-
-  sendNote (amount: any, fantasyName: string) {
-    amount = Math.round(amount * 10) / 10;
-    let result = this.db.list('/creditNotes/').push({
-      "amount": amount,
-      "fantasyName": fantasyName,
-      "date": new Date().getTime()
-    });
-  }
-
-  cleanDebt(order: any) {
-    this.updateOrder(order.key, {"debt": 0})
-  }
+  // discount(order:any, product:any, discount: number, orderIndex: number) {
+  //   let products = []
+  //     for (let i=0;i<order[this.orderIndex].payload.val().products.length;i++) {
+  //       if (product.productId == order[this.orderIndex].payload.val().products[i].productId) {
+  //         this.db.object('/order/' + order[orderIndex].key +'/products/' + i).update({
+  //           "discountPrice": order[this.orderIndex].payload.val().products[i].price * (1 - discount/100),
+  //           "discount": discount
+  //         });
+  //         break;
+  //       }
+  //     }
+  // }
 
   getTotalAmount(products: any) {
     let totalAmount = 0;
@@ -392,18 +192,12 @@ export class OrdersService implements OnDestroy {
     return totalAmount;
   }
 
-  getTotalCost(order: any) {
-    let totalCost = 0;
-    if (order.payload.val().order.products) {
-      for (let i = 0;i < order.payload.val().order.products.length;i++) {
-        totalCost += order.payload.val().order.products[i].discountPrice * order.payload.val().order.products[i].quantity
-      }
-    }
-    return totalCost;
-  }
-
   aproveOrder(order:any) {
     this.updateOrder(order.key, {"aproved": true})
+  }
+
+  updateOrder(key: any, order:any) {
+    return this.db.object('/orders/' + key).update(order);
   }
 
   isClientInDebt(fantasyName: string, orders: any[]) {
@@ -413,8 +207,6 @@ export class OrdersService implements OnDestroy {
     }
     return false;
   }
-
-
 
   //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a dias tolerados, sino trae el monto total de pedidos
   getClientOrdersAmount(fantasyName: string, inDebt: boolean) {
@@ -429,10 +221,6 @@ export class OrdersService implements OnDestroy {
     return amount
   }
 
-  incrementOrderNumber() {
-    let orderNumb = parseInt(this.orderNumber[0].payload.val().orderNumber) + 1;
-    return this.db.object('/orderNumber/' + this.orderNumber[0].key).update({"orderNumber": orderNumb});
-  }
 
   // ................................................clients methods................................................
 
@@ -445,7 +233,15 @@ export class OrdersService implements OnDestroy {
     return this.db.list('/clients').snapshotChanges();
   }
 
-  get(clientId:any) {
+  getUserClients(seller: string): any[] {
+    let userClients: any[] = [];
+    for (let i=0;i<this.clients.length;i++) {
+      if (this.clients[i].payload.val().designatedSeller == seller) userClients.push(this.clients[i].payload.val().fantasyName)
+    }
+    return userClients
+  }
+
+  getClient(clientId:any) {
     return this.db.object('/clients/' + clientId).snapshotChanges();
   }
 
@@ -511,8 +307,8 @@ export class OrdersService implements OnDestroy {
     return payment;
   }
 
-  getAddress(fantasyName: string, clients: any[]) {
-    for (let i=0;i<clients.length;i++) {
+  getAddress(fantasyName: string) {
+    for (let i=0;i<this.clients.length;i++) {
       if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(fantasyName.toLowerCase())) {
         return this.clients[i].payload.val().address;
       }
@@ -541,10 +337,10 @@ export class OrdersService implements OnDestroy {
     return result
   }
 
-  calcDebtGreatherThanToleratedDays(fantasyName: any) {
-    let ordersAmount = this.getClientOrdersAmount(fantasyName, true);
-    return ordersAmount
-  }
+  // calcDebtGreatherThanToleratedDays(fantasyName: any) {
+  //   let ordersAmount = this.getClientOrdersAmount(fantasyName, true);
+  //   return ordersAmount
+  // }
 
   // ................................................payments methods................................................
 

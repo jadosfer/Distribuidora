@@ -69,10 +69,7 @@ export class PaymentsComponent implements OnInit {
         this.appUser = appUser;
         this.subscription3 = this.ordersService.getAllClients().subscribe(clients => {
           this.clients = clients;
-          this.userClients = [];
-          for (let i=0;i<this.clients.length;i++) {
-            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
-          }
+          this.userClients = this.ordersService.getUserClients(appUser.name);
           this.payments = payments;
           this.userPayments = [];
           this.dateRangefilteredPayments = [];
@@ -177,7 +174,7 @@ export class PaymentsComponent implements OnInit {
 
   isClientInUserClients(fantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (fantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
+      if (fantasyName.toLowerCase().includes(userClients[i].toLowerCase().trim())) {
         return true;
       }
     }

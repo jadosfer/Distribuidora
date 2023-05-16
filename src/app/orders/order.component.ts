@@ -9,6 +9,7 @@ import { map, startWith } from 'rxjs/operators';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
 import { UtilityService } from '../services/utility.service';
+import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'order',
@@ -42,7 +43,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   orderProducts:any[] = []
   filteredOrder: any;
   prodQuery: string;
-  order: any[] = [];
+  order: any;
   orderIndex: number;
   OrderId: any;
   disc: number = 0;
@@ -70,40 +71,42 @@ export class OrderComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    public productService: ProductService,
-    public route: ActivatedRoute,
+    private productService: ProductService,
+    private route: ActivatedRoute,
     public ordersService: OrdersService,
+    private orderService: OrderService,
     private auth: AuthService,
     private router: Router,
     public utilityService: UtilityService
   ) {
 
-    //this.order = this.ordersService.getOrder();
+    // this.order = this.ordersService.getOrder();
   }
 
   ngOnInit(){
-    this.subscription = this.ordersService.getOrderNumber().subscribe(orderNumber => {
-      if (!orderNumber) this.ordersService.createOrderNumber();
-      this.ordersService.orderNumber = orderNumber;
+    this.subscription = this.orderService.getOrderNumber().subscribe(orderNumber => {
+      if (!orderNumber) this.orderService.createOrderNumber();
+      this.orderService.orderNumber = orderNumber;
     });
 
     this.subscription2 = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.orderIndex = 0;
-      this.subscription3 = this.ordersService.getOrder().subscribe(order => {
+      this.orderIndex = this.orderService.orderIndex;
+      this.subscription3 = this.orderService.getOrder().subscribe(order => {
+        this.orderService.clearOrder();
         this.order = order;
-        if (this.order.length == 0) this.ordersService.createOrderEmpty();
+        if (this.order.length == 0) this.orderService.createOrderEmpty();
 
         this.orderIndex = -1
         for (let i=0;i<this.order.length;i++) {
-          if (this.appUser && this.order[i].payload.val().seller == this.appUser.name) {
+          if (this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
             this.orderIndex = i
             this.orderProducts = this.order[this.orderIndex].payload.val().products;
             break
           }
         }
         if (this.appUser && this.orderIndex == -1) {
-          this.ordersService.createOrderEmpty();
+          this.orderService.createOrderEmpty();
         }
 
         this.subscription4 = this.ordersService.getAllClients().subscribe(clients => {
@@ -216,7 +219,7 @@ export class OrderComponent implements OnInit, OnDestroy {
     if (!this.order) return 0;
     for (let i=0;i<this.order[this.orderIndex].payload.val().products.length;i++) {
       if (this.order[this.orderIndex].payload.val().products[i].product.title == item.title) return this.order[this.orderIndex].payload.val().products[i].quantity;
-    }
+    }this.clients
     return 0;
   }
 
@@ -244,27 +247,28 @@ export class OrderComponent implements OnInit, OnDestroy {
       return
     }
     this.showedProducts = (prodQuery) ?
-    this.showedProducts.filter((p: { product: { title: string; }; }) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
+    this.showedProducts.filter((p: any) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
     this.showedProducts;
     this.actualPage = 0;
     this.refreshPages();
   }
 
-  updateOrderItemQuantity(product: any, change: number, index: number){
+  updateOrderItemQuantity(product: any, quantityChange: number, index: number){
     for (let i=0;i<this.orderProducts.length;i++) {
       if (product.product.title == this.orderProducts[i].product.title) {
-        if (this.orderProducts[i].quantity + change < 0) return;
-        if (this.orderProducts[i].quantity + change > this.ordersService.getStock(product) ) {
+        if (this.orderProducts[i].quantity + quantityChange < 0) return;
+        if (this.orderProducts[i].quantity + quantityChange > this.orderService.getStock(product) ) {
           this.noStock = true;
           setTimeout(()=> {
             this.noStock = false;
-           }, 1600);
+           }, 2000);
           return;}
-        this.orderProducts[i].quantity += change;
+          //cartProducts[i].quantity += quantityChange;
+          this.orderProducts[i].quantity += quantityChange;
         break
       }
     }
-    this.quantity += change;
+    this.quantity += quantityChange;
   }
 
   orderProductsLength() {
@@ -289,11 +293,11 @@ export class OrderComponent implements OnInit, OnDestroy {
     // }
 
   beforeShowOrder() {
-    if (!this.ordersService.isStock(this.order[this.orderIndex], this.orderProducts)) {
+    if (!this.orderService.isStock(this.order[this.orderIndex])) {
       this.noStock = true;
       setTimeout(()=> {
         this.noStock = false;
-        }, 1600);
+        }, 2000);
       return
     }
     this.orderEmpty = true;
@@ -302,12 +306,18 @@ export class OrderComponent implements OnInit, OnDestroy {
         this.orderEmpty = false;
       }
     }
+    if (this.orderEmpty) {
+      setTimeout(()=> {
+        this.orderEmpty = false;
+      }, 2000);
+      return;
+    }
     if (this.orderEmpty) return;
     if (this.fantasyName == "") {
       this.client = false;
       setTimeout(()=> {
           this.client = true;
-        }, 900);
+        }, 2000);
       return;
     }
 
@@ -322,12 +332,12 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        let debt = this.ordersService.calcDebtGreatherThanToleratedDays(this.fantasyName);
-        this.ordersService.createOrder(this.order[this.orderIndex].payload.val().seller,
-          this.fantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
+        //let debt = this.ordersService.calcDebtGreatherThanToleratedDays(this.fantasyName);
+        console.log('this.orderIndex ', this.orderIndex);
+        this.orderService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.fantasyName, this.iva, this.orderProducts, this.quantity, this.date);
         this.fantasyName = "";
         this.router.navigateByUrl('/orders/orders');
-        this.ordersService.resetOrder(this.orderIndex);
+        this.orderService.resetOrder(this.orderIndex);
       }
       return;
     }
@@ -341,7 +351,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       this.orderProducts[i].quantity = 0;
     }
     this.showOrder=false;
-    this.ordersService.resetOrder(this.orderIndex);
+    this.orderService.resetOrder(this.orderIndex);
     this.fantasyName = "";
     }
   }
@@ -362,12 +372,12 @@ export class OrderComponent implements OnInit, OnDestroy {
   }
 
   getStock(product: any) {
-    return this.ordersService.getStock(product);
+    return this.orderService.getStock(product);
   }
 
   @HostListener('window:beforeunload', ['$event'])
   unloadHandler(event: Event) {
-    this.ordersService.clearOrder();
+    this.orderService.clearOrder();
   }
 
   //funciones paginator bootstrap
@@ -394,7 +404,7 @@ export class OrderComponent implements OnInit, OnDestroy {
   //funciones paginator bootstrap
 
   ngOnDestroy() {
-    this.ordersService.clearOrder();
+    this.orderService.clearOrder();
     this.subscription.unsubscribe();
     this.subscription2.unsubscribe();
     this.subscription3.unsubscribe();

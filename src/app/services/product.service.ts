@@ -2,6 +2,7 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { Injectable, OnInit } from '@angular/core';
 import { OrdersService } from './orders.service';
 import { Subscription } from 'rxjs';
+import { Product } from '../models/product';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class ProductService implements OnInit{
   subscription4: Subscription;
 
   constructor(private db: AngularFireDatabase) {
-    this.subscription = this.getAll().subscribe(products => {
+    this.subscription = this.getAllProducts().subscribe(products => {
       this.products = products;
     });
     this.subscription2 = this.getAllRecharges().subscribe(recharges => {
@@ -61,7 +62,7 @@ export class ProductService implements OnInit{
     return result;
   }
 
-  getAll() {
+  getAllProducts() {
     return this.db.list('/products').snapshotChanges();
   }
 
@@ -86,7 +87,7 @@ export class ProductService implements OnInit{
     return this.db.object('/products/' + productId).remove();
   }
 
-  recharge(products:any, distRecharge: number, comRecharge: number, kiosRecharge: number, gymRecharge: number) {
+  recharge(products:any, recharges: any) {
     let result = new Promise(() => {});
     for (let i=0;i<products.length;i++) {
       let prod = {
@@ -95,10 +96,10 @@ export class ProductService implements OnInit{
         "disc3": products[i].payload.val().disc3,
         "disc4": products[i].payload.val().disc4,
         "buyPrice": products[i].payload.val().buyPrice,
-        "price1": products[i].payload.val().buyPrice * (1 + distRecharge/100),
-        "price2": products[i].payload.val().buyPrice * (1 + comRecharge/100),
-        "price3": products[i].payload.val().buyPrice * (1 + kiosRecharge/100),
-        "price4": products[i].payload.val().buyPrice * (1 + gymRecharge/100),
+        "price1": products[i].payload.val().buyPrice * (1 + recharges.distRecharge/100),
+        "price2": products[i].payload.val().buyPrice * (1 + recharges.comRecharge/100),
+        "price3": products[i].payload.val().buyPrice * (1 + recharges.kiosRecharge/100),
+        "price4": products[i].payload.val().buyPrice * (1 + recharges.gymRecharge/100),
         "discPrice1": 0,
         "discPrice2": 0,
         "discPrice3": 0,
@@ -169,7 +170,7 @@ export class ProductService implements OnInit{
   }
 
   applyDiscountToAll() {
-    this.subscription3 = this.getAll().subscribe(products=> {
+    this.subscription3 = this.getAllProducts().subscribe(products=> {
       this.products = products;
       for (let i=0;i<this.products.length;i++) {
         let product = this.products[i].payload.val();
@@ -185,7 +186,7 @@ export class ProductService implements OnInit{
   updateStocks(prods: any, thisProds: any, add: boolean) {
     for (let i=0;i<prods.length;i++) {
       for (let j=0;j<thisProds.length;j++) {
-        if (prods[i].product.title == thisProds[j].payload.val().title) {
+        if (prods[i].title == thisProds[j].payload.val().title) {
           let quantity;
           if (add) quantity = parseInt(thisProds[j].payload.val().stock) + parseInt(prods[i].quantity);
           else quantity = parseInt(thisProds[j].payload.val().stock) - parseInt(prods[i].quantity);
@@ -197,13 +198,14 @@ export class ProductService implements OnInit{
     }
   }
 
-  async restoreStock(order: any, products: any) {
+  async restoreStock(order: any, products: any, orderProducts: Product[]) {
+    console.log('orderProducts ', orderProducts);
     let prods = [];
-    for (let i=0;i<order.payload.val().order.products.length;i++) {
+    for (let i=0;i<orderProducts.length;i++) {
       for (let j=0;j<products.length;j++) {
-        if (order.payload.val().order.products[i].product.title == products[j].payload.val().title)
+        if (orderProducts[i].title == products[j].payload.val().title)
         await this.db.object('/products/' + products[j].key).update({
-          "stock": parseInt(products[j].payload.val().stock) + parseInt(order.payload.val().order.products[i].quantity)
+          "stock": parseInt(products[j].payload.val().stock) + orderProducts[i].quantity
         });
       }
     }

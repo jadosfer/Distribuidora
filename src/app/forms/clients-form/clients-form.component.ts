@@ -31,7 +31,7 @@ export class ClientsFormComponent {
     this.clientsCategories = categoryService.getAllClientsCategories();
     this.sellers$ = ordersService.getAllSellers();
     this.id = this.route.snapshot.paramMap.get('id');
-    if (this.id) this.subscription = this.ordersService.get(this.id).take(1).subscribe(p => {
+    if (this.id) this.subscription = this.ordersService.getClient(this.id).take(1).subscribe(p => {
       this.client = p.payload.val();
     });
    }

@@ -1,8 +1,6 @@
 import { StockService } from '../services/stock.service';
 import { OrdersService } from '../services/orders.service';
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { ProductService } from '../services/product.service';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AppUser } from '../models/app-user';
 import { DatePipe } from '@angular/common'
@@ -10,10 +8,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
 import { MatPaginator } from '@angular/material/paginator';
-import { Observable, Subscription, from } from 'rxjs';
+import { Subscription, from } from 'rxjs';
 import { TOLERATED_DAYS } from '../constants';
-import { Order } from '../models/order';
-import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'orders',
@@ -31,132 +27,139 @@ export class OrdersComponent implements OnInit {
   appUser: AppUser;
 
   order: any;
-  // orders: any[];
-  clients: any;
   recentUserOrders: any[] = [];
   userOrders: any[] = [];
-  titles: string[]=[];
+  orders: any[];
   filteredProduct:any[];
   filteredOrders:any[];
   currentItemsToShow:any[];
   dateRangefilteredOrders:any[];
   datefilteredOrders:any[];
-  products:any[];
   date: any;
   dateValue: string;
   clientValue: string;
   sellerValue: string;
   ordersNotAproved: number = 0;
   notAprovedOrders: any[] = [];
-
-  title: string;
-  quantity: number;
-  aproved: string[] = ["NO", "SI"];
-  selected: string = "NO";
   query: {client: string, seller: string, date: string, dateRange: {start: Date, end: Date}} = {client: "", seller: "", date: "", dateRange: {start: new Date(2017, 1, 1), end: new Date(2040, 1, 1)}}
 
-  aproveFirst: boolean = false;
   isExpanded: boolean = false;
-  changeCheckbox: boolean = false;
   debtWarning: boolean = false;
   userClients: string[];
   debtors: any[];
 
   subscription: Subscription;
   subscription2: Subscription;
-  subscription3: Subscription;
   orderDetail: any
   openAccordion: number = -1;
 
-  constructor(public ordersService: OrdersService,
-  private auth: AuthService, public datepipe: DatePipe,
-  public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
+  constructor(
+    public ordersService: OrdersService,
+    private auth: AuthService,
+    public datepipe: DatePipe,
+    public stockService: StockService,
+    private dateAdapter: DateAdapter<Date>) {
     this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
   }
 
   ngOnInit(){
-    this.filter("");
-    this.subscription = this.ordersService.getAllOrders().subscribe(orders => {
-      this.subscription2 = this.auth.appUser$.subscribe(appUser => {
-        this.appUser = appUser;
-        this.subscription3 =  this.ordersService.getAllClients().subscribe(clients => {
-          this.clients = clients;
-          this.userClients = [];
-          for (let i=0;i<this.clients.length;i++) {
-            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
-          }
-          this.ordersService.orders =  orders;
-          //---------------------------------------------------------
-          // if (this.ordersService.orders[0].payload.val().order) { //borrar luego
-          //   this.ordersService.createOrdersdetails(this.ordersService.orders)
-          // }
-          //---------------------------------------------------------
-
-
-          this.recentUserOrders = [];
-          this.userOrders = [];
-          this.debtors = [];
-          this.dateRangefilteredOrders = [];
-          this.currentItemsToShow = [];
-          this.notAprovedOrders = [];
-          this.ordersNotAproved = 0;
-          for (let i=0;i<this.ordersService.orders.length;i++) {
-            let isUserOrder = this.ordersService.orders[i].payload.val().seller == this.appUser.name;
-            let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().fantasyName, this.userClients);
-            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //dias mora
-            if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
-              this.userOrders.push(this.ordersService.orders[i]);
-              if (this.ordersService.orders[i].payload.val().aproved == false) {
-                this.notAprovedOrders.push(this.ordersService.orders[i].payload.val());
-                this.ordersNotAproved += 1;
-              }
-            }
-            if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient) && isRecentOrder) {
-              this.recentUserOrders.push(this.ordersService.orders[i]);
+    this.orders = this.ordersService.orders
+    this.subscription = this.auth.appUser$.subscribe(appUser => {
+      this.appUser = appUser;
+      //this.appUser = {name : "Natalia Guevara"}
+      this.ordersService.getAllOrders().subscribe((orders: any) => {
+        this.orders = orders;
+        this.userClients = this.ordersService.getUserClients(this.appUser.name);
+        this.recentUserOrders = [];
+        this.userOrders = [];
+        this.debtors = [];
+        this.dateRangefilteredOrders = [];
+        this.currentItemsToShow = [];
+        this.notAprovedOrders = [];
+        this.ordersNotAproved = 0;
+        for (let i=0;i<this.orders.length;i++) {
+          let isUserOrder = this.orders[i].payload.val().seller == this.appUser.name;
+          let isUserClient = this.isClientInUserClients(this.orders[i].payload.val().fantasyName, this.userClients);
+          let isRecentOrder = Date.now() - this.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //dias mora
+          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
+            this.userOrders.push(this.orders[i]);
+            if (this.orders[i].payload.val().aproved == false) {
+              this.notAprovedOrders.push(this.orders[i].payload.val());
+              this.ordersNotAproved += 1;
             }
           }
-
-          for (let i=0;i<this.recentUserOrders.length;i++) {
-            if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().fantasyName, this.recentUserOrders)) {
-              this.debtors = [];
-              let date = new Date(this.recentUserOrders[i].payload.val().date)
-              this.debtors.push({
-                "debtorName": this.recentUserOrders[i].payload.val().fantasyName,
-                "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
-                "orderDebt": this.recentUserOrders[i].payload.val().amountWithIva
-              });
-              this.debtWarning = true;
-            }
+          if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient) && isRecentOrder) {
+            this.recentUserOrders.push(this.orders[i]);
           }
+        }
 
-          this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.recentUserOrders; //ver que hace??
-
-          //genera el string para la fecha de HOY
-          let today = new Date().getDate().toString();
-          let mon = new Date().getMonth() +1;
-          let year = new Date().getFullYear();
-          let month = mon.toString();
-          if (mon < 10) {
-            month = "0" + mon.toString();
+        for (let i=0;i<this.recentUserOrders.length;i++) {
+          if (this.ordersService.isClientInDebt(this.recentUserOrders[i].payload.val().fantasyName, this.recentUserOrders)) {
+            this.debtors = [];
+            let date = new Date(this.recentUserOrders[i].payload.val().date)
+            this.debtors.push({
+              "debtorName": this.recentUserOrders[i].payload.val().fantasyName,
+              "orderDate": date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear(),
+              "orderDebt": this.recentUserOrders[i].payload.val().amountWithIva
+            });
+            this.debtWarning = true;
           }
-          this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
-          this.dateValue = today + "/" + month + "/" + year;
-          this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+        }
+        this.dateRangefilteredOrders = this.datefilteredOrders = this.filteredOrders = this.recentUserOrders; //ver que hace??
+        this.currentItemsToShow = this.filteredOrders;
 
-          this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
-          if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
-            this.dateValue = "";
-            this.clientValue = this.ordersService.fantasyName; // idem
-            this.filter(this.ordersService.fantasyName); // idem
-            this.ordersService.fantasyName = ""; // idem
-            this.filterByDate("");
-          }
-          this.currentItemsToShow = this.filteredOrders;
-        });
-      });
+        //genera el string para la fecha de HOY
+        let today = new Date().getDate().toString();
+        let mon = new Date().getMonth() +1;
+        let year = new Date().getFullYear();
+        let month = mon.toString();
+        if (mon < 10) {
+          month = "0" + mon.toString();
+        }
+        //this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
+        this.dateValue = today + "/" + month + "/" + year;
+        this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+        if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+          this.dateValue = "";
+          this.clientValue = this.ordersService.fantasyName; // idem
+          this.filter(this.ordersService.fantasyName); // idem
+          this.ordersService.fantasyName = ""; // idem
+          this.filterByDate("");
+        }
+      })
+
+      // //genera el string para la fecha de HOY
+      // let today = new Date().getDate().toString();
+      // let mon = new Date().getMonth() +1;
+      // let year = new Date().getFullYear();
+      // let month = mon.toString();
+      // if (mon < 10) {
+      //   month = "0" + mon.toString();
+      // }
+      // //this.filterByDate(today + "/" + month); //se abre con los pedidos de hoy
+      // this.dateValue = today + "/" + month + "/" + year;
+      // this.filterByDate( this.dateValue); //se abre con los pedidos de hoy
+
+      // this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+      // if (this.ordersService.fantasyName) { // esto es para desde clientes ver los cobros de un cliente en particular
+      //   this.dateValue = "";
+      //   this.clientValue = this.ordersService.fantasyName; // idem
+      //   this.filter(this.ordersService.fantasyName); // idem
+      //   this.ordersService.fantasyName = ""; // idem
+      //   this.filterByDate("");
+      // }
+
+      //---------------------------------------------------------
+      // if (this.orders[0].payload.val().order) { //borrar luego
+      //   this.ordersService.createOrdersdetails(this.orders)
+      // }
+      //---------------------------------------------------------
+
     });
     //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
-    // this.ordersService.getAll().subscribe(clients => {
+    // this.ordersService.getAllProducts().subscribe(clients => {
     //   this.clients = clients;
     // });
 
@@ -165,6 +168,7 @@ export class OrdersComponent implements OnInit {
   expandOrderDetail(order: any, i: number) {
     this.openAccordion = (this.openAccordion === i) ? -1 : i
     this.orderDetail = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val();
+    console.log('this.orderDetail', this.orderDetail);
   }
 
   filter(query: string) {
@@ -174,7 +178,7 @@ export class OrdersComponent implements OnInit {
       if (this.userOrders[i].payload.val().fantasyName.toLowerCase().includes(query.toLowerCase())
       && this.userOrders[i].payload.val().seller.toLowerCase().includes(this.query.seller.toLowerCase())
       && this.datepipe.transform(this.userOrders[i].payload.val().date, 'dd/MM/yyyy HH:mm')?.includes(this.query.date) )
-      //this.filteredOrders.push(this.ordersService.orders[i]);
+      //this.filteredOrders.push(this.orders[i]);
       this.filteredOrders.push(this.userOrders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
@@ -252,7 +256,6 @@ export class OrdersComponent implements OnInit {
     let total = 0;
     if (this.filteredOrders) {
       this.filteredOrders.forEach(order => {
-        //total += this.ordersService.getTotalAmount(order.payload.val().order.products);
         total += parseFloat(order.payload.val().amountWithIva);
       });
     }
@@ -300,7 +303,7 @@ export class OrdersComponent implements OnInit {
   }
 
   exportAsPDF(order: any)  {
-    let orderDetail = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey)
+    let orderProducts = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val().products
     let myDate = new Date(order.payload.val().date);
     var dd = String(myDate.getDate()).padStart(2, '0');
     var mm = String(myDate.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -310,7 +313,7 @@ export class OrdersComponent implements OnInit {
     const line1 = 30
     const line2 = line1 + 10
     const line3 = line2 + 10
-    let address = this.ordersService.getAddress(order.payload.val().fantasyName, this.clients);
+    let address = this.ordersService.getAddress(order.payload.val().fantasyName);
 
     var doc = new jsPDF();
     doc.setFontSize(10);
@@ -336,11 +339,11 @@ export class OrdersComponent implements OnInit {
     doc.text('Importe', 155 + posX, line2);
 
     let cont = 0;
-    for (let i=0;i<orderDetail.payload.val().products.length;i++) {
-      if (orderDetail.payload.val().products[i].quantity != 0) {
-        let total = orderDetail.payload.val().products[i].discountPrice * orderDetail.payload.val().products[i].quantity
-        doc.text(orderDetail.payload.val().products[i].quantity.toString(), 10, line3 + 10*cont);
-        doc.text(orderDetail.payload.val().products[i].title, 30, line3 + 10*cont);
+    for (let i=0;i<orderProducts.length;i++) {
+      if (orderProducts[i].quantity != 0) {
+        let total = orderProducts[i].discountPrice * orderProducts[i].quantity
+        doc.text(orderProducts[i].quantity.toString(), 10, line3 + 10*cont);
+        doc.text(orderProducts[i].title, 30, line3 + 10*cont);
         posX = 0;
         if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
           doc.text("$"+(total * (1+order.payload.val().iva/100)).toFixed(1), 185, line3 + 10*cont);
@@ -348,7 +351,7 @@ export class OrdersComponent implements OnInit {
         else {
           posX = 30
         }
-        doc.text("$"+orderDetail.payload.val().products[i].discountPrice.toFixed(1), 125 + posX, line3 + 10*cont);
+        doc.text("$"+orderProducts[i].discountPrice.toFixed(1), 125 + posX, line3 + 10*cont);
         doc.text("$"+total.toFixed(1), 155 + posX, line3 + 10*cont);
         cont +=1;
       }
@@ -357,9 +360,9 @@ export class OrdersComponent implements OnInit {
     let footerVertPos = line3 + 10 * cont + 10;
     doc.text('---------------------------------------------------------------------------------------------------------------------------------------------------------------------', 10, footerVertPos-5);
     if (this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Gimnasio" && this.ordersService.getClientCategory(order.payload.val().fantasyName) != "Kiosko") {
-      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(orderDetail.payload.val().products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+      doc.text("TOTAL CON IVA " +order.payload.val().iva+"%       $"    + (this.ordersService.getTotalAmount(orderProducts)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
     }
-    else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(orderDetail.payload.val().products)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
+    else doc.text("TOTAL $"    + (this.ordersService.getTotalAmount(orderProducts)*(1 + order.payload.val().iva/100)).toFixed(1), 10, footerVertPos);
 
     // Save the PDF
     doc.save(`${order.payload.val().fantasyName} ${date}.pdf`);
@@ -369,12 +372,8 @@ export class OrdersComponent implements OnInit {
   remove(order: any) {
     if (confirm('Está segur@ que quiere eliminar este pedido? Se restará el monto del pedido a la deuda del cliente')) {
       this.ordersService.removeOrder(order);
-    }
-  }
-
-  cleanDebt(order: any) {
-    if (confirm('Está segur@ que quiere eliminar la DEUDA de este pedido? no modificará la deuda del cliente')) {
-      this.ordersService.cleanDebt(order);
+      // this.filteredOrders = this.filteredOrders.filter(o => o.key != order.key);
+      // this.currentItemsToShow = this.currentItemsToShow.filter(o => o.key != order.key);
     }
   }
 
@@ -395,8 +394,6 @@ export class OrdersComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();
-    this.subscription3.unsubscribe();
   }
 }
 

@@ -25,13 +25,13 @@ import { CommissionsDashComponent } from './commissions/commissionsDash.componen
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
+import { UtilityService } from './services/utility.service';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
   { path: "", component: CheckOutComponent },
   { path: "dashboard", component: DashboardComponent },
-  { path: "orders/order", component: OrderComponent },
   { path: "payments/creditNote", component: CreditNoteComponent },
   { path: "payments/payment", component: PaymentComponent },
   { path: "payments/payments/:id", component: PaymentComponent, canActivate: [AuthGuard, AdminAuthGuard] },
@@ -43,7 +43,6 @@ const routes: Routes = [
   { path: "checkout", component: CheckOutComponent },
 
   { path: "stock/stock", component: StockComponent},
-  { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "buys", component: BuysComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "editProductPrices", component: EditProductPricesComponent, canActivate: [AuthGuard, AdminAuthGuard] },
 
@@ -61,6 +60,10 @@ const routes: Routes = [
   { path: "replaces/replaces", component: ReplacesComponent, canActivate: [AuthGuard, AdminAuthGuard]},
   { path: "commissions/commissionsDash", component: CommissionsDashComponent},
   { path: "commissions/commissions", component: CommissionsComponent},
+  { path: 'orders/order', loadChildren: () => import('./modules/order-lazy/order.module').then(m => m.OrderModule)},
+  { path: 'client/clients', loadChildren: () => import('./modules/clients-lazy/clients-lazy.module').then(m => m.ClientsLazyModule) },
+  { path: 'stock/buy', loadChildren: () => import('./modules/buy-lazy/buy-lazy.module').then(m => m.BuyLazyModule) }
+
 ];
 
 @NgModule({

@@ -39,7 +39,7 @@ export class BuyComponent implements OnInit {
   ngOnInit() {
     this.subscription2 = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.subscription3 = this.productService.getAll().subscribe(products => {
+      this.subscription3 = this.productService.getAllProducts().subscribe(products => {
         this.products = products;
         this.subscription = this.stockService.getBuy().subscribe(buy => {
         this.buy = buy;

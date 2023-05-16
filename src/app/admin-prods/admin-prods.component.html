@@ -4,7 +4,7 @@
     <span class="visually-hidden"></span>
   </div>
 </div> -->
-<div class="SCContainer" *ngIf="true">
+<div class="SCContainer ms-1" *ngIf="true">
   <div><h1 style="display: inline; margin:10px;">ADMINISTRAR PRODUCTOS</h1></div>
   <hr>
   <div>
@@ -95,7 +95,6 @@
             </mat-form-field>
 
             <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid" >Aplicar</button>
-            <span *ngIf="this.recharged">&nbsp;&nbsp;Aplicando</span>
         </p>
         </form>
       </div>
@@ -106,7 +105,10 @@
       </div>
     </div>
 
+
     <div>
+      <br>
+      <span *ngIf="this.recharged" class="text-danger border border-danger p-2 my-5 rounded">&nbsp;&nbsp;Aplicando</span>
       <div class="admin-prods-form" *ngFor="let product of currentItemsToShow; index as i;">
         <form #f2="ngForm" (ngSubmit)="saveProd(f2.value, product)">
           <mat-form-field appearance="legacy" style="width:25vw;min-width:320px;margin-right: 10px; ">
@@ -196,7 +198,8 @@
 
           <button mat-raised-button type="submit" color="primary" [disabled]="!f2.valid">Guardar</button>
           <button (click)="delete(product.key)" mat-raised-button type="button" color="warn">Eliminar</button>
-          <span *ngIf="!f2.valid">&nbsp;&nbsp;ERROR: hay datos inválidos! recuerde usar punto en vez de coma para los decimales</span>
+          <br><br>
+          <span *ngIf="!f2.valid" class="text-danger border border-danger p-2 my-5 rounded">&nbsp;&nbsp;ERROR: hay datos inválidos! recuerde usar punto en vez de coma para los decimales</span>
         </form>
       </div>
     </div>

@@ -32,7 +32,7 @@ export class StockService {
       });
 
       this.filteredProducts = [];
-      this.subscription2 = this.productService.getAll().subscribe(products => {
+      this.subscription2 = this.productService.getAllProducts().subscribe(products => {
         this.filteredProducts = this.products = products;
         this.subscription3 = this.route.queryParamMap.subscribe(params => {
           this.prodsCategory = params.get('prodsCategory');

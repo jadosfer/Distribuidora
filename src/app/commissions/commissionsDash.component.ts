@@ -7,6 +7,7 @@ import { Router} from '@angular/router';
 import { CategoryService } from '../services/category.service';
 import { Subscription } from 'rxjs';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Product } from '../models/product';
 
 @Component({
   selector: 'app-commissions',
@@ -148,7 +149,7 @@ export class CommissionsDashComponent implements OnInit {
     if (orders) {
       for (let i=0;i<orders.length;i++) {
         if (orders[i].payload.val().seller == seller
-        && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) != "Distribuidor") {
+        && this.ordersService.getClientCategory(orders[i].payload.val().fantasyName) != "Distribuidor") {
           amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
         }
       }
@@ -162,7 +163,7 @@ export class CommissionsDashComponent implements OnInit {
     let amount = 0;
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().seller == seller
-      && this.ordersService.getClientCategory(orders[i].payload.val().clientFantasyName) == "Distribuidor") {
+      && this.ordersService.getClientCategory(orders[i].payload.val().fantasyName) == "Distribuidor") {
         amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
     }
@@ -174,13 +175,15 @@ export class CommissionsDashComponent implements OnInit {
     let sales = 0;
     if (orders) {
       for (let i=0;i<orders.length;i++) {
-        if (orders[i].payload.val().seller == seller) {
-          //arreglar!!!
-          for (let j=0;j<orders[i].payload.val().products.length;j++) {
-            if (orders[i].payload.val().products[j].product.prodsCategory == category)
-            sales += parseFloat(orders[i].payload.val().products[j].discountPrice)*orders[i].payload.val().order.products[j].quantity;
+        orders.array.forEach((order: any) => {
+          if (order.payload.val().seller == seller) {
+            let products = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val().products;
+            for (let j=0;j<products.length;j++) {
+              if (products[j].category == category)
+              sales += parseFloat(products[j].discountPrice)*products[j].quantity;
+            }
           }
-        }
+        });
       }
     }
     if (sales) sales = Math.round(sales * 10) / 10;

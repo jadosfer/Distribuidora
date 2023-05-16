@@ -11,6 +11,7 @@ import { ChartOptions, ChartType } from 'chart.js';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
+import { Product } from '../models/product';
 
 
 @Component({
@@ -244,9 +245,9 @@ export class DashboardComponent implements OnInit {
     let colors = []
     for (let i=0;i<orders.length;i++) {
       for (let j=0;j<orders[i].payload.val().products.length; j++) {
-        // arreglar products
-        if (!this.isCategoryIncluded(categories, orders[i].payload.val().products[j].product.prodsCategory)) {
-          categories.push(orders[i].payload.val().products[j].product.prodsCategory)
+        let products = this.ordersService.getOrderDetail(orders[i].payload.val().orderDetailKey).payload.val().products;
+        if (!this.isCategoryIncluded(categories, products[j].product.prodsCategory)) {
+          categories.push(products[j].product.prodsCategory)
           let col = this.color.pop()
           if (col) {
             this.pieChartColors[0].backgroundColor.push(col);
@@ -269,11 +270,19 @@ export class DashboardComponent implements OnInit {
     for (let i=0;i<categories.length;i++) {
       let amount = 0;
       for (let j=0;j<orders.length;j++) {
-        for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
-          if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
-            amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)*parseInt(orders[j].payload.val().order.products[k].quantity)*(1+orders[j].payload.val().iva/100)
+        let products = this.ordersService.getOrderDetail(orders[j].key).payload.val().products;
+        products.array.forEach((p: Product) => {
+          if (p.category == categories[i]) {
+            amount += parseFloat(p.discountPrice)*p.quantity*(1+orders[j].payload.val().iva/100)
           }
-        }
+        });
+
+        // reemplazado por lo de arriba
+        // for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
+        //   if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
+        //     amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)*parseInt(orders[j].payload.val().order.products[k].quantity)*(1+orders[j].payload.val().iva/100)
+        //   }
+        // }
       }
       amounts.push(amount)
     }

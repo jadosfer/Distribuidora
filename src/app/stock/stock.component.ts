@@ -33,7 +33,7 @@ export class StockComponent implements OnInit {
   ngOnInit(){
     this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
-      this.subscription2 = this.productService.getAll().subscribe(products => {
+      this.subscription2 = this.productService.getAllProducts().subscribe(products => {
         this.products = this.filteredProducts = products;
         let alertProducts = []
         for (let i=0;i<this.products.length;i++) {
@@ -88,6 +88,6 @@ export class StockComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();   
+    this.subscription2.unsubscribe();
   }
 }

@@ -66,10 +66,10 @@
 
             </div>
 
-            <span *ngIf="this.clientCategory =='Gimnasio' || this.clientCategory =='Kiosko'">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kiosko 0%</span>
-            <span *ngIf="!client">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
-            <span *ngIf="orderEmpty">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
-            <span *ngIf="noStock">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
+            <span *ngIf="this.clientCategory =='Gimnasio' || this.clientCategory =='Kiosko'" class="text-danger border border-danger p-2 pe-4 rounded">&nbsp;&nbsp;&nbsp;&nbsp;*Gimnasios y Kiosko IVA 0%</span>
+            <span *ngIf="!client" class="text-danger border border-danger p-2 pe-4 rounded">&nbsp;&nbsp;&nbsp;&nbsp;*Especifique el cliente para operar</span>
+            <span *ngIf="orderEmpty" class="text-danger border border-danger p-2 pe-4 rounded">&nbsp;&nbsp;&nbsp;&nbsp;*Haga el pedido</span>
+            <span *ngIf="noStock" class="text-danger border border-danger p-2 pe-4 rounded">&nbsp;&nbsp;&nbsp;&nbsp;*No hay stock suficiente de al menos uno de los productos seleccionados</span>
           </div>
         </div>
       </div>
