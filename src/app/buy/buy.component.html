@@ -1,17 +1,23 @@
 <div class="container-grid">
-  <div style="margin-left:10px;margin-bottom:30px;margin-top:-20px;">
-    <h1>Nueva Compra</h1>
+  <div class="ms-3 row">
+    <div class="col-3">
+      <h1>Nueva Compra</h1>
+    </div>
+    <div *ngIf="orderProducts" class="col-3">
+      <h3>Cantidad Total: {{orderProducts.buyItemsCount}}</h3>
+    </div>
   </div>
   <!-- <div style="margin:20px;">
     <product-filter></product-filter>
   </div> -->
 
-  <div style="margin-left:10px;">
-    <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>
+  <div class="ms-3 mb-3">
+    <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic">Cargar compra</button>
     <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
   </div>
-  <div style="margin:20px;">
-    <table matSort (matSortChange)="sortData($event)">
+  <div class="ms-3">
+    <span *ngIf="buyEmpty" class="text-danger border border-danger p-2 mt-5 mb-5 rounded">Agregue productos a la compra</span>
+    <table class="mt-3" matSort (matSortChange)="sortData($event)">
       <tr>
         <th mat-sort-header="title">Producto</th>
         <th mat-sort-header="quantity">Cantidad</th>
@@ -20,16 +26,16 @@
 
       <tr *ngFor="let p of filteredBuy">
         <td style="max-width: 280px;">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
-        <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}" (blur)="setBuyItemQuantity(this.buy, p, p.quantity)"></td>
+        <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}" (blur)="setBuyItemQuantity(p, p.quantity)"></td>
         <td>{{getQuantityOfP(p)}}</td>
-        <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, -1)" mat-raised-button color="basic">-</button>
-        <button class="left-btn" (click)="updateBuyItemQuantity(this.buy, p, 1)" mat-raised-button color="basic">+</button>
+        <button class="left-btn" (click)="updateBuyItemQuantity(p, -1)" mat-raised-button color="basic">-</button>
+        <button class="left-btn" (click)="updateBuyItemQuantity(p, 1)" mat-raised-button color="basic">+</button>
       </tr>
     </table>
   </div>
 
 
-  <div style="margin-left:10px;">
+  <div class="ms-3">
     <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic" routerLink="/stock/stock">Cargar compra</button>
     <button class="left-btn" (click)="reset()" mat-raised-button color="warn">Anular </button>
   </div>

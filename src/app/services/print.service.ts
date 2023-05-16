@@ -74,8 +74,9 @@ export class PrintService {
           this.payments = paymnts;
           let orders = [];
           let payments = [];
+          let stringDate= ""
           for (let i=0;i<this.ordersService.orders.length;i++) {
-            if (this.ordersService.orders[i].payload.val().clientFantasyName == client.fantasyName) {
+            if (this.ordersService.orders[i].payload.val().fantasyName == client.fantasyName) {
               orders.push(this.ordersService.orders[i].payload.val())
             }
           }
@@ -122,66 +123,69 @@ export class PrintService {
             }
 
             if (this.orderOrPayment && orders.length > 0) {
-              //balance +=  parseFloat(orders[pos1].amount)
-              let humanDateFormat = new Date(orders[pos1].date);
-              let dd = humanDateFormat.getDate();
-              let mm = humanDateFormat.getMonth() + 1;
-              let day;
-              let month;
-              let yyyy = humanDateFormat.getFullYear().toString();
-              if (dd < 10) {
-                day = '0' + dd.toString();
-              }
-              else day = dd.toString();
-              if (mm < 10) {
-                  month = '0' + mm.toString();
-              }
-              else month = mm.toString();
-              let stringDate = day + '/' + month + '/' + yyyy;
+              if (orders[pos1].date) {
+                let humanDateFormat = new Date(orders[pos1].date);
+                let dd = humanDateFormat.getDate();
+                let mm = humanDateFormat.getMonth() + 1;
+                let day;
+                let month;
+                let yyyy = humanDateFormat.getFullYear().toString();
+                if (dd < 10) {
+                  day = '0' + dd.toString();
+                }
+                else day = dd.toString();
+                if (mm < 10) {
+                    month = '0' + mm.toString();
+                }
+                else month = mm.toString();
+                stringDate = day + '/' + month + '/' + yyyy;
+                doc.text(stringDate, col1, line3 + y);
+                doc.text("FACTURA", col2, line3 + y);
+                let orderNum: string = orders[pos1].orderNumber && parseInt(orders[pos1].orderNumber) != 0 ? parseInt(orders[pos1].orderNumber).toString(): "-";
+                doc.text(orderNum, col3, line3 + y);
+                doc.text(parseFloat(orders[pos1].amountWithIva).toFixed(2).toString(), col5, line3 + y);
+                // doc.text(balance.toFixed(2).toString(), col6, line3 + y);
+                doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
 
-              doc.text(stringDate, col1, line3 + y);
-              doc.text("FACTURA", col2, line3 + y);
-              doc.text(parseInt(orders[pos1].orderNumber).toString(), col3, line3 + y);
-              doc.text(parseFloat(orders[pos1].amount).toFixed(2).toString(), col5, line3 + y);
-              // doc.text(balance.toFixed(2).toString(), col6, line3 + y);
-              doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
+              } else stringDate = "Sin datos" //esto nunca se imprime
               orders = this.splice2(orders, pos1);
               doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
             }
             else if (!this.orderOrPayment && payments.length > 0) {
-              //balance -=  parseFloat(payments[pos2].amount)
-              let humanDateFormat = new Date(payments[pos2].date);
-              let dd = humanDateFormat.getDate();
-              let mm = humanDateFormat.getMonth() + 1;
-              let day;
-              let month;
-              let yyyy = humanDateFormat.getFullYear().toString();
-              if (dd < 10) {
-                  day = '0' + dd.toString();
-              }
-              else day = dd.toString();
-              if (mm < 10) {
-                  month = '0' + mm.toString();
-              }
-              else month = mm.toString();
-              let stringDate = day + '/' + month + '/' + yyyy;
-
-              doc.text(stringDate, col1, line3 + y);
-              doc.text(parseInt(payments[pos2].orderNumber).toString(), col3, line3 + y);
-              doc.text(parseFloat(payments[pos2].amount).toFixed(2).toString(), col4, line3 + y);
-              //doc.text(balance.toFixed(2).toString(), col6, line3 + y);
-              doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
-              doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
-              if (payments[pos2].payWay == "Nota de Crédito") doc.text("NOTA CRED.", col2, line3 + y);
-              else doc.text("RECIBO", col2, line3 + y);
+              if (payments[pos2].date) {
+                let humanDateFormat = new Date(payments[pos2].date);
+                let dd = humanDateFormat.getDate();
+                let mm = humanDateFormat.getMonth() + 1;
+                let day;
+                let month;
+                let yyyy = humanDateFormat.getFullYear().toString();
+                if (dd < 10) {
+                    day = '0' + dd.toString();
+                }
+                else day = dd.toString();
+                if (mm < 10) {
+                    month = '0' + mm.toString();
+                }
+                else month = mm.toString();
+                stringDate = day + '/' + month + '/' + yyyy;
+                doc.text(stringDate, col1, line3 + y);
+                let orderNum: string = payments[pos2].orderNumber && parseInt(payments[pos2].orderNumber) != 0 ? parseInt(payments[pos2].orderNumber).toString(): "-";
+                doc.text(orderNum, col3, line3 + y);
+                doc.text(parseFloat(payments[pos2].amount).toFixed(2).toString(), col4, line3 + y);
+                doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
+                doc.text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', 10, line3+y+3);
+                if (payments[pos2].payWay == "Nota de Crédito") doc.text("NOTA CRED.", col2, line3 + y);
+                else doc.text("RECIBO", col2, line3 + y);
+              } else stringDate = "Sin datos" //esto nunca se imprime
               payments = this.splice2(payments, pos2);
             }
           }
 
           doc.setFontSize(8);
+          let documentName = "Estado_de_Cuenta_" + client.fantasyName + ".pdf"
 
           // Save the PDF
-          doc.save('Resumen.pdf');
+          doc.save(documentName);
         });
       });
     }
@@ -210,9 +214,9 @@ export class PrintService {
       }
 
       if (this.orderOrPayment && orders.length > 0) {
-        if (i==0) balance[0] = parseFloat(orders[pos1].amount);
+        if (i==0) balance[0] = parseFloat(orders[pos1].amountWithIva);
         else {
-          balance[i] =  balance[i-1] + parseFloat(orders[pos1].amount)
+          balance[i] =  balance[i-1] + parseFloat(orders[pos1].amountWithIva)
         }
         orders = this.splice2(orders, pos1);
       }

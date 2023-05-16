@@ -214,7 +214,7 @@ export class OrdersService implements OnDestroy {
     if (this.orders) {
       for (let i=0;i<this.orders.length;i++) {
         if (this.orders[i].payload.val().fantasyName.toLowerCase().includes(fantasyName.toLowerCase()) && (!inDebt || this.isOrderInDebt(this.orders[i]))) {
-          amount += parseFloat(this.orders[i].payload.val().amount)
+          amount += parseFloat(this.orders[i].payload.val().amountWithIva)
         }
       }
     }

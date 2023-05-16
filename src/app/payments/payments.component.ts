@@ -163,7 +163,7 @@ export class PaymentsComponent implements OnInit {
         this.filteredPayments.push(this.userPayments[i]);
       }
       this.filteredPayments = (range) ?
-      this.filteredPayments.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
+      this.filteredPayments.filter(p => p.payload.val().date >= Date.parse(range.start._d) && p.payload.val().date <= Date.parse(range.end._d)):
       this.filteredPayments;
       this.query.dateRange.start = new Date(Date.parse(range.start?._d));
       this.query.dateRange.end = new Date(Date.parse(range.end?._d));

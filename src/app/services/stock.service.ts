@@ -18,6 +18,7 @@ export class StockService {
   buyId:any;
   filteredProducts:any;
   products:any;
+  orderProducts: any;
   prodsCategory: string | null;
   subscription: Subscription;
   subscription2: Subscription;
@@ -120,112 +121,22 @@ export class StockService {
     return this.db.list('/buys').snapshotChanges();
   }
 
-  // updateItemQuantity(p:any, quantity: number, stockKey: number){
+  sendBuy(orderProducts: any) {
 
-  //   this.db.object('/stock/' + stockKey).update({
-  //     product: p,
-  //     "quantity": quantity
-  //   })
-  // }
-
-  updateBuyItemQuantity(buy:any, product:any, change: number){
-
-    let buyItemsCount = parseInt(buy[0].payload.val().buyItemsCount) + change;
-    let products = []
-    for (let i=0;i<buy[0].payload.val().products.length;i++) {
-      let plus = 0;
-      if (product.productId == buy[0].payload.val().products[i].productId) plus = change;
-      products.push({
-            "price": buy[0].payload.val().products[i].price,
-            "product": buy[0].payload.val().products[i].product,
-            "productId": buy[0].payload.val().products[i].productId,
-            "quantity": parseInt(buy[0].payload.val().products[i].quantity) + plus,
-          })
-      plus = 0;
-    }
-
-    this.db.object('/buy/' + buy[0].key).update({
-      "buyItemsCount": buyItemsCount,
-      "products": products
+    let prods: any[] = [];
+    orderProducts.products.forEach((p: any) => {
+      if (p.quantity != 0) {
+        prods.push({"title": p.product.title, "quantity": p.quantity, "price": p.product.buyPrice} )
+      }
     });
-  }
-
-  setBuyItemQuantity(buy: any, product: any, quantity: number) {
-    let buyItemsCount = 0;
-    let products = []
-    for (let i=0;i<buy[0].payload.val().products.length;i++) {
-      if (product.productId == buy[0].payload.val().products[i].productId){
-        products.push({
-          "price": buy[0].payload.val().products[i].price,
-          "product": buy[0].payload.val().products[i].product,
-          "productId": buy[0].payload.val().products[i].productId,
-          "quantity": quantity
-        })
-        buyItemsCount += quantity;
-      }
-      else {
-        products.push({
-          "price": buy[0].payload.val().products[i].price,
-          "product": buy[0].payload.val().products[i].product,
-          "productId": buy[0].payload.val().products[i].productId,
-          "quantity": buy[0].payload.val().products[i].quantity,
-        })
-        buyItemsCount += parseInt(buy[0].payload.val().products[i].quantity);
-      }
-    }
-
-    this.db.object('/buy/' + buy[0].key).update({
-      "buyItemsCount": buyItemsCount,
-      "products": products
-    });
-  }
-
-  sendBuy(buy: any) {
-
-    // for (let i=0;i<this.buy[0].payload.val().products.length;i++) {
-    //   if  (this.buy[0].payload.val().products[i].quantity != 0) {
-    //     let quantity = this.products[i].payload.val().stock + this.buy[0].payload.val().products[i].quantity;
-        // this.db.object('/stock/' + this.products[i].key).update({
-        //   //product: this.stock[i].payload.val().product,
-        //   "stock": quantity
-        // });
-    //   }
-    // }
-
-    let prods = [];
-
-    for (let i=0;i<buy[0].payload.val().products.length;i++) {
-      if  (this.buy[0].payload.val().products[i].quantity != 0) {
-        prods.push({"title": buy[0].payload.val().products[i].product.title, "quantity": buy[0].payload.val().products[i].quantity, "price": buy[0].payload.val().products[i].product.buyPrice} )
-      }
-    }
-
     let time = new Date().getTime();
     let result = this.db.list('/buys/').push({
-      "buyItemsCount": buy[0].payload.val().buyItemsCount,
+      "buyItemsCount": orderProducts.buyItemsCount,
       "buy": prods,
       "date": time
     });
     this.db.object('/buy/').remove();
   }
-
-  gentechProductPrice(prod:any) {
-
-  }
-
-  // updateStocks(prods: any) {
-  //   for (let i=0;i<prods.length;i++) {
-  //     for (let j=0;j<this.stock.length;j++) {
-  //       if (prods[i].product.title == this.stock[j].payload.val().product.title) {
-  //         let quantity = this.stock[j].payload.val().quantity - prods[i].quantity;
-  //         this.db.object('/stock/' + this.stock[j].key).update({
-  //           product: this.stock[i].payload.val().product,
-  //           "quantity": quantity
-  //         });
-  //       }
-  //     }
-  //   }
-  // }
 
   reset() {
     this.db.object('/buy/').remove();
