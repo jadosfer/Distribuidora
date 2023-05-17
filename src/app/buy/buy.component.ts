@@ -7,7 +7,6 @@ import { AuthService } from '../services/auth.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
 
-
 @Component({
   selector: 'app-buy',
   templateUrl: './buy.component.html',
@@ -92,9 +91,12 @@ export class BuyComponent implements OnInit {
 
   setBuyItemQuantity(product: any, quantity: string) {
     let quan = parseInt(quantity)
-    if (!Number.isInteger(quan)) return
     for (let i=0;i<this.orderProducts.products.length;i++) {
       if (this.orderProducts.products[i].productId == product.productId) {
+        if (!Number.isInteger(quan)) {
+          this.orderProducts.products[i].quantity = 0;
+          return
+        }
         this.orderProducts.products[i].quantity = quan;
       }
     }

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { BuyLazyRoutingModule } from './buy-lazy-routing.module';
 import { BuyComponent } from 'src/app/buy/buy.component';
 import { MaterialModule } from 'src/app/Material/Material.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ProductFilterModule } from '../product-filter/product-filter.module';
 
 
 @NgModule({
@@ -14,8 +15,9 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     BuyLazyRoutingModule,
     MaterialModule,
-    //ReactiveFormsModule,
+    ReactiveFormsModule,
     FormsModule,
+    ProductFilterModule
   ]
 })
 export class BuyLazyModule { }

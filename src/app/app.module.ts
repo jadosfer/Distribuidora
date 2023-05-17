@@ -22,10 +22,7 @@ import { AuthService } from './services/auth.service';
 import { AuthGuard } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
 import { ProductService } from './services/product.service';
-import { ProductFilterComponent } from './products/product-filter/product-filter.component';
 import { OrdersService } from './services/orders.service';
-import { ClientsComponent } from './clients/clients.component';
-
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
 import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.component';
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
@@ -92,7 +89,8 @@ import { UtilityService } from './services/utility.service';
     AngularFireDatabaseModule,
     FlexLayoutModule,
     ReactiveFormsModule,
-    ChartsModule
+    ChartsModule,
+    //ProductFilterModule
   ],
   providers: [AuthGuard, AdminAuthGuard, ProductService, AuthService, UtilityService, UserService, OrdersService,
     DatePipe, PieChartComponent, {
