@@ -184,7 +184,6 @@ export class ProductService implements OnInit{
   }
 
   updateStocks(cartProducts: any, thisProducts: any, adding: boolean) {
-    debugger
     for (let i=0;i<cartProducts.length;i++) {
       for (let j=0;j<thisProducts.length;j++) {
         if (cartProducts[i].productId == thisProducts[j].key) {

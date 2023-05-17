@@ -12,6 +12,7 @@ import { ProductService } from './product.service';
   providedIn: 'root'
 })
 export class StockService {
+
   appUser: AppUser;
   stock: any;
   buy: any;
@@ -140,6 +141,10 @@ export class StockService {
 
   reset() {
     this.db.object('/buy/').remove();
+  }
+
+  removeBuy(buy: any) {
+    this.db.object('/buys/'+ buy.key).remove();
   }
 
   getQuantityOfP(pBuy: any) {

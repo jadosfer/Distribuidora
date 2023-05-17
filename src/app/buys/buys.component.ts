@@ -17,6 +17,7 @@ import { StockService } from '../services/stock.service';
   styleUrls: ['./buys.component.scss']
 })
 export class BuysComponent implements OnInit {
+  loading: boolean = true;
   sortedData: any;
   subscription: Subscription;
   subscription2: Subscription;
@@ -39,16 +40,19 @@ export class BuysComponent implements OnInit {
     private route: ActivatedRoute,
     private auth: AuthService, public datepipe: DatePipe,
     public stockService: StockService, private dateAdapter: DateAdapter<Date>) {
+
       this.dateAdapter.setLocale('en-GB'); //dd/MM/yyyy
     }
 
     ngOnInit(){
+      this.loading = true;
       //this.filter("");
       this.subscription = this.stockService.getBuys().subscribe(buys => {
         this.subscription2 = this.auth.appUser$.subscribe(appUser => {
           this.appUser = appUser;
           //this.buys =  buys;
           this.buys = this.dateRangefilteredBuys = this.datefilteredBuys = this.filteredBuys = buys;
+          this.loading = false;
         });
       });
     }
@@ -82,6 +86,10 @@ export class BuysComponent implements OnInit {
       });
     }
 
+    removeBuy(buy: any){
+        this.stockService.removeBuy(buy);
+    }
+
     getTitle(item: any) {
       return item.title;
     }
@@ -99,10 +107,6 @@ export class BuysComponent implements OnInit {
         });
       }
       return Math.round(total * 10) / 10;;
-    }
-
-    removeBuy(buyId: any) {
-      //this.stockService.removeBuy(buyId);
     }
 
     searchDateRange(range: any) {

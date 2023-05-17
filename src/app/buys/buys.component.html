@@ -1,3 +1,6 @@
+<div *ngIf="loading" class="SCContainer ml-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div>
 <div class="BsContainer" *ngIf="appUser">
   <div>
     <a mat-raised-button color="accent" routerLink="/stock/buy">Nueva Compra</a>
@@ -42,6 +45,8 @@
 
       <th mat-sort-header="date">Fecha</th>
       <th mat-sort-header="import">Importe</th>
+      <th mat-sort-header="detail">Detalle</th>
+      <th mat-sort-header="delete">Eliminar</th>
 
     </tr>
 
@@ -73,6 +78,7 @@
               </tr>
             </mat-expansion-panel>
           </mat-accordion>
+        <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="removeBuy(b)" color="accent" ><mat-icon>delete</mat-icon></button></td>
     </tr>
 
     <tr>

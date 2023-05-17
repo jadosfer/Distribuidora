@@ -43,7 +43,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   subscription4: Subscription;
 
   showClientsInDebt: boolean;
-  loading: boolean = false;
+  loading: boolean = true;
   fromEditing: boolean = false;
 
   //nuevos

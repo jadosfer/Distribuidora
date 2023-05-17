@@ -201,10 +201,12 @@ export class OrdersService implements OnDestroy {
   }
 
   isClientInDebt(fantasyName: string, orders: any[]) {
+    let ordersInDebt = false;
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().fantasyName?.toLowerCase().includes(fantasyName?.toLowerCase()) &&
-      this.isOrderInDebt(orders[i])) return true;
+      this.isOrderInDebt(orders[i])) ordersInDebt = true;
     }
+    if (ordersInDebt && this.getDebt(fantasyName) > TOLERATED_DEBT) return true
     return false;
   }
 
@@ -274,16 +276,9 @@ export class OrdersService implements OnDestroy {
   // }
 
   getClientsInDebt(clients: any[], orders: any[]) {
-    // let result = [];
-    // for (let i=0;i<clients.length;i++) {
-    //   if (this.isClientInDebt(clients[i].payload.val().fantasyName, orders))
-    //   result.push(clients[i])
-    // }
-    // return result;
-
     let result = [];
     for (let i=0;i<clients.length;i++) {
-      if (this.getDebt(clients[i].payload.val().fantasyName) > 0)
+      if (this.isClientInDebt(clients[i].payload.val().fantasyName, orders))
       result.push(clients[i])
     }
     return result;
@@ -695,8 +690,8 @@ export class OrdersService implements OnDestroy {
     let keepAdding = false;
     this.orders.forEach((order) => {
       if (order.payload.val().fantasyName.toLowerCase().includes(fantasyName.toLowerCase())) {
-        amounts += parseFloat(order.payload.val().amount);
-        if (keepAdding && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) result += parseFloat(order.payload.val().amount);
+        amounts += parseFloat(order.payload.val().amountWithIva);
+        if (keepAdding && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) result += parseFloat(order.payload.val().amountWithIva);
         else;
         if (totalPayments < amounts - TOLERATED_DEBT && !order.payload.val().fullPaymentDate && result == 0
         && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000)) {

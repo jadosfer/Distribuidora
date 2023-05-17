@@ -10,6 +10,14 @@
   <div class="ms-3">
     <product-filter></product-filter>
   </div>
+  <div class="col-4 col-sm-3 m-3 col-lg-3">
+    <div class="input-group">
+      <div>
+        <mat-icon matSuffix>search</mat-icon>
+      </div>
+      <div><input matInput class="border-end-0 border rounded-pill" #prodQuery (keyup)="filter(prodQuery.value)" type="text" placeholder="   Buscar producto..."></div>
+    </div>
+  </div>
 
   <div class="ms-3 mb-3">
     <button class="left-btn" (click)="sendBuy()" mat-raised-button color="basic">Cargar compra</button>
@@ -24,7 +32,7 @@
         <th mat-sort-header="stock">Stock actual</th>
       </tr>
 
-      <tr *ngFor="let p of filteredBuy">
+      <tr *ngFor="let p of showedProducts">
         <td style="max-width: 280px;">{{p.product.title}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
         <td><input #amount="ngModel" matInput [(ngModel)]="p.quantity" name="amount" placeholder="{{p.quantity}}" (blur)="setBuyItemQuantity(p, p.quantity)"></td>
         <td>{{getQuantityOfP(p)}}</td>

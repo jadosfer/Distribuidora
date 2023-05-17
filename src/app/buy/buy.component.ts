@@ -22,7 +22,8 @@ export class BuyComponent implements OnInit {
   products$:any;
   prodsCategory: string | null;
   sortedData: any[];
-
+  prodQuery: string;
+  showedProducts:any;
   subscription: Subscription;
   subscription2: Subscription
   subscription3: Subscription
@@ -58,11 +59,25 @@ export class BuyComponent implements OnInit {
                 for (let i=0;i<this.orderProducts.products.length;i++)
                   this.filteredBuy.push(this.orderProducts.products[i]);
               }
+              this.showedProducts = this.filteredBuy;
             }
           });
         //});
       })
     });
+  }
+
+  filter(prodQuery: string) {
+    this.prodQuery = prodQuery;
+    if (prodQuery=='') {
+      // this.showedProducts = this.filteredOrder;
+      this.showedProducts = this.filteredBuy;
+      return
+    }
+    this.showedProducts = (prodQuery) ?
+    this.showedProducts.filter((p: any) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
+    this.showedProducts;
+    console.log('this.showedProducts ', this.showedProducts);
   }
 
   buildOrderProducts(products: any) {
