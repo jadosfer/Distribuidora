@@ -1,10 +1,8 @@
 import { ReplacesComponent } from './replaces/replaces.component';
 import { CheckOutComponent } from './check-out/check-out.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
-import { OrdersComponent } from './orders/orders.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { OrderComponent } from './orders/order.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { ClientsComponent} from './clients/clients.component';
@@ -13,7 +11,6 @@ import { ProductFormComponent } from './forms/product-form/product-form.componen
 import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.component';
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
 import { StockComponent } from './stock/stock.component';
-import { BuyComponent } from './buy/buy.component';
 import { AdminAuthGuard } from './services/admin-auth-guard.service';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { BuysComponent } from './buys/buys.component';
@@ -25,7 +22,6 @@ import { CommissionsDashComponent } from './commissions/commissionsDash.componen
 import { CommissionsComponent } from './commissions/commissions.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
-import { UtilityService } from './services/utility.service';
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
@@ -37,7 +33,6 @@ const routes: Routes = [
   { path: "payments/payments/:id", component: PaymentComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "payments/payments", component: PaymentsComponent },
   { path: "client/client", component: ClientsComponent },
-  { path: "orders/orders", component: OrdersComponent },
   { path: "pruebas/prueba", component: PruebaComponent },
   { path: "login", component: LoginComponent },
   { path: "checkout", component: CheckOutComponent },
@@ -61,6 +56,7 @@ const routes: Routes = [
   { path: "commissions/commissionsDash", component: CommissionsDashComponent},
   { path: "commissions/commissions", component: CommissionsComponent},
   { path: 'orders/order', loadChildren: () => import('./modules/order-lazy/order.module').then(m => m.OrderModule)},
+  { path: 'orders/orders', loadChildren: () => import('./modules/orders-lazy/orders.module').then(m => m.OrdersModule)},
   { path: 'client/clients', loadChildren: () => import('./modules/clients-lazy/clients-lazy.module').then(m => m.ClientsLazyModule) },
   { path: 'stock/buy', loadChildren: () => import('./modules/buy-lazy/buy-lazy.module').then(m => m.BuyLazyModule) }
 

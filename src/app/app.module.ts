@@ -53,7 +53,6 @@ import { UtilityService } from './services/utility.service';
 @NgModule({
   declarations: [
     AppComponent,
-    OrdersComponent,
     MatNavbarComponent,
     AdminClientsComponent,
     LoginComponent,
@@ -89,11 +88,10 @@ import { UtilityService } from './services/utility.service';
     AngularFireDatabaseModule,
     FlexLayoutModule,
     ReactiveFormsModule,
-    ChartsModule,
-    //ProductFilterModule
+    ChartsModule
   ],
-  providers: [AuthGuard, AdminAuthGuard, ProductService, AuthService, UtilityService, UserService, OrdersService,
-    DatePipe, PieChartComponent, {
+  providers: [AuthGuard, AdminAuthGuard, ProductService, AuthService, UtilityService,
+    UserService, DatePipe, PieChartComponent, {
       provide: MAT_RADIO_DEFAULT_OPTIONS,
       useValue: { color: 'primary' },
   }],
