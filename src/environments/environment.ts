@@ -14,7 +14,8 @@ export const environment = {
     appId: "1:763137673585:web:f9194415b214fddd014ed0"
   }
 };
-
+// debo cambiar de proyecto en firebase haciendo firebase use --add distribuidora-nb
+// para que despliegue en la url correcta
 
 
 /*

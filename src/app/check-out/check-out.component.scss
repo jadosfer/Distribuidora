@@ -6,9 +6,9 @@
 }
 
 @keyframes move {
-  0% { transform: translateX(-100px); } /* Posición inicial */
-  50% { transform: translateX(100px); } /* Posición intermedia */
-  100% { transform: translateX(-100px); } /* Posición final, vuelve a la posición inicial */
+  0% { transform: translateX(-80px); } /* Posición inicial */
+  50% { transform: translateX(80px); } /* Posición intermedia */
+  100% { transform: translateX(-80px); } /* Posición final, vuelve a la posición inicial */
 }
 
 .image-container {
