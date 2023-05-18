@@ -125,7 +125,7 @@ export class CommissionsDashComponent implements OnInit {
   }
 
   getActiveSellers() {
-    let activeSellers = this.sellers.filter(seller =>
+    let activeSellers = this.ordersService.sellers.filter(seller =>
       this.isSellerActive(seller.payload.val().name)
     )
     this.sellers = activeSellers;
@@ -133,11 +133,11 @@ export class CommissionsDashComponent implements OnInit {
 
   isSellerActive(name: String) {
     for (let i=this.ordersService.orders.length - 1;i>0;i--) {
-      let orderDate = this.ordersService.orders[i].payload.val().date;
-      let timeAfterOrder = (Date.now() - orderDate)/(1000*3600*24);
+      let fullPaymentDate = this.ordersService.orders[i].payload.val().fullPaymentDate;
+      let timeAfterOrderPayment = (Date.now() - fullPaymentDate)/(1000*3600*24);
       const d = new Date(Date.now());
       let day = d.getDate()
-      if(this.ordersService.orders[i].payload.val().seller == name && timeAfterOrder <= day + 1) {
+      if(this.ordersService.orders[i].payload.val().seller == name && timeAfterOrderPayment <= day + 1) {
         return true;
       }
     }
@@ -150,7 +150,7 @@ export class CommissionsDashComponent implements OnInit {
       for (let i=0;i<orders.length;i++) {
         if (orders[i].payload.val().seller == seller
         && this.ordersService.getClientCategory(orders[i].payload.val().fantasyName) != "Distribuidor") {
-          amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
+          amount += parseFloat(orders[i].payload.val().amountWithIva)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
         }
       }
     }
@@ -164,7 +164,7 @@ export class CommissionsDashComponent implements OnInit {
     for (let i=0;i<orders.length;i++) {
       if (orders[i].payload.val().seller == seller
       && this.ordersService.getClientCategory(orders[i].payload.val().fantasyName) == "Distribuidor") {
-        amount += parseFloat(orders[i].payload.val().amount)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
+        amount += parseFloat(orders[i].payload.val().amountWithIva)/(1 + (parseFloat(orders[i].payload.val().iva)/100));
       }
     }
     if (amount) amount = Math.round(amount * 10) / 10;
@@ -175,7 +175,7 @@ export class CommissionsDashComponent implements OnInit {
     let sales = 0;
     if (orders) {
       for (let i=0;i<orders.length;i++) {
-        orders.array.forEach((order: any) => {
+        orders.forEach((order: any) => {
           if (order.payload.val().seller == seller) {
             let products = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val().products;
             for (let j=0;j<products.length;j++) {
@@ -251,19 +251,19 @@ export class CommissionsDashComponent implements OnInit {
 
   getSellersCommissionsInfo() {
     let sellersCommissionsInfo = [];
-    for (let i=0;i<this.sellers.length;i++) {
-      let retailSalesPMonth = this.retailSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
+    for (let i=0;i<this.ordersService.sellers.length;i++) {
+      let retailSalesPMonth = this.retailSalesPMonth(this.ordersService.sellers[i].payload.val().name, this.lastFullMonthOrders)
       let retailCommission = this.retailCommission(this.commissions[0].payload.val().retailPercent, retailSalesPMonth);
-      let wholesalerSalesPMonth = this.wholesalerSalesPMonth(this.sellers[i].payload.val().name, this.lastFullMonthOrders)
+      let wholesalerSalesPMonth = this.wholesalerSalesPMonth(this.ordersService.sellers[i].payload.val().name, this.lastFullMonthOrders)
       let wholesalerCommission = this.wholesalerCommission(this.commissions[0].payload.val().wholesalerPercent, wholesalerSalesPMonth, retailSalesPMonth);
       let sellerPenalty = this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate, this.sellers[i].payload.val().name, this.ordersService.orders);
-      let rewardsObject = this.getProdCategoryRewards(this.sellers[i].payload.val().name)
+      let rewardsObject = this.getProdCategoryRewards(this.ordersService.sellers[i].payload.val().name)
       let prodCategoryRewards = rewardsObject.prodCategoryRewards;
       let totalRewards = rewardsObject.totalRewards
       let totalIncome = retailCommission + wholesalerCommission + totalRewards - sellerPenalty;
-      if (this.hasSellerSalesInLastMonth(this.sellers[i].payload.val().name)) {
+      if (this.hasSellerSalesInLastMonth(this.ordersService.sellers[i].payload.val().name)) {
         sellersCommissionsInfo.push({
-          "sellerName": this.sellers[i].payload.val().name,
+          "sellerName": this.ordersService.sellers[i].payload.val().name,
           "retailSalesPMonth": retailSalesPMonth,
           "retailCommission": retailCommission,
           "wholesalerSalesPMonth": wholesalerSalesPMonth,

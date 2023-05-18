@@ -14,6 +14,7 @@ export class AppComponent implements OnInit, OnDestroy{
   itemValue = '';
   items: Observable<any>;
   subscription: Subscription
+  loading = true;
 
   constructor(private auth: AuthService, private userService: UserService,
      private router: Router) {
@@ -29,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy{
       localStorage.removeItem('returnUrl');
       router.navigateByUrl(returnUrl);
     });
+    this.loading = false
   }
 
   ngOnInit() {

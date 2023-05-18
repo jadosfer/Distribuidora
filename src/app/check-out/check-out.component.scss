@@ -1,0 +1,19 @@
+.move-animation {
+  animation-name: move;
+  animation-duration: 5s; /* Duración de la animación en segundos */
+  animation-timing-function: linear; /* Función de temporización de la animación */
+  animation-iteration-count: infinite; /* Repetir la animación infinitamente */
+}
+
+@keyframes move {
+  0% { transform: translateX(-100px); } /* Posición inicial */
+  50% { transform: translateX(100px); } /* Posición intermedia */
+  100% { transform: translateX(-100px); } /* Posición final, vuelve a la posición inicial */
+}
+
+.image-container {
+  display: flex;
+  justify-content: center; /* Centrado horizontal */
+  align-items: center; /* Centrado vertical */
+  height: 100vh; /* Ajusta la altura del contenedor según tus necesidades */
+}

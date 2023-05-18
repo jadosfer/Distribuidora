@@ -4,6 +4,7 @@ import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { UtilityService } from '../services/utility.service';
 
 @Component({
   selector: 'mat-navbar',
@@ -16,12 +17,18 @@ export class MatNavbarComponent implements OnInit{
   appUser: AppUser;
   sellers: any;
   production = true;
+  loading = true;
 
   subscription: Subscription;
   subscription2: Subscription;
 
 
-  constructor(private auth: AuthService, private ordersService: OrdersService, private router: Router) {
+  constructor(
+    private auth: AuthService,
+    private ordersService: OrdersService,
+    private router: Router,
+    private utilityService: UtilityService
+    ) {
   }
 
   logout() {
@@ -54,7 +61,8 @@ export class MatNavbarComponent implements OnInit{
               "phone": ""
             });
           }
-
+          this.loading = false;
+          this.utilityService.navBarLoading = false;
         });
       }
     });

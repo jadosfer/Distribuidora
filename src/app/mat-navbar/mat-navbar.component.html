@@ -1,5 +1,8 @@
 <h1 *ngIf="!production">-----SITIO EN MANTENIMIENTO DISCULPE LAS MOLESTIAS - REINTENTE MAÑANA SÁBADO POR LA TARDE----</h1>
-<mat-toolbar color="primary" *ngIf="production">
+<div *ngIf="loading" class="SCContainer mt-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div>
+<mat-toolbar color="primary" *ngIf="production && !loading">
   <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-button class="foc" routerLink="/dashboard">Gráficos</a>
   <div class="spacer"></div>
   <ng-template #anonymousUser>
@@ -28,7 +31,5 @@
   <div class="ms-5 d-none d-lg-block">
     <h2 *ngIf="appUser">GENTECH - MAR DEL PLATA</h2>
   </div>
-
-
 </mat-toolbar>
-<div class="version"><button style="color: white; background-color: rgb(63, 82, 180); border: 0px;">{{VERSION}}</button></div>
+<div *ngIf="production && !loading" class="version"><button style="color: white; background-color: rgb(63, 82, 180); border: 0px;">{{VERSION}}</button></div>

@@ -1,4 +1,7 @@
-  <mat-navbar id="over-router"></mat-navbar>
+<div *ngIf="loading" class="SCContainer mt-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div>
+<mat-navbar *ngIf="!loading" id="over-router"></mat-navbar>
 <div class="container-fluid">
   <router-outlet></router-outlet>
 </div>

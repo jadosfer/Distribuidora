@@ -2,6 +2,8 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class UtilityService{
+  navBarLoading = true;
+  
   isMobile() {
     return ( ( window.innerWidth <= 700 ) || ( window.innerHeight <= 700 ) );
   }

@@ -1,3 +1,10 @@
-<p></p>
-<img src="../../assets/intro.png">
-<!-- <h2 style="margin-left:300px; margin-top: -40px;"><a href="https://github.com/jadosfer/Distribuidora" style="color:black">Repositorio Git Hub Tecnología y Programación</a></h2> -->
+<div>
+  <div *ngIf="loading" class="SCContainer mt-5 ms-5 spinner-border text-primary" role="status">
+    <span class="visually-hidden"></span>
+  </div>
+  <p></p>
+  <div class="image-container">
+    <img *ngIf="utilityService.navBarLoading" src="../../assets/intro.png" [ngClass]="{ 'move-animation': true }">
+    <img *ngIf="!utilityService.navBarLoading" src="../../assets/intro2.png">
+  </div>
+</div>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UtilityService } from '../services/utility.service';
 
 @Component({
   selector: 'app-check-out',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CheckOutComponent implements OnInit {
 
-  constructor() { }
+  loading = true;
+
+  constructor(public utilityService: UtilityService) { }
 
   ngOnInit(): void {
+    this.loading = false;
   }
 
 }
