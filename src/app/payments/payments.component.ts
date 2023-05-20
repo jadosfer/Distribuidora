@@ -69,14 +69,14 @@ export class PaymentsComponent implements OnInit {
         this.appUser = appUser;
         this.subscription3 = this.ordersService.getAllClients().subscribe(clients => {
           this.clients = clients;
-          this.userClients = this.ordersService.getUserClients(appUser.name);
+          this.userClients = this.ordersService.getUserClients(appUser?.name);
           this.payments = payments;
           this.userPayments = [];
           this.dateRangefilteredPayments = [];
           this.currentItemsToShow = [];
 
           for (let i=0;i<this.payments.length;i++) {
-            let isUserPayment = this.payments[i].payload.val().sellerName == this.appUser.name;
+            let isUserPayment = this.payments[i].payload.val().sellerName == this.appUser?.name;
             let isUserClient = this.isClientInUserClients(this.payments[i].payload.val().client, this.userClients);
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserPayment || isUserClient)) {
               this.userPayments.push(this.payments[i]);

@@ -49,7 +49,7 @@ export class ClientsComponent implements OnInit {
         this.currentItemsToShow = [];
 
         this.clients.forEach((client: any)=>{
-          let isUserClient = client.payload.val().designatedSeller == this.appUser.name;
+          let isUserClient = client.payload.val().designatedSeller == this.appUser?.name;
           if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserClient)) {
             this.includedClients.push(client);
           }
