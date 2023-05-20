@@ -77,7 +77,6 @@ export class BuyComponent implements OnInit {
     this.showedProducts = (prodQuery) ?
     this.showedProducts.filter((p: any) => p.product.title.toLowerCase().includes(prodQuery.toLowerCase())) :
     this.showedProducts;
-    console.log('this.showedProducts ', this.showedProducts);
   }
 
   buildOrderProducts(products: any) {

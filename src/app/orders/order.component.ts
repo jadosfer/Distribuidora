@@ -332,8 +332,6 @@ export class OrderComponent implements OnInit, OnDestroy {
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        //let debt = this.ordersService.calcDebtGreatherThanToleratedDays(this.fantasyName);
-        console.log('this.orderIndex ', this.orderIndex);
         this.orderService.createOrder(this.order[this.orderIndex].payload.val().sellerName, this.fantasyName, this.iva, this.orderProducts, this.quantity, this.date);
         this.fantasyName = "";
         this.router.navigateByUrl('/orders/orders');

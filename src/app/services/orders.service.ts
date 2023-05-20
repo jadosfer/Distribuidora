@@ -7,6 +7,9 @@ import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
 import { TOLERATED_DAYS, TOLERATED_DEBT } from '../constants';
+import { Product } from '../models/product';
+import { OrderDetail } from '../models/order-detail';
+import { Order } from '../models/order';
 
 
 @Injectable({
@@ -44,6 +47,8 @@ export class OrdersService implements OnDestroy {
     private auth: AuthService,
     private route: ActivatedRoute
     ) {
+
+      console.log('orders service constructor');
       const sub = this.getAllSellers().subscribe(sellers => {
         this.sellers = sellers;
       });
@@ -74,12 +79,14 @@ export class OrdersService implements OnDestroy {
       this.subscriptions.push(sub6)
       const sub7 = this.getAllOrders().subscribe(orders => {
         this.orders = orders;
-        // for (let i=0;i<this.orders.length;i++) {
-        //   console.log('i = ', i);
-        //   if (this.orders[i].payload.val().date > this.orders[i].payload.val().fullPaymentDate) {
-        //     this.updateOrder(this.ordsaveers[i].key, {"fullPaymentDate": null})
-        //   }
+
+        //NO BORRAR********************************************************
+        //---------------------------------------------------------
+        // if (this.orders[0].payload.val().order) { //borrar luego
+        //this.createOrdersdetails(this.orders)
         // }
+        //---------------------------------------------------------
+
       });
       this.subscriptions.push(sub7)
       const sub8 = this.getAllPayments().subscribe(payments => {
@@ -95,6 +102,7 @@ export class OrdersService implements OnDestroy {
 
     //NO BORRAR********************************************************
   // createOrdersdetails(orders: any[]): void { //borrar luego metodo redisenio
+
   //   console.log('crea ordersDetail solo para migrar');
   //   orders.forEach((order)=>{
   //     if (!order.payload.val().fantasyName) {
@@ -139,7 +147,7 @@ export class OrdersService implements OnDestroy {
   //     else console.log('');
   //   })
   // }
-  //NO BORRAR********************************************************
+  // //NO BORRAR********************************************************
 
 
   // ................................................orders methods................................................

@@ -5,7 +5,7 @@ import { AdminAuthGuard } from 'src/app/services/admin-auth-guard.service';
 import { OrdersComponent } from 'src/app/orders/orders.component';
 
 const routes: Routes = [
-  { path: '', component: OrdersComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  { path: '', component: OrdersComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

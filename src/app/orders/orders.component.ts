@@ -151,12 +151,6 @@ export class OrdersComponent implements OnInit {
       //   this.filterByDate("");
       // }
 
-      //---------------------------------------------------------
-      // if (this.orders[0].payload.val().order) { //borrar luego
-      //   this.ordersService.createOrdersdetails(this.orders)
-      // }
-      //---------------------------------------------------------
-
     });
     //this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
     // this.ordersService.getAllProducts().subscribe(clients => {
@@ -168,7 +162,6 @@ export class OrdersComponent implements OnInit {
   expandOrderDetail(order: any, i: number) {
     this.openAccordion = (this.openAccordion === i) ? -1 : i
     this.orderDetail = this.ordersService.getOrderDetail(order.payload.val().orderDetailKey).payload.val();
-    console.log('this.orderDetail', this.orderDetail);
   }
 
   filter(query: string) {

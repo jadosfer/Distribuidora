@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { UtilityService } from '../services/utility.service';
 
 
 @Component({
@@ -8,7 +9,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginComponent {
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, public utilityService: UtilityService) {}
 
 
   login() {

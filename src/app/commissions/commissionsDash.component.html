@@ -45,16 +45,16 @@
 
   <div *ngIf="!edit">
     <div class="row">
-      <div class="col col-sm-4 col-lg-2">
-        <button  *ngIf="!loading && appUser && appUser.isAdmin" class="left-btn mb-3" (click)="this.edit = !this.edit" mat-raised-button color="primary">Editar comisiones y límites </button>
+      <div class="col col-sm-4 col-lg-2" *ngIf="!loading && appUser && appUser.isAdmin">
+        <button class="left-btn mb-3" (click)="this.edit = !this.edit" mat-raised-button color="primary">Editar comisiones y límites </button>
       </div>
-      <div class="col">
-        <button  *ngIf="!loading && appUser && (appUser.isAdmin || appUser.isSalesManager)" class="left-btn mb-3" (click)="this.router.navigate(['/commissions/commissions']);" mat-raised-button color="accent">Ver histórico comisiones </button>
+      <div *ngIf="!loading && appUser && (appUser.isAdmin || appUser.isSalesManager)" class="col">
+        <button  class="left-btn mb-3" (click)="this.router.navigate(['/commissions/commissions']);" mat-raised-button color="accent">Ver histórico comisiones </button>
       </div>
     </div>
 
-    <h1 *ngIf="this.ordersService.orders && commissions" >Comisiones del mes en curso</h1>
-    <table *ngIf="this.ordersService.orders && commissions" class="table table-striped table-sm mat-elevation-z8">
+    <h1 *ngIf="this.ordersService.orders && commissions && appUser.isAdmin" >Comisiones del mes en curso</h1>
+    <table *ngIf="this.ordersService.orders && commissions && appUser.isAdmin" class="table table-striped table-sm mat-elevation-z8">
       <thead>
         <tr>
           <th>Vendedor</th>
@@ -84,14 +84,12 @@
             this.wholesalerSalesPMonth(seller.payload.val().name, this.monthOrders), this.retailSalesPMonth(seller.payload.val().name, this.monthOrders))
              + this.getProdCategoryRewards(seller.payload.val().name).totalRewards - this.commissionsService.getSellerPenalty(this.commissions[0].payload.val().monthlyRate,
              seller.payload.val().name, this.ordersService.orders) | number:'1.1-1'}}  </td>
-             <td>{{this.commissionsService.getTotalSellerDebtDelayed(seller.payload.val().name, this.orders)}}</td>
+          <td>{{this.commissionsService.getTotalSellerDebtDelayed(seller.payload.val().name, this.orders)}}</td>
         </tr>
       </tbody>
     </table>
-
-    <h1 >Premios</h1>
-
-    <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
+    <h1 *ngIf="appUser.isAdmin">Premios</h1>
+    <table *ngIf="this.ordersService.orders && this.commissions && appUser.isAdmin" class="table table-striped table-sm mat-elevation-z8">
       <thead>
         <tr>
           <th>Vendedor</th>
@@ -108,10 +106,9 @@
       </tbody>
     </table>
   </div>
-
 </div>
 
-<div class="SCContainer ml-3" *ngIf="appUser && !appUser.isAdmin">
+<div class="ml-3" *ngIf="appUser && !appUser.isAdmin">
   <h1 >Mis Números</h1>
   <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
     <thead>

@@ -30,6 +30,7 @@ export class OrderService implements OnDestroy{
     private productService: ProductService,
   )
   {
+    console.log('order service constructor');
     this.subscription2 = this.productService.getAllProducts().subscribe((products) =>{
       this.products = products;
     })

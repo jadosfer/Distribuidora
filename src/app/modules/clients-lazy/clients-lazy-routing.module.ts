@@ -9,7 +9,7 @@ import { PrintService } from 'src/app/services/print.service';
 import { UtilityService } from 'src/app/services/utility.service';
 
 
-const routes: Routes = [{ path: '', component: ClientsComponent, canActivate: [AuthGuard, AdminAuthGuard]}];
+const routes: Routes = [{ path: '', component: ClientsComponent, canActivate: [AuthGuard]}];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

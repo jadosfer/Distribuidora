@@ -15,6 +15,7 @@ export class CommissionsService {
   commissions: any[];
 
   constructor(private db: AngularFireDatabase, private prodsCatService: CategoryService) {
+    console.log('commissions service constructor');
     this.prodsCatService.getAllProdsCategories().subscribe((prodsCategories)=>{
       this.prodsCategories = prodsCategories;
       this.getCommissions().subscribe((commissions) => {

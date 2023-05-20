@@ -19,6 +19,21 @@ export class AuthService {
 
   constructor(public afAuth: AngularFireAuth, private route: ActivatedRoute, private router: Router, private userService: UserService) {
       this.user$ = afAuth.authState;
+      const ordersRef = firebase.database().ref('orders');
+      ordersRef.once('value')
+      .then((snapshot) => {
+        const numChildren = snapshot.numChildren();
+        console.log('numero de orders:', numChildren);
+      })
+
+      const ordersDetail = firebase.database().ref('ordersDetail');
+      ordersDetail.once('value')
+      .then((snapshot) => {
+        const numChildren = snapshot.numChildren();
+        console.log('numero de ordersDetail:', numChildren);
+      })
+
+    //borrar hasta aca
   }
 
 

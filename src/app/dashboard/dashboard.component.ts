@@ -21,7 +21,7 @@ import { Product } from '../models/product';
 })
 export class DashboardComponent implements OnInit {
 
-  displayedColumns: string[] = ['client', 'seller', 'amount'];
+  displayedColumns: string[] = ['client', 'seller', 'amountWithIva'];
   dataSource: any;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit {
   orders: any[];
   userOrders: any[] = [];
   filteredOrders:any[];
+  currentItemsToShow:any[];
 
   dateValue: string;
   clientValue: string;
@@ -76,14 +77,16 @@ export class DashboardComponent implements OnInit {
         this.ordersService.orders = orders;
         this.userOrders = [];
         for (let i=0;i<this.ordersService.orders.length;i++) {
-          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().seller == this.appUser.name) {
+          if (this.appUser?.isAdmin || this.ordersService.orders[i].payload.val().seller == this.appUser?.name) {
             this.userOrders.push(this.ordersService.orders[i]);
           }
         }
-        this.produceDashData(this.userOrders);
+        //this.produceDashData(this.userOrders);
         this.filteredOrders = this.userOrders;
-        this.dataSource = new MatTableDataSource<any>(this.dashData);
-        this.dataSource.paginator = this.paginator;
+        this.produceDashData(this.filteredOrders);
+        // this.dataSource = new MatTableDataSource<any>(this.dashData);
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+        this.dataSource = new MatTableDataSource<any>(this.currentItemsToShow);
         this.loading = false;
       });
     });
@@ -99,6 +102,9 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders.push(this.userOrders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
+
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
 
     this.produceDashData(this.filteredOrders);
     this.dataSource = new MatTableDataSource<any>(this.dashData);
@@ -174,7 +180,7 @@ export class DashboardComponent implements OnInit {
       switch (sort.active) {
         case 'client': return this.compare(a.client, b.client, isAsc);
         case 'seller': return this.compare(a.seller, b.seller, isAsc);
-        case 'amount': return this.compare(a.amount, b.amount, isAsc);
+        case 'amountWithIva': return this.compare(a.amountWithIva, b.amountWithIva, isAsc);
         default: return 0;
       }
     });
@@ -244,10 +250,10 @@ export class DashboardComponent implements OnInit {
     let categories: string[] = []
     let colors = []
     for (let i=0;i<orders.length;i++) {
-      for (let j=0;j<orders[i].payload.val().products.length; j++) {
-        let products = this.ordersService.getOrderDetail(orders[i].payload.val().orderDetailKey).payload.val().products;
-        if (!this.isCategoryIncluded(categories, products[j].product.prodsCategory)) {
-          categories.push(products[j].product.prodsCategory)
+      let products = this.ordersService.getOrderDetail(orders[i].payload.val().orderDetailKey).payload.val().products;
+      for (let j=0;j<products.length; j++) {
+        if (!this.isCategoryIncluded(categories, products[j].category)) {
+          categories.push(products[j].category)
           let col = this.color.pop()
           if (col) {
             this.pieChartColors[0].backgroundColor.push(col);
@@ -268,23 +274,23 @@ export class DashboardComponent implements OnInit {
   getAmounts(orders: any, categories: string[]) {
     let amounts = [];
     for (let i=0;i<categories.length;i++) {
-      let amount = 0;
+      let amountWithIva = 0;
       for (let j=0;j<orders.length;j++) {
-        let products = this.ordersService.getOrderDetail(orders[j].key).payload.val().products;
-        products.array.forEach((p: Product) => {
+        let products = this.ordersService.getOrderDetail(orders[j].payload.val().orderDetailKey).payload.val().products;
+        products.forEach((p: Product) => {
           if (p.category == categories[i]) {
-            amount += parseFloat(p.discountPrice)*p.quantity*(1+orders[j].payload.val().iva/100)
+            amountWithIva += parseFloat(p.discountPrice)*p.quantity*(1+orders[j].payload.val().iva/100)
           }
         });
 
         // reemplazado por lo de arriba
         // for (let k=0;k<orders[j].payload.val().order.products.length; k++) {
         //   if (orders[j].payload.val().order.products[k].product.prodsCategory == categories[i]) {
-        //     amount += parseFloat(orders[j].payload.val().order.products[k].discountPrice)*parseInt(orders[j].payload.val().order.products[k].quantity)*(1+orders[j].payload.val().iva/100)
+        //     amountWithIva += parseFloat(orders[j].payload.val().order.products[k].discountPrice)*parseInt(orders[j].payload.val().order.products[k].quantity)*(1+orders[j].payload.val().iva/100)
         //   }
         // }
       }
-      amounts.push(amount)
+      amounts.push(amountWithIva)
     }
     return amounts;
   }
@@ -310,19 +316,19 @@ export class DashboardComponent implements OnInit {
     for (let i=0;i<dataArray.length;i++) {
       if (!this.isClientInDashData(dataArray[i].payload.val().fantasyName)) {
         this.dashData.push({
-          "client": dataArray[i].payload.val().fantasyName, "seller" : dataArray[i].payload.val().seller, "amount": dataArray[i].payload.val().amount
+          "client": dataArray[i].payload.val().fantasyName, "seller" : dataArray[i].payload.val().seller, "amountWithIva": dataArray[i].payload.val().amountWithIva
         })
       }
       else {
-        this.adAmount(dataArray[i].payload.val().fantasyName, dataArray[i].payload.val().amount);
+        this.adAmount(dataArray[i].payload.val().fantasyName, dataArray[i].payload.val().amountWithIva);
       }
     }
   }
 
-  adAmount(client: string, amount: number) {
+  adAmount(client: string, amountWithIva: number) {
     for (let i=0;i<this.dashData.length;i++) {
       if (this.dashData[i].client.toLowerCase().includes(client.toLowerCase())) {
-        this.dashData[i].amount += amount;
+        this.dashData[i].amountWithIva += amountWithIva;
       }
     }
   }
@@ -334,6 +340,15 @@ export class DashboardComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.dashData.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy() {

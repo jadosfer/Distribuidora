@@ -40,8 +40,6 @@
   </div>
   <hr>
 
-  <!-- <div style="margin-left:20px"><h2>NOVEDADES: Se puede buscar por varios filtros a la vez</h2></div> -->
-
   <div class="row">
     <div class="row">
       <div class="col-6 col-md-4 my-1">
@@ -101,16 +99,7 @@
         <th *ngIf="!isExpanded">Pagado</th>
         <th *ngIf="!isExpanded">Desc?</th>
         <th *ngIf="!isExpanded">Deudor?</th>
-        <!-- <th>Pago Completo</th>
-        <th> Importe c/iva</th> -->
-        <!-- <th >IVA</th>
-        <th *ngIf="!isExpanded">¿aprobado?</th>
-        <th *ngIf="!isExpanded">Desc?</th>
-        <th *ngIf="!isExpanded">Deudor</th>
-        <th *ngIf="!isExpanded">Nro. Fact</th> -->
         <th>Detalle</th>
-        <!-- <th>PDF</th>
-        <th *ngIf ="appUser.isAdmin">Eliminar</th> -->
       </tr>
     </thead>
     <tbody>
@@ -125,15 +114,6 @@
         <td>{{order.payload.val().fullPaymentDate ? (order.payload.val().fullPaymentDate | date:"dd/MM/yyyy") : "NO"}}&nbsp;&nbsp;</td>
         <td>{{order.payload.val().hasDiscount ? "SI" : "NO"}}&nbsp;&nbsp;</td>
         <td>{{order.payload.val().clientInDebt ? "SI" : "NO"}}&nbsp;&nbsp;</td>
-
-        <!-- <td>{{order.payload.val().fullPaymentDate | date:"dd/MM/yyyy"}}</td>
-        <td>${{order.payload.val().amount | number:'1.1-1'}}</td> -->
-        <!-- <td>{{order.payload.val().iva}}%</td>
-        <td *ngIf="!isExpanded"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
-        <td *ngIf="!isExpanded"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
-        <td *ngIf="!isExpanded"><span *ngIf="!ordersService.isClientInDebt(order.payload.val().fantasyName, userOrders)">NO</span><span *ngIf="ordersService.isClientInDebt(order.payload.val().fantasyName, userOrders)">SI</span>&nbsp;</td>
-        <td *ngIf="!isExpanded">{{order.payload.val().orderNumber}}&nbsp;</td> -->
-
         <td>
           <mat-accordion>
             <mat-expansion-panel hideToggle (opened)="expandOrderDetail(order, i)" (closed)="isExpanded = false"  [expanded]="openAccordion === i">

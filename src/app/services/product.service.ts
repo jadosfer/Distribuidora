@@ -199,7 +199,6 @@ export class ProductService implements OnInit{
   }
 
   async restoreStock(order: any, products: any, orderProducts: Product[]) {
-    console.log('orderProducts ', orderProducts);
     let prods = [];
     for (let i=0;i<orderProducts.length;i++) {
       for (let j=0;j<products.length;j++) {
