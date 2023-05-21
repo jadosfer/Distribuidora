@@ -42,19 +42,14 @@ mat-card{
   width: fit-content;
 }
 
+// button.mat-icon-button {
+//   color: #fff;
+// }
+
 @media only screen and (max-width: 800px) {
   .container-grid-order {
     margin-top: 20px !important;
     margin-left: -20px !important;
-  }
-
-  #prodTable {
-    margin-left: -28px !important;
-  }
-
-  .orderContainer {
-    margin-top: 90px !important;
-    margin-left: 30px !important;
   }
 
   #disc {

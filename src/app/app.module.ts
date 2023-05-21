@@ -8,7 +8,6 @@ import { MaterialModule } from './Material/Material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { OrderComponent } from './orders/order.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
-import { LoginComponent } from './login/login.component';
 //import { environment } from '../environments/environment';
 import { environment } from '../environments/environment.test';
 import { AngularFireModule } from '@angular/fire';
@@ -22,7 +21,6 @@ import { AuthService } from './services/auth.service';
 import { AuthGuard } from './services/auth-guard.service';
 import { UserService } from './services/user.service';
 import { ProductService } from './services/product.service';
-import { OrdersService } from './services/orders.service';
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
 import { AdminSellersComponent } from './admin/admin-sellers/admin-sellers.component';
 import { SellersFormComponent } from './forms/sellers-form/sellers-form.component';
@@ -38,8 +36,7 @@ import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
-import { CheckOutComponent } from './check-out/check-out.component';
-import { OrdersComponent } from './orders/orders.component';
+import { LogCheckComponent } from './log-check/log-check.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
 import { CreditNoteComponent } from './credit-note/credit-note.component';
@@ -49,13 +46,13 @@ import { ReplacesComponent } from './replaces/replaces.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
 import { UtilityService } from './services/utility.service';
+import { MenuComponent } from './menu/menu.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MatNavbarComponent,
     AdminClientsComponent,
-    LoginComponent,
     ProductFormComponent,
     ClientsFormComponent,
     AdminSellersComponent,
@@ -65,7 +62,7 @@ import { UtilityService } from './services/utility.service';
     BuysComponent,
     PieChartComponent,
     AdminProdsComponent,
-    CheckOutComponent,
+    LogCheckComponent,
     PaymentsComponent,
     PaymentComponent,
     CreditNoteComponent,
@@ -74,7 +71,8 @@ import { UtilityService } from './services/utility.service';
     ReplacesComponent,
     PruebaComponent,
     EditProductPricesComponent,
-    PaymentsComponent
+    PaymentsComponent,
+    MenuComponent
   ],
   imports: [
     BrowserAnimationsModule,

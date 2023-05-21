@@ -4,4 +4,5 @@ export interface Product {
   discountPrice: string;
   discount?: number,
   quantity: number;
+  productId?: string
 }

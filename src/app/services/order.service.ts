@@ -110,7 +110,7 @@ export class OrderService implements OnDestroy{
     //this.db.object('/order/').remove(); elimina todo "order" de la base
     if (!this.order) return;
     for (let i=0;i<this.order.length;i++) {
-      if (this.order[i].payload.val().seller == this.appUser.name) this.db.object('/order/'+ this.order[i].key).remove();
+      if (this.order[i].payload.val().seller == this.appUser?.name) this.db.object('/order/'+ this.order[i].key).remove();
     }
   }
 
@@ -146,7 +146,8 @@ export class OrderService implements OnDestroy{
           "category": cartOrder[i].product.prodsCategory,
           "discountPrice": cartOrder[i].discountPrice,
           "discount" : cartOrder[i].discount,
-          "quantity": cartOrder[i].quantity
+          "quantity": cartOrder[i].quantity,
+          "productId": cartOrder[i].productId
         });
         amount += parseInt(cartOrder[i].quantity) * parseFloat(cartOrder[i].discountPrice) * (1 + iva/100);
         if (parseFloat(cartOrder[i].discount) != 0) this.hasDiscount = true;

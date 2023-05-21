@@ -38,7 +38,7 @@ export class AuthService {
 
 
   login() {
-    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/checkout';
+    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '';
     localStorage.setItem('returnUrl', returnUrl);
     return this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=> {
       let returnUrl = localStorage.getItem('returnUrl');
@@ -50,8 +50,8 @@ export class AuthService {
 
   logout() {
     this.afAuth.signOut()
-    location.reload();
-    this.router.navigateByUrl('/checkout');
+    //location.reload();
+    this.router.navigateByUrl('/');
   }
 
   get appUser$() : Observable<AppUser> {

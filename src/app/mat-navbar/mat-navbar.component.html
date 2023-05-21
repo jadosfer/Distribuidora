@@ -1,9 +1,9 @@
 <h1 *ngIf="!production">-----SITIO EN MANTENIMIENTO DISCULPE LAS MOLESTIAS - REINTENTE MAÑANA SÁBADO POR LA TARDE----</h1>
-<mat-toolbar color="primary" *ngIf="production">
+<mat-toolbar color="primary" *ngIf="production && !isMobile">
   <a *ngIf="appUser!=undefined && appUser?.isAdmin" mat-button class="foc" routerLink="/dashboard">Gráficos</a>
   <div class="spacer"></div>
   <ng-template #anonymousUser>
-    <a mat-button routerLink="/login" class="foc">Login</a>
+    <a mat-button routerLink="/" class="foc">Login</a>
   </ng-template>
   <a mat-button class="foc" routerLink="orders/orders" *ngIf="appUser">Pedidos</a>
   <a mat-button class="foc" routerLink="payments/payments" *ngIf="appUser">Cobros</a>

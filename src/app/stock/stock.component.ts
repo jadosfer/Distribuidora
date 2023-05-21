@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppUser } from '../models/app-user';
 import { AuthService } from '../services/auth.service';
-import { OrdersService } from '../services/orders.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
 import { MatPaginator } from '@angular/material/paginator';

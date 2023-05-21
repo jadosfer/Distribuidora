@@ -21,7 +21,7 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 
 const MaterialsComponents = [
@@ -48,6 +48,7 @@ const MaterialsComponents = [
   MatBadgeModule,
   MatCheckboxModule,
   MatRadioModule,
+  MatSidenavModule
 ]
 @NgModule({
   imports: [
