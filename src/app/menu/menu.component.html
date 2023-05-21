@@ -8,7 +8,7 @@
 <mat-sidenav-container class="menu-container">
   <mat-sidenav #sidenav class="menu-sidenav" [mode]="'over'" [opened]="isMenuOpen">
     <mat-nav-list>
-      <a mat-list-item routerLink="/" *ngIf="!appUser">Login</a>
+      <a mat-list-item routerLink="/" *ngIf="!appUser" (click)="isMenuOpen=false">Login</a>
       <a mat-list-item routerLink="orders/orders" *ngIf="appUser" (click)="isMenuOpen=false">Pedidos</a>
       <a mat-list-item routerLink="payments/payments" *ngIf="appUser" (click)="isMenuOpen=false">Cobros</a>
       <a mat-list-item routerLink="client/client" *ngIf="appUser && !appUser?.isAdmin" (click)="isMenuOpen=false">Clientes</a>
