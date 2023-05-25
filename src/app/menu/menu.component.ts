@@ -19,7 +19,6 @@ export class MenuComponent implements OnInit {
   sellers: any;
   production = true;
   loading = true;
-  isMobile = false;
 
   subscription: Subscription;
   subscription2: Subscription;

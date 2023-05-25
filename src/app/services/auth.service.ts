@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
 import { AppUser } from '../models/app-user';
+import { environment } from '../../environments/environment';
 
 
 @Injectable()
@@ -18,20 +19,26 @@ export class AuthService {
   isAdmin: boolean;
 
   constructor(public afAuth: AngularFireAuth, private route: ActivatedRoute, private router: Router, private userService: UserService) {
-      this.user$ = afAuth.authState;
-      const ordersRef = firebase.database().ref('orders');
-      ordersRef.once('value')
-      .then((snapshot) => {
-        const numChildren = snapshot.numChildren();
-        console.log('numero de orders:', numChildren);
-      })
+      // if (!environment.production) {
+      //       this.afAuth.useEmulator('http://localhost:9099/');
+      // }
 
-      const ordersDetail = firebase.database().ref('ordersDetail');
-      ordersDetail.once('value')
-      .then((snapshot) => {
-        const numChildren = snapshot.numChildren();
-        console.log('numero de ordersDetail:', numChildren);
-      })
+
+      this.user$ = afAuth.authState;
+      //borrar desde aca
+      // const ordersRef = firebase.database().ref('orders');
+      // ordersRef.once('value')
+      // .then((snapshot) => {
+      //   const numChildren = snapshot.numChildren();
+      //   console.log('numero de orders:', numChildren);
+      // })
+
+      // const ordersDetail = firebase.database().ref('ordersDetail');
+      // ordersDetail.once('value')
+      // .then((snapshot) => {
+      //   const numChildren = snapshot.numChildren();
+      //   console.log('numero de ordersDetail:', numChildren);
+      // })
 
     //borrar hasta aca
   }

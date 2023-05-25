@@ -3,7 +3,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { AuthService } from './services/auth.service';
 import { UserService } from './services/user.service';
-import { AppUser } from './models/app-user';
+import { isMobile } from './globals';
 
 @Component({
   selector: 'app-root',
@@ -17,12 +17,12 @@ export class AppComponent implements OnInit, OnDestroy{
   items: Observable<any>;
   subscription: Subscription
   loading = true;
-  isMobile = false;
-  MOBILE_SIZE: number = 1000;
+  isMobile = isMobile;
+  //MOBILE_SIZE: number = 1000;
 
   constructor(private auth: AuthService, private userService: UserService,
      private router: Router) {
-      this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
+      //this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
       this.subscription = auth.user$.subscribe(user => {
         if (!user) return;
         this.user = user;
@@ -40,10 +40,10 @@ export class AppComponent implements OnInit, OnDestroy{
   ngOnInit() {
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
-  }
+  // @HostListener('window:resize', ['$event'])
+  // onResize(event: any) {
+  //   this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
+  // }
 
   ngOnDestroy() {
     this.subscription?.unsubscribe();
