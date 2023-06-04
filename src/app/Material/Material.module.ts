@@ -17,7 +17,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
+//import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
@@ -44,7 +44,7 @@ const MaterialsComponents = [
   MatAutocompleteModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatMomentDateModule,
+  //MatMomentDateModule,
   MatBadgeModule,
   MatCheckboxModule,
   MatRadioModule,
