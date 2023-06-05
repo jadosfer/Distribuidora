@@ -28,7 +28,7 @@
             <tbody>
               <tr *ngFor="let order of notAprovedOrders; let i = index">
                 <td>{{order.date | date:"dd/MM/yyyy HH:mm"}}&nbsp;&nbsp;</td>
-                <td>{{order.clientFantasyName}}&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                <td><a (click)="filterNotAprovedOrder(order)" routerLink="/orders/orders">{{order.clientFantasyName}}</a></td>
                 <td>{{order.order.sellerName}}</td>
               </tr>
             </tbody>
@@ -118,7 +118,6 @@
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
-        <!-- <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0 && appUser.isAdmin"><section class="example-section"><mat-checkbox [(ngModel)]="order.payload.val().sended" (ngModelChange)="updateSendedStatus(order)" [disabled]="false"></mat-checkbox></section></td> -->
         <!-- <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td> -->
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">NO</span><span *ngIf="ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">SI</span>&nbsp;</td>

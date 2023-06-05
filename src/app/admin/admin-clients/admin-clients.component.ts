@@ -7,6 +7,7 @@ import { AppUser } from 'src/app/models/app-user';
 import { AuthService } from 'src/app/services/auth.service';
 import { UtilityService } from 'src/app/services/utility.service';
 import { Subscription } from 'rxjs';
+import {TOLERATED_DAYS} from 'src/app/constants'
 
 @Component({
   selector: 'admin-clients',
@@ -20,8 +21,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   totalPages: number = 1;
   itemsPerPage: number = 10;
 
-  //paginator bootstrap
-
+  TOLERATED_DAYS = TOLERATED_DAYS;
   appUser: AppUser;
   dataSource: any;
   clients:any[];
@@ -32,6 +32,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
   orderOrPayment: boolean;
   pos: number;
   query: {client: string, seller: string} = {client: "", seller: ""}
+  totalDebt: number = 0;
 
   //ordersInDebt: any[];
   clientsInDebt: any[];
@@ -99,7 +100,7 @@ export class AdminClientsComponent implements OnInit, AfterViewInit {
             this.clientsInDebt = this.ordersService.getClientsInDebt(this.clients, this.orders);
             this.clientsInDebt.forEach((client)=>{
               client.paymentDate = this.getClientLastPayment(client.payload.val().fantasyName).payload.val().date;
-              client.debt = this.ordersService.calcDebt(client.payload.val().fantasyName);
+              this.totalDebt += this.ordersService.getDebt(client.payload.val().fantasyName);
             });
             this.loading = false;
           });

@@ -80,7 +80,7 @@ export class PrintService {
             }
           }
           for (let i=0;i<this.payments.length;i++) {
-            if (this.payments[i].payload.val().client == client.fantasyName) payments.push(this.payments[i].payload.val())
+            if (this.payments[i].payload.val().client.toLowerCase().includes(client.fantasyName.toLowerCase())) payments.push(this.payments[i].payload.val())
           }
           orders = this.sortArrayByDate(orders);
           payments = this.sortArrayByDate(payments);

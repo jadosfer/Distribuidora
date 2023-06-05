@@ -11,6 +11,7 @@ import { DateAdapter } from '@angular/material/core';
 import { jsPDF } from "jspdf";
 import { MatPaginator } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
+import { TOLERATED_DAYS } from '../constants';
 
 @Component({
   selector: 'orders',
@@ -92,7 +93,7 @@ export class OrdersComponent implements OnInit {
           for (let i=0;i<this.ordersService.orders.length;i++) {
             let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
             let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
-            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < 30*24*60*60*1000; //7 dias
+            let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //7 dias
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
               this.userOrders.push(this.ordersService.orders[i]);
               if (this.ordersService.orders[i].payload.val().aproved == false) {
@@ -268,6 +269,20 @@ export class OrdersComponent implements OnInit {
     return this.ordersService.isOrderInDebt(order);
   }
 
+  filterNotAprovedOrder(order: any) {
+    this.dateValue = "";
+    this.query.client = "";
+    this.query.date = "";
+    let result = this.userOrders.filter((o) => {
+      return o.payload.val().date == order.date
+    });
+    this.currentItemsToShow = result
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  }
+
   exportAsPDF(order: any)  {
 
     let myDate = new Date(order.payload.val().date);
@@ -336,10 +351,6 @@ export class OrdersComponent implements OnInit {
 
   }
 
-  updateSendedStatus(order: any) {
-    this.ordersService.updateSendedStatus(order);
-  }
-
   remove(order: any) {
     if (confirm('Está segur@ que quiere eliminar este pedido? Se restará el monto del pedido a la deuda del cliente')) {
       this.ordersService.removeOrder(order);
@@ -354,7 +365,7 @@ export class OrdersComponent implements OnInit {
 
   isClientInUserClients(clientFantasyName: string, userClients: string[]): boolean {
     for (let i=0;i<userClients.length;i++) {
-      if (clientFantasyName == userClients[i]) {
+      if (clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())) {
         return true;
       }
     }

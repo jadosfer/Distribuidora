@@ -34,18 +34,20 @@ export class CommissionsService {
     }
     // rewardsStrObj = rewardsStrObj.slice(0, -1) + '}';
     // let rewardsObj = JSON.parse(rewardsStrObj)
+    let today = new Date();
 
+    //SavedMonth is
     let result = this.db.list('/commissions/').push({
-      "minRetailTotalSales": 400000,
+      "minRetailTotalSales": 700000,
       "retailPercent": 0.05,
       "wholesalerPercent": 0.01,
-      "monthlyRate": 0.01,
+      "monthlyRate": 0.07,
       "productsCategories" : prodsCat,
       "rewardsGoals": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
       "rewards": rewardsArray, //uso el mismo porque pongo 0 en todos y tienen el mismo length
       "monthCommissionsSavedDate" : {
-        'month' : 7,
-        'year' : 2022
+        'month' : today.getMonth() + 1,
+        'year' : today.getFullYear()
       }
     });
   }
@@ -76,24 +78,31 @@ export class CommissionsService {
     });
   }
 
-  addProdCategory(productsCategories: any) {
-    return this.db.object('/commissions/' + this.commissions[0].key).update({
-      "minRetailTotalSales": this.commissions[0].payload.val().minRetailTotalSales,
-      "retailPercent": this.commissions[0].payload.val().retailPercent,
-      "wholesalerPercent": this.commissions[0].payload.val().wholesalerPercent,
-      "monthlyRate": this.commissions[0].payload.val().monthlyRate,
-      "rewards" : this.commissions[0].payload.val().rewards,
-      "rewardsGoals" : this.commissions[0].payload.val().rewardsGoals,
-      "productsCategories" : productsCategories,
-      "monthCommissionsSavedDate" : {
-        'month' : this.commissions[0].payload.val().monthCommissionsSavedDate.month,
-        'year' : this.commissions[0].payload.val().monthCommissionsSavedDate.year
-      }
-    });
-  }
+  // este metodo no se usa
+  // addProdCategory(productsCategories: any) {
+  //   return this.db.object('/commissions/' + this.commissions[0].key).update({
+  //     "minRetailTotalSales": this.commissions[0].payload.val().minRetailTotalSales,
+  //     "retailPercent": this.commissions[0].payload.val().retailPercent,
+  //     "wholesalerPercent": this.commissions[0].payload.val().wholesalerPercent,
+  //     "monthlyRate": this.commissions[0].payload.val().monthlyRate,
+  //     "rewards" : this.commissions[0].payload.val().rewards,
+  //     "rewardsGoals" : this.commissions[0].payload.val().rewardsGoals,
+  //     "productsCategories" : productsCategories,
+  //     "monthCommissionsSavedDate" : {
+  //       'month' : this.commissions[0].payload.val().monthCommissionsSavedDate.month,
+  //       'year' : this.commissions[0].payload.val().monthCommissionsSavedDate.year
+  //     }
+  //   });
+  // }
 
   saveCommissionsByMonth(monthCommissions: any, commissions: any[]) {
     let today = new Date();
+    let month = today.getMonth();
+    let year = today.getFullYear();
+    if (month == 0) {
+      month = 12;
+      year -= 1;
+    }
     let result = this.db.object('/commissions/' + commissions[0].key).update({
       "minRetailTotalSales": commissions[0].payload.val().minRetailTotalSales,
       "retailPercent": commissions[0].payload.val().retailPercent,
@@ -103,8 +112,8 @@ export class CommissionsService {
       "rewardsGoals": commissions[0].payload.val().rewardsGoals,
       "rewards": commissions[0].payload.val().rewards,
       "monthCommissionsSavedDate" : {
-        'month' : today.getMonth(),
-        'year' : today.getFullYear()
+        'month' : month,
+        'year' : year
       }
     });
     this.db.list('/commissionsByMonth/').push(monthCommissions);
@@ -113,23 +122,47 @@ export class CommissionsService {
   getSellerPenalty(monthlyRate: number, seller: string, orders: any[]) {
     let today = new Date();
     let monthPenalty = 0;
-    this.totalSellerDebtDelayed = 0
+    this.totalSellerDebtDelayed = 0;
     for (let i=0;i<orders.length;i++) {
+
+      if (orders[i].payload.val().clientFantasyName.toLowerCase().includes("red line constituci")) continue;else;
       if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
         let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
+        if (delay > 366) continue; else;
         if (delay > 30 && delay < 60) {
-          monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(orders[i].payload.val().debt) / (1 + (parseFloat(orders[i].payload.val().iva)/100));
+          monthPenalty += ((delay-30)/30) * monthlyRate * parseFloat(orders[i].payload.val().amount) / (1 + (parseFloat(orders[i].payload.val().iva)/100));
           this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);
         }
         else if (delay >= 60) {
           monthPenalty += monthlyRate * parseFloat(orders[i].payload.val().amount);
+          //if (isNaN(monthPenalty)) console.log('es else', " i ", i);
           this.totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);
         }
+        else;
       }
+      else;
       //if (orders[i].payload.val().order.sellerName == "Enrique Oyhamburu") console.log('totalSellerDebtDelayed ', this.totalSellerDebtDelayed);
     }
     this.totalSellerDebtDelayed = Math.round(this.totalSellerDebtDelayed * 100) / 100;
     monthPenalty = Math.round(monthPenalty * 10) / 10;
     return monthPenalty;
+  }
+
+  getTotalSellerDebtDelayed(seller: string, orders: any) {
+    let today = new Date();
+    let totalSellerDebtDelayed = 0;
+    for (let i=0;i<orders.length;i++) {
+      if (orders[i].payload.val().order.sellerName == seller && !orders[i].payload.val().fullPaymentDate) {
+        let delay = (today.getTime() - orders[i].payload.val().date)/(1000*60*60*24);
+        if (delay > 366) continue; else;
+        if (delay > 30) {
+          totalSellerDebtDelayed += parseFloat(orders[i].payload.val().amount);
+        }
+        else;
+      }
+      else;
+    }
+    totalSellerDebtDelayed = Math.round(totalSellerDebtDelayed * 100) / 100;
+    return totalSellerDebtDelayed;
   }
 }

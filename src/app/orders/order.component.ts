@@ -184,7 +184,7 @@ export class OrderComponent implements OnInit, OnDestroy {
       }
     }
     this.showedProducts = this.orderProducts;
-    if (this.clientFantasyName != null) this.router.navigateByUrl('/orders/order');
+    if (this.clientFantasyName) this.router.navigateByUrl('/orders/order');
 
   }
 
@@ -307,12 +307,13 @@ export class OrderComponent implements OnInit, OnDestroy {
   createOrder() {
     let clientOk = false;
     for (let i=0;i<this.clients.length;i++) {
-      if (this.clientFantasyName == this.clients[i].payload.val().fantasyName)
+      if (this.clientFantasyName.toLowerCase().includes(this.clients[i].payload.val().fantasyName.toLowerCase()))
+
       clientOk = true;
     }
     if (clientOk) {
       if (confirm('Está segur@ que quiere crear el pedido? No podrá modificarlo')) {
-        let debt = this.ordersService.calcDebt(this.clientFantasyName);
+        let debt = this.ordersService.calcDebtGreatherThan30(this.clientFantasyName);
         this.ordersService.createOrder(this.order[this.orderIndex].payload.val().sellerName,
           this.clientFantasyName, this.iva, this.orderProducts, this.quantity, this.date, debt);
         this.clientFantasyName = "";

@@ -311,7 +311,7 @@ export class DashboardComponent implements OnInit {
 
   adAmount(client: string, amount: number) {
     for (let i=0;i<this.dashData.length;i++) {
-      if (this.dashData[i].client == client) {
+      if (this.dashData[i].client.toLowerCase().includes(client.toLowerCase())) {
         this.dashData[i].amount += amount;
       }
     }
@@ -319,7 +319,7 @@ export class DashboardComponent implements OnInit {
 
   isClientInDashData(client: string) {
     for (let i=0;i<this.dashData.length;i++) {
-      if (this.dashData[i].client == client) {
+      if (this.dashData[i].client.toLowerCase().includes(client.toLowerCase())) {
         return true;
       }
     }
@@ -328,7 +328,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();    
+    this.subscription2.unsubscribe();
   }
 }
 

@@ -6,6 +6,7 @@ import 'rxjs/add/operator/take';
 import { AppUser } from '../models/app-user';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
+import { TOLERATED_DAYS, TOLERATED_DEBT } from '../constants';
 
 
 @Injectable({
@@ -40,7 +41,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   clientsPaginator: {"pageIndex": number, "pageSize": number, "length": number} = {"pageIndex": 0, "pageSize": 10, "length": 0};
 
-  TOLERATED_DEBT = 100;
   payment: any;
   payments: any[];
   paymentId: any;
@@ -251,19 +251,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let time = new Date();
     time.getHours();
     //time.getMinutes();
-    let debt = false;
-    if (this.isClientInDebt(clientFantasyName, this.orders)) {
-      debt = true;
-    }
-    let isAproved = !debt && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
-    let updatedDebt = amount;
-    if (clientDebt < 0) {
-      if (amount + clientDebt <=0) {
-        updatedDebt = 0;
-      }
-      else updatedDebt = amount + clientDebt;
-    }
-    updatedDebt = Math.round(updatedDebt * 10) / 10
+    let isAproved = clientDebt <= 0 && time.getHours()<=20; //si los hacen despues de las 21 salen sin aprobacion
 
     if (iva != 21 && clientCategory!="Gimnasio" && clientCategory!="Kiosko") isAproved = false;
     if (date == null) {
@@ -283,11 +271,9 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       "clientFantasyName": clientFantasyName,
       "aproved": isAproved,
       "amount": amount,
-      "debt": updatedDebt,
       "hasDiscount": this.hasDiscount,
-      "clientInDebt": debt,
+      "clientInDebt": clientDebt > 0,
       "orderNumber": this.orderNumber[0].payload.val().orderNumber,
-      "sended": false
     })
     this.incrementOrderNumber();
     //this.addPaymentAmount(clientFantasyName, -amount)
@@ -317,7 +303,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       }
     }
     for (let i=0;i<this.orders.length;i++) {
-      if (this.orders[i].payload.val().clientFantasyName == payment.client) {
+      if (this.orders[i].payload.val().clientFantasyName.toLowerCase().includes(payment.client.toLowerCase()) ) {
         if (parseFloat(this.orders[i].payload.val().amount) && parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
           rest = rest - (parseFloat(this.orders[i].payload.val().amount) - parseFloat(this.orders[i].payload.val().debt));
           let amount = Math.round(this.orders[i].payload.val().amount * 10) / 10
@@ -342,7 +328,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       "clienteFantasyName": clientFantasyName,
       "date": new Date().getTime()
     });
-    //this.addPaymentAmount(clientFantasyName, -amount)
   }
 
   cleanDebt(order: any) {
@@ -374,11 +359,8 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   isClientInDebt(fantasyName: string, orders: any[]) {
-    // const inDebt = (order: any) => this.isOrderInDebt(order)
-    // return orders.some(inDebt)
-
     for (let i=0;i<orders.length;i++) {
-      if (orders[i].payload.val().clientFantasyName == fantasyName &&
+      if (orders[i].payload.val().clientFantasyName.toLowerCase().includes(fantasyName.toLowerCase()) &&
       this.isOrderInDebt(orders[i])) return true;
     }
     return false;
@@ -386,17 +368,15 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
 
 
-  //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a 30
+  //inDebt true es para que me calcule la deuda de los pedidos de fecha mayor a dias tolerados, sino trae el monto total de pedidos
   getClientOrdersAmount(fantasyName: string, inDebt: boolean) {
     let amount = 0;
-
     if (this.orders) {
       for (let i=0;i<this.orders.length;i++) {
-        if (this.orders[i].payload.val().clientFantasyName == fantasyName && (!inDebt || this.isOrderInDebt(this.orders[i]))) {
+        if (this.orders[i].payload.val().clientFantasyName.toLowerCase().includes(fantasyName.toLowerCase()) && (!inDebt || this.isOrderInDebt(this.orders[i]))) {
           amount += parseFloat(this.orders[i].payload.val().amount)
         }
       }
-
     }
     return amount
   }
@@ -404,10 +384,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   incrementOrderNumber() {
     let orderNumb = parseInt(this.orderNumber[0].payload.val().orderNumber) + 1;
     return this.db.object('/orderNumber/' + this.orderNumber[0].key).update({"orderNumber": orderNumb});
-  }
-
-  updateSendedStatus(order: any) {
-    this.db.object('/orders/' + order.key).update({"sended": !order.payload.val().sended});
   }
 
   // ................................................clients methods................................................
@@ -432,7 +408,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   updateFilteredClients(clientId: any, client:any) {
     for (let i=0; i< this.filteredClients.length;i++) {
       if (this.filteredClients[i].key == clientId) {
-        // this.filteredClients[i].payload.val().fantasyName = client.fantasyName;
       }
     }
   }
@@ -455,9 +430,16 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   // }
 
   getClientsInDebt(clients: any[], orders: any[]) {
+    // let result = [];
+    // for (let i=0;i<clients.length;i++) {
+    //   if (this.isClientInDebt(clients[i].payload.val().fantasyName, orders))
+    //   result.push(clients[i])
+    // }
+    // return result;
+
     let result = [];
     for (let i=0;i<clients.length;i++) {
-      if (this.isClientInDebt(clients[i].payload.val().fantasyName, orders))
+      if (this.getDebt(clients[i].payload.val().fantasyName) > 0)
       result.push(clients[i])
     }
     return result;
@@ -465,7 +447,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   isOrderInDebt(order: any) {
     let today = new Date();
-    if((Date.parse(today.toString()) - order.payload.val().date > 30*24*60*60*1000) && !order.payload.val().fullPaymentDate) { //que pasen 30 dias
+    if((Date.parse(today.toString()) - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) { //que pasen los dias tolerados
       return true;
     }
     return false;
@@ -475,7 +457,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let payment = payments[0];
     payment.payload.val().date = 1
     for (let i=0;i<payments.length;i++) {
-      if (payments[i].payload.val().client == fantasyName && payments[i].payload.val().date > payment.payload.val().date)
+      if (payments[i].payload.val().client.toLowerCase().includes(fantasyName.toLowerCase()) && payments[i].payload.val().date > payment.payload.val().date)
       payment = payments[i];
     }
     return payment;
@@ -483,7 +465,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   getAddress(fantasyName: string, clients: any[]) {
     for (let i=0;i<clients.length;i++) {
-      if (this.clients[i].payload.val().fantasyName == fantasyName) {
+      if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(fantasyName.toLowerCase())) {
         return this.clients[i].payload.val().address;
       }
     }
@@ -494,7 +476,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let clientCategory = "";
     if (this.clients) {
       for (let i = 0;i < this.clients.length;i++) {
-        if (this.clients[i].payload.val().fantasyName == clientFantasyName) {
+        if (this.clients[i].payload.val().fantasyName.toLowerCase().includes(clientFantasyName.toLowerCase())) {
           clientCategory = this.clients[i].payload.val().clientCategory;
           return clientCategory
         }
@@ -504,9 +486,11 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   calcDebt(fantasyName: any) {
+    let result = 0;
     let ordersAmount = this.getClientOrdersAmount(fantasyName, false);
     let paymentsAmount = this.getClientPaymentsAmount(fantasyName);
-    return ordersAmount - paymentsAmount
+    result = ordersAmount - paymentsAmount;
+    return result
   }
 
   calcDebtGreatherThan30(fantasyName: any) {
@@ -547,12 +531,23 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   setOrdersPaymentDate(payment: any) {
     let totalPayments = this.getTotalPayments(payment)
-    let amounts = 0
+    let amounts = 0;
     this.orders.forEach((order) =>{
-      if (order.payload.val().clientFantasyName == payment.client) {
+      if (order.payload.val().clientFantasyName.toLowerCase().includes(payment.client.toLowerCase())) {
         amounts += parseFloat(order.payload.val().amount);
-        if (!order.payload.val().fullPaymentDate && totalPayments > amounts - this.TOLERATED_DEBT) {
-          this.updateOrder(order.key, {"fullPaymentDate": Date.now()}) //payment.date}) //
+        if (!order.payload.val().fullPaymentDate && totalPayments > amounts - TOLERATED_DEBT) {
+          this.updateOrder(order.key, {
+            "amount": order.payload.val().amount,
+            "aproved": order.payload.val().aproved,
+            "clientFantasyName": order.payload.val().clientFantasyName,
+            "clientInDebt": this.isClientInDebt(order.payload.val().clientFantasyName, this.orders),
+            "date": order.payload.val().date,
+            "hasDiscount": order.payload.val().hasOwnProperty('hasDiscount') ? order.payload.val().hasDiscount : false,
+            "iva": order.payload.val().iva,
+            "order": order.payload.val().order,
+            "orderNumber": order.payload.val().hasOwnProperty('orderNumber') ? order.payload.val().orderNumber : 0,
+            "fullPaymentDate": Date.now()
+          })
         }
       }
     });
@@ -561,57 +556,29 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   getTotalPayments(payment: any) {
     let totalPayments = 0;
     this.payments.forEach((pay) => {
-      if (pay.payload.val().client == payment.client) {
+      if (pay.payload.val().client.toLowerCase().includes(payment.client.toLowerCase())) {
         totalPayments += parseFloat(pay.payload.val().amount);
       }
     });
+    if (payment.amount) {
+      totalPayments += payment.amount;
+    }
     return totalPayments
   }
 
-  // clearDebts(clientFantasyName: string, amount: number, paymentDate: number) {
-  //   let rest = amount
-  //   for (let i=0;i<this.orders.length;i++) {
-  //     if (this.orders[i].payload.val().clientFantasyName == clientFantasyName) {
-  //       if (parseFloat(this.orders[i].payload.val().debt)
-  //       && parseFloat(this.orders[i].payload.val().debt) <= rest) {
-  //         this.addSaleToSeller(this.orders[i],
-  //         this.orders[i].payload.val().amount, this.orders[i].payload.val().clientFantasyName);
-  //         //update order paymentDate---------------
-  //         rest = rest - parseFloat(this.orders[i].payload.val().debt);//cambie orden de este
-  //         this.updateOrder(this.orders[i].key, {"debt": 0}) //con este
-  //         this.updateOrder(this.orders[i].key, {"fullPaymentDate": paymentDate})
-  //         if (rest < this.TOLERATED_DEBT) break
-  //       }
-  //       else if (this.orders[i].payload.val().debt) {
-  //         let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
-  //         this.updateOrder(this.orders[i].key, {"debt": debt})
-  //         break
-  //       }
-  //     }
-  //   }
-  // }
+  setPaymentsToAll() {
+    const today = new Date().getTime();
+    this.clients.forEach((client)=> {
+      let payment = {
+        client: client.payload.val().fantasyName,
+	      amount: 0,
+        payWay: "Efectivo",
+	      date: today
+      }
+      this.setOrdersPaymentDate(payment);
+    });
+  }
 
-  // clearOrderDebt(payment: any) {
-  //   let rest = payment.amount
-  //   for (let i=0;i<this.orders.length;i++) {
-  //     if (this.orders[i].payload.val().orderNumber == payment.orderNumber) {
-  //       if (parseFloat(this.orders[i].payload.val().debt)
-  //       && parseFloat(this.orders[i].payload.val().debt) <= payment.amount) {
-  //         rest = rest - parseFloat(this.orders[i].payload.val().debt);
-  //         this.addSaleToSeller(this.orders[i].payload.val().order.sellerName, this.orders[i].payload.val().amount,
-  //         this.orders[i].payload.val().clientFantasyName);
-  //         this.updateOrder(this.orders[i].key, {"debt": 0})
-  //         this.clearDebts(payment.client, rest, payment.date.unix()*1000);
-  //         break
-  //       }
-  //       else if (this.orders[i].payload.val().debt) {
-  //         let debt = Math.round((parseFloat(this.orders[i].payload.val().debt) - rest) * 10) / 10
-  //         this.updateOrder(this.orders[i].key, {"debt": debt})
-  //         break
-  //       }
-  //     }
-  //   }
-  // }
 
   updatePayment(key: any, payment:any) {
     return this.db.object('/payments/' + key).update(payment);
@@ -649,7 +616,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let amount = 0;
     if (this.payments) {
       for (let i = 0;i < this.payments.length;i++) {
-        if (this.payments[i].payload.val().client == fantasyName) {
+        if (this.payments[i].payload.val().client.toLowerCase().includes(fantasyName.toLowerCase())) {
           amount += parseFloat(this.payments[i].payload.val().amount)
         }
       }
@@ -726,31 +693,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   //usado manualmente para corregir la falta de fecha de pago completado
   calculateFullPaymentDates(sellerName: String) {
-    // let clientsSellerNames = this.getSellerClients(sellerName);
-    // for (let k=0;k<clientsSellerNames.length;k++) {
-    //   let payments = this.sortArrayPayloadByDate(this.getSellerPayments(sellerName, clientsSellerNames[k]))
-    //   let orders = this.sortArrayPayloadByDate(this.getSellerOrders(sellerName, clientsSellerNames[k]))
-    //   let i = 0;
-    //   let j = 0;
-    //   let ordersAmount = 0;
-    //   let paymentsAmount = 0;
-    //   while (i < payments.length) {
-    //     paymentsAmount += parseFloat(payments[i].payload.val().amount)
-    //     while (j < orders.length) {
-    //       ordersAmount += parseFloat(orders[j].payload.val().amount)
-    //       if (paymentsAmount > ordersAmount) {
-    //         this.updateOrder(orders[j].key, {"fullPaymentDate": payments[i].payload.val().date})
-    //         j++
-    //         if (j == orders.length) i = payments.length //esta linea corta el bucle de los payments cuando ya se pagaron todos los pedidos
-    //       }
-    //       else {
-    //         i++
-    //         ordersAmount -= parseFloat(orders[j].payload.val().amount);
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
 
     for (let k=0;k<this.clients.length;k++) {
       while (this.clients[k].payload.val().fantasyName != "Carlos Fox") k++;
@@ -765,7 +707,18 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
         while (j < orders.length) {
           ordersAmount += parseFloat(orders[j].payload.val().amount)
           if (paymentsAmount > ordersAmount - 200) {
-            this.updateOrder(orders[j].key, {"fullPaymentDate": payments[i].payload.val().date})
+            this.updateOrder(orders[j].key, {
+              "amount": orders[j].payload.val().amount,
+              "aproved": orders[j].payload.val().aproved,
+              "clientFantasyName": orders[j].payload.val().clientFantasyName,
+              "clientInDebt": orders[j].payload.val().clientInDebt,
+              "date": orders[j].payload.val().date,
+              "hasDiscount": orders[j].payload.val().hasDiscount,
+              "iva": orders[j].payload.val().iva,
+              "order": orders[j].payload.val().order,
+              "orderNumber": orders[j].payload.val().orderNumber,
+              "fullPaymentDate": payments[i].payload.val().date
+            })
             j++
             if (j == orders.length) i = payments.length //esta linea corta el bucle de los payments cuando ya se pagaron todos los pedidos
           }
@@ -782,7 +735,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let result = [];
     if (this.orders) {
       for (let i=0;i<this.orders.length;i++) {
-        if (this.orders[i].payload.val().clientFantasyName == fantasyName) {
+        if (this.orders[i].payload.val().clientFantasyName.toLowerCase().includes(fantasyName.toLowerCase())) {
           result.push(this.orders[i])
         }
       }
@@ -794,7 +747,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     let result = [];
     if (this.payments) {
       for (let i=0;i<this.payments.length;i++) {
-        if (this.payments[i].payload.val().client == fantasyName) {
+        if (this.payments[i].payload.val().client.toLowerCase().includes(fantasyName.toLowerCase())) {
           result.push(this.payments[i])
         }
       }
@@ -817,7 +770,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     if (this.orders) {
       for (let i=0;i<this.orders.length;i++) {
         if (this.orders[i].payload.val().order.sellerName == sellerName
-        && this.orders[i].payload.val().clientFantasyName == fantasyName)
+        && this.orders[i].payload.val().clientFantasyName.toLowerCase().includes(fantasyName.toLowerCase()))
         sellerOrders.push(this.orders[i]);
       }
     }
@@ -829,7 +782,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     if (this.payments[0]) {
       for (let i=0;i<this.payments.length;i++) {
         if (this.payments[i].payload.val().sellerName == sellerName
-        && this.payments[i].payload.val().client == fantasyName)
+        && this.payments[i].payload.val().client.toLowerCase().includes(fantasyName.toLowerCase()))
         sellerPayments.push(this.payments[i]);
       }
 
@@ -884,6 +837,31 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
   getClientItemsPerPage() {
     return this.itemsPerPage;
+  }
+
+  // ................................................common methods................................................
+  // deuda mayor a los dias tolerados
+  getDebt(clientFantasyName: string) {
+    let today = new Date().getTime();
+    let totalPayments = this.getTotalPayments({"client": clientFantasyName })
+    let amounts = 0;
+    let result = 0;
+    let keepAdding = false;
+    this.orders.forEach((order) => {
+      if (order.payload.val().clientFantasyName.toLowerCase().includes(clientFantasyName.toLowerCase())) {
+        amounts += parseFloat(order.payload.val().amount);
+        if (keepAdding && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000) && !order.payload.val().fullPaymentDate) result += parseFloat(order.payload.val().amount);
+        else;
+        if (totalPayments < amounts - TOLERATED_DEBT && !order.payload.val().fullPaymentDate && result == 0
+        && (today - order.payload.val().date > TOLERATED_DAYS*24*60*60*1000)) {
+          result = amounts - totalPayments;
+          keepAdding = true;
+        }
+        else;
+      }
+      else;
+    });
+    return result;
   }
 
   ngOnDestroy() {

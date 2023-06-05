@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 })
 export class MatNavbarComponent implements OnInit{
 
-  VERSION = "V132002"
+  VERSION = "V191104"
   appUser: AppUser;
   sellers: any;
   production = true;

@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { UtilityService } from '../services/utility.service';
+import {TOLERATED_DAYS} from '../constants'
 
 @Component({
   selector: 'clients',
@@ -18,6 +19,7 @@ export class ClientsComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  TOLERATED_DAYS = TOLERATED_DAYS;
   appUser: AppUser;
   clients$: Observable<any>;
   clients: any;

@@ -57,7 +57,7 @@
                   <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.wholesalerCommission}}</td>
                   <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.TotalRewards}}</td>
                   <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.sellerPenalty}}</td>
-                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalIncome}}</td>
+                  <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalIncome | number:'1.1-1'}}</td>
                   <td *ngIf="!prodCatDetails">{{sellersCommissionInfo.totalSellerDebtDelayed}}</td>
 
                     <div *ngIf="prodCatDetails" class="row">

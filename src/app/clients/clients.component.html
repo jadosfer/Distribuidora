@@ -5,9 +5,9 @@
   </div>
 
   <hr>
-  <h3>*IMPORTANTE: si la deuda es negativa el cliente tiene saldo a favor</h3>
+  <h3>*IMPORTANTE VENDEDORES: La deuda que figura es el remanente del monto de lo/s pedido/s con mas de {{TOLERATED_DAYS}} días y que no quedaron pagos en su totalidad. Por ejemplo si el pedido era de 1000 y se cobró 300, la deuda va a ser de 700.</h3>
 
-  <div class="row" *ngIf="appUser && (appUser.isAdmin || appUser.isSalesManager)">
+  <div class="row">
     <div class="col col-md-3 ms-2 my-2">
       <div class="input-group">
         <div>
@@ -17,12 +17,12 @@
       </div>
     </div>
 
-    <div class="col col-md-3 ms-2 my-2" *ngIf="appUser.isAdmin || appUser.isSalesManager">
+    <div class="col col-md-3 ms-2 my-2">
       <div class="input-group">
         <div>
           <mat-icon matSuffix>search</mat-icon>
         </div>
-        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
+        <div><input class="border-end-0 border rounded-pill" [(ngModel)]="sellerValue" #sellerquery (ngModelChange)="filterBySeller(sellerquery.value)" (keyup)="filterBySeller(sellerquery.value)" type="text" placeholder="   Vendedor..."></div>
       </div>
     </div>
   </div>
@@ -36,7 +36,8 @@
         <th mat-sort-header="seller">Vendedor</th>
         <th mat-sort-header="address">Dirección</th>
         <th mat-sort-header="phone">Teléfono</th>
-        <th mat-sort-header="debt">Deuda*</th>
+        <th mat-sort-header="debt">Deuda {{TOLERATED_DAYS}}d</th>
+        <th mat-sort-header="presentDebt">Saldo hoy</th>
         <th mat-sort-header="resume">Estado de cuenta</th>
       </tr>
     </thead>
@@ -48,7 +49,9 @@
         <td>{{client.payload.val().designatedSeller}}</td>
         <td>{{client.payload.val().address}}&nbsp;&nbsp;</td>
         <td>{{client.payload.val().phone}}&nbsp;&nbsp;</td>
-        <td>{{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <!-- <td>{{this.ordersService.calcDebtGreatherThan30(client.payload.val().fantasyName) | number:'1.1-1'}}</td> -->
+        <td>${{this.ordersService.getDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
+        <td>${{this.ordersService.calcDebt(client.payload.val().fantasyName) | number:'1.1-1'}}</td>
         <td><button mat-icon-button (click)="this.printService.exportResume(client.payload.val())" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/payments/payments" (click) ="searchPayments(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span>Ver cobros al cliente</span></td>
         <td><a style="margin-left:10px;" mat-icon-button routerLink="/orders/orders" (click) ="searchOrders(client.payload.val().fantasyName)"><mat-icon>control_point</mat-icon></a><span style="margin-right:10px;">Ver pedidos del cliente</span></td>
