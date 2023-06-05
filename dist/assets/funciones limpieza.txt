@@ -35,7 +35,7 @@ permite eliminar elementos salvados. Elminar a partir de la ubicacion i = 4
           //   });
           // }
       tambien hay que comentar esta linea:
-        payment.date = payment.date.unix()*1000;
+        payment.date = payment.date.unix()*1000; unix no va mas
         que esta en orders.service.ts linea 529 en el metodo createPayment
 
 

@@ -257,7 +257,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     if (date == null) {
       date = time.getTime();
     }
-    else date = date.unix()*1000;
+    else date = date.getTime();
     if (amount) amount = Math.round(amount * 10) / 10;
 
     let result = this.db.list('/orders/').push({
@@ -505,7 +505,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   //   //this.addPaymentAmount(payment.client, payment.amount, clients)
   //   //antes le ponia la fecha del dia, ahora puede elegirla, por eso comento lo de abajo
 
-  //   payment.date = payment.date.unix()*1000;
+  //   payment.date = payment.date.unix()*1000; unix no va mas
 
   //   //el cobro no es para una factura en particular
   //   if (!payment.orderNumber) {
@@ -520,7 +520,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   // }
 
   createPayment(payment: any, clients: any) {
-    payment.date = payment.date.unix()*1000;
+    payment.date = payment.date.getTime();
     this.setOrdersPaymentDate(payment)
         //el cobro no es para una factura en particular
     if (!payment.orderNumber) {
