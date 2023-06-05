@@ -2,9 +2,10 @@
   <span class="visually-hidden"></span>
 </div>
 
-<div *ngIf="this.commissions && this.ordersService.clients" class="SCContainer ml-3">
+<div *ngIf="this.commissions && this.ordersService.clients && appUser?.isAdmin" class="SCContainer ml-3">
   <h1>COMISIONES</h1>
   <hr>
+
   <!-- <div *ngIf="!loading && appUser && appUser.isAdmin"></div> -->
 
   <div *ngIf="edit && commissions">
@@ -112,6 +113,8 @@
 </div>
 
 <div class="SCContainer ml-3" *ngIf="appUser && !appUser.isAdmin">
+  <h1>COMISIONES</h1>
+  <hr>
   <h1 >Mis Números</h1>
   <table *ngIf="this.ordersService.orders && this.commissions" class="table table-striped table-sm mat-elevation-z8">
     <thead>
