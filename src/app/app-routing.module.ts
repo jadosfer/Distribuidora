@@ -1,11 +1,10 @@
 import { ReplacesComponent } from './replaces/replaces.component';
-import { CheckOutComponent } from './check-out/check-out.component';
+import { LogCheckComponent } from './log-check/log-check.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
 import { OrdersComponent } from './orders/orders.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OrderComponent } from './orders/order.component';
-import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './services/auth-guard.service';
 import { ClientsComponent} from './clients/clients.component';
 import { ClientsFormComponent } from './forms/clients-form/clients-form.component';
@@ -29,7 +28,7 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
 
-  { path: "", component: CheckOutComponent },
+  { path: "", component: LogCheckComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "orders/order", component: OrderComponent },
   { path: "payments/creditNote", component: CreditNoteComponent },
@@ -39,9 +38,6 @@ const routes: Routes = [
   { path: "client/client", component: ClientsComponent },
   { path: "orders/orders", component: OrdersComponent },
   { path: "pruebas/prueba", component: PruebaComponent },
-  { path: "login", component: LoginComponent },
-  { path: "checkout", component: CheckOutComponent },
-
   { path: "stock/stock", component: StockComponent},
   { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard, AdminAuthGuard] },
   { path: "buys", component: BuysComponent, canActivate: [AuthGuard, AdminAuthGuard] },

@@ -1,0 +1,16 @@
+<div>
+  <!-- <div *ngIf="loading" class="SCContainer mt-5 ms-5 spinner-border text-primary" role="status">
+    <span class="visually-hidden"></span>
+  </div> -->
+  <div class="login-btn ms-4" *ngIf="!appUser">
+    <button (click)="this.auth.login()" mat-raised-button color="accent">Login with google</button>
+  </div>
+
+  <br><br>
+  <div class="container mt-5">
+    <img *ngIf="utilityService.navBarLoading && appUser" class="img-fluid" [src]="isMobile ? '../../assets/intro-mob.png' : '../../assets/intro.png'" [ngClass]="{ 'move-animation': true }">
+    <img *ngIf="!utilityService.navBarLoading && !appUser" class="img-fluid" [src]="isMobile ? '../../assets/intro2-mob.png' : '../../assets/intro2.png'">
+    <img *ngIf="utilityService.navBarLoading && !appUser" class="img-fluid" [src]="isMobile ? '../../assets/loguear-mob.png' : '../../assets/loguear.png'">
+    <img *ngIf="!utilityService.navBarLoading && appUser" class="img-fluid" [src]="isMobile ? '../../assets/otra-mob.png' : '../../assets/otra.png'">
+  </div>
+</div>

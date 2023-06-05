@@ -34,6 +34,7 @@ export class DashboardComponent implements OnInit {
   orders: any[];
   userOrders: any[] = [];
   filteredOrders:any[];
+  currentItemsToShow:any[];
 
   dateValue: string;
   clientValue: string;
@@ -79,11 +80,14 @@ export class DashboardComponent implements OnInit {
             this.userOrders.push(this.ordersService.orders[i]);
           }
         }
+        // this.produceDashData(this.userOrders);
         this.produceDashData(this.userOrders);
         this.filteredOrders = this.userOrders;
-        this.dataSource = new MatTableDataSource<any>(this.dashData);
-        this.dataSource.paginator = this.paginator;
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length})
+        this.dataSource = new MatTableDataSource<any>(this.currentItemsToShow);
         this.loading = false;
+        //this.dataSource = new MatTableDataSource<any>(this.dashData);
+        //this.dataSource.paginator = this.paginator;
       });
     });
   }
@@ -98,7 +102,8 @@ export class DashboardComponent implements OnInit {
       this.filteredOrders.push(this.userOrders[i]);
     }
     this.filteredOrders.filter(p => p.payload.val().date > this.query.dateRange.start.getTime() && p.payload.val().date < this.query.dateRange.start.getTime());
-
+    this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
+    if (this.paginator) this.paginator.pageIndex = 0;
     this.produceDashData(this.filteredOrders);
     this.dataSource = new MatTableDataSource<any>(this.dashData);
     this.dataSource.paginator = this.paginator;
@@ -149,15 +154,15 @@ export class DashboardComponent implements OnInit {
         this.filteredOrders.push(this.userOrders[i]);
       }
       this.filteredOrders = (range) ?
-      this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
+      this.filteredOrders.filter(p => p.payload.val().date > range.start.getTime() && p.payload.val().date < range.end.getTime() + 86400000):
       this.filteredOrders;
 
       this.produceDashData(this.filteredOrders);
       this.dataSource = new MatTableDataSource<any>(this.dashData);
       this.dataSource.paginator = this.paginator;
     }
-    this.query.dateRange.start = new Date(Date.parse(range.start._d));
-    this.query.dateRange.end = new Date(Date.parse(range.end._d));
+    this.query.dateRange.start = range.start;
+    this.query.dateRange.end = range.end;
     if (this.showGraph) this.graphic();
   }
 
@@ -297,7 +302,7 @@ export class DashboardComponent implements OnInit {
   //llena en dashData la lista de clientes con el monto total
   produceDashData(dataArray: any) {
     this.dashData = [];
-    for (let i=0;i<dataArray.length;i++) {
+    for (let i=0;i<dataArray?.length;i++) {
       if (!this.isClientInDashData(dataArray[i].payload.val().clientFantasyName)) {
         this.dashData.push({
           "client": dataArray[i].payload.val().clientFantasyName, "seller" : dataArray[i].payload.val().order.sellerName, "amount": dataArray[i].payload.val().amount
@@ -324,6 +329,15 @@ export class DashboardComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.dashData.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
+    this.dataSource = new MatTableDataSource<any>(this.dashData);
+    this.dataSource.paginator = this.paginator;
   }
 
   ngOnDestroy() {

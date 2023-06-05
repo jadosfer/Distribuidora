@@ -108,7 +108,8 @@ export class BuysComponent implements OnInit {
     searchDateRange(range: any) {
       if (range.start) {
         this.filteredBuys = (range) ?
-        this.filteredBuys.filter((b: { payload: { val: () => { (): any; new(): any; date: number; }; }; }) => b.payload.val().date > Date.parse(range.start._d) && b.payload.val().date < Date.parse(range.end._d)):
+        this.filteredBuys.filter((b: any) => b.payload.val().date > range.start.getTime() && b.payload.val().date < range.end.getTime() + 86400000):
+        // this.filteredBuys.filter((b: any) => b.payload.val().date > Date.parse(range.start._d) && b.payload.val().date < Date.parse(range.end._d)):
         this.filteredBuys;
       }
       else this.filteredBuys = this.buys;

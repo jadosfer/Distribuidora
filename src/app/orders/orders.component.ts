@@ -209,10 +209,10 @@ export class OrdersComponent implements OnInit {
         this.filteredOrders.push(this.userOrders[i]);
       }
       this.filteredOrders = (range) ?
-      this.filteredOrders.filter(p => p.payload.val().date > Date.parse(range.start._d) && p.payload.val().date < Date.parse(range.end._d)):
+      this.filteredOrders.filter(p => p.payload.val().date > range.start.getTime() && p.payload.val().date < range.end.getTime() + 86400000):
       this.filteredOrders;
-      this.query.dateRange.start = new Date(Date.parse(range.start?._d));
-      this.query.dateRange.end = new Date(Date.parse(range.end?._d));
+      this.query.dateRange.start = range.start;
+      this.query.dateRange.end = range.end;
     }
     this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredOrders.length});
     if (this.paginator) this.paginator.pageIndex = 0;

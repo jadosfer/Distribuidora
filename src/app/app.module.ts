@@ -8,8 +8,6 @@ import { MaterialModule } from './Material/Material.module';
 import { AppRoutingModule } from './app-routing.module';
 import { OrderComponent } from './orders/order.component';
 import { AdminClientsComponent } from './admin/admin-clients/admin-clients.component';
-import { LoginComponent } from './login/login.component';
-import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
@@ -41,7 +39,7 @@ import { PieChartComponent } from './pieChart/pieChart.component';
 import { ChartsModule } from 'ng2-charts';
 import { AdminProdsComponent } from './admin-prods/admin-prods.component';
 import { MAT_RADIO_DEFAULT_OPTIONS } from '@angular/material/radio';
-import { CheckOutComponent } from './check-out/check-out.component';
+import { LogCheckComponent } from './log-check/log-check.component';
 import { OrdersComponent } from './orders/orders.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { PaymentComponent } from './payment/payment.component';
@@ -52,6 +50,8 @@ import { UtilityService } from './services/utility.service';
 import { ReplacesComponent } from './replaces/replaces.component';
 import { PruebaComponent } from './pruebas/prueba.component';
 import { EditProductPricesComponent } from './edit-product-prices/edit-product-prices.component';
+import { environment } from 'src/environments/environment';
+import { MenuComponent } from './menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +60,6 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
     MatNavbarComponent,
     OrderComponent,
     AdminClientsComponent,
-    LoginComponent,
     ProductFormComponent,
     ProductFilterComponent,
     ClientsComponent,
@@ -73,7 +72,7 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
     BuysComponent,
     PieChartComponent,
     AdminProdsComponent,
-    CheckOutComponent,
+    LogCheckComponent,
     PaymentsComponent,
     PaymentComponent,
     CreditNoteComponent,
@@ -82,6 +81,7 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
     ReplacesComponent,
     PruebaComponent,
     EditProductPricesComponent,
+    MenuComponent,
   ],
   imports: [
     BrowserAnimationsModule,

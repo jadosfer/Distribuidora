@@ -21,6 +21,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatRadioModule} from '@angular/material/radio';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 
 
@@ -48,6 +49,7 @@ const MaterialsComponents = [
   MatBadgeModule,
   MatCheckboxModule,
   MatRadioModule,
+  MatSidenavModule
 ]
 @NgModule({
   imports: [

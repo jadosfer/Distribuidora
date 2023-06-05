@@ -1,47 +1,34 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { AppUser } from '../models/app-user';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { UtilityService } from '../services/utility.service';
+import { AppUser } from '../models/app-user';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'mat-navbar',
-  templateUrl: './mat-navbar.component.html',
-  styleUrls: ['./mat-navbar.component.scss']
+  selector: 'app-menu',
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.scss']
 })
-export class MatNavbarComponent implements OnInit{
+export class MenuComponent implements OnInit {
 
-  VERSION = "V051533";
+  isMenuOpen = false;
   MOBILE_SIZE: number = 1000;
   appUser: AppUser;
   sellers: any;
   production = true;
   loading = true;
-  isMobile = false;
+
   subscription: Subscription;
   subscription2: Subscription;
 
-
   constructor(
-    private auth: AuthService,
+    public auth: AuthService,
     private ordersService: OrdersService,
-    private router: Router,
-    private utilityService: UtilityService
-    ) {
-  }
-
-  logout() {
-    //this.router.navigateByUrl('/');
-    //this.ordersService.clearOrder();
-    this.auth.logout()
-  }
-
-  getTotalItems() {
-    // let order = this.ordersService.getOrder();
-    // return 0;
-  }
+    private utilityService: UtilityService,
+    private router: Router
+    ) { }
 
   ngOnInit() {
     this.subscription = this.auth.appUser$.subscribe(appUser => {
@@ -69,10 +56,15 @@ export class MatNavbarComponent implements OnInit{
     });
   }
 
-  @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    // this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
-    this.isMobile = this.utilityService.isMobile()
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen
+  }
+
+  logout() {
+    this.auth.logout();
+    this.appUser = {
+      name: ""
+    }
   }
 
   ngOnDestroy() {

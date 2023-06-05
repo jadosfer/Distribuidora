@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { OrdersService } from '../services/orders.service';
 import { ProductService } from '../services/product.service';
 import { StockService } from '../services/stock.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'stock',
@@ -14,7 +15,10 @@ import { StockService } from '../services/stock.service';
   styleUrls: ['./stock.component.scss']
 })
 export class StockComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
   appUser: AppUser;
+  currentItemsToShow: any[];
   stock: any;
   sortedData: any[];
   alertProducts: any[] = [];
@@ -35,6 +39,8 @@ export class StockComponent implements OnInit {
       this.appUser = appUser;
       this.subscription2 = this.productService.getAll().subscribe(products => {
         this.products = this.filteredProducts = products;
+        this.currentItemsToShow = this.filteredProducts;
+        this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.products.length})
         let alertProducts = []
         for (let i=0;i<this.products.length;i++) {
           if (this.products[i].payload.val().stock < 5) {
@@ -43,27 +49,16 @@ export class StockComponent implements OnInit {
         }
         this.alertProducts = alertProducts;
       });
-    // this.stockService.getStock().subscribe(stock => {
-    //   this.stock = this.filteredStock = stock;
-    //   let alertProducts = []
-    //   for (let i=0;i<this.stock.length;i++) {
-    //     if (this.stock[i].payload.val().quantity < 5) {
-    //       alertProducts.push(this.stock[i]);
-    //     }
-    //   }
-    //   this.alertProducts = alertProducts;
-    //  });
     });
   }
 
   filter(query: string) {
-    // this.filteredStock = (query) ?
-    //   this.stock.filter( (p: { payload: { val: () => { (): any; new(): any; product: { (): any; new(): any; title: string; }; }; }; }) => p.payload.val().product.title.toLowerCase().includes(query.toLowerCase())) :
-    //   this.stock;
     this.filteredProducts = (query) ?
       this.products.filter( (p: { payload: { val: () => { (): any; new(): any; title: string; }; }; }) => p.payload.val().title.toLowerCase().includes(query.toLowerCase())) :
       this.products;
-  }
+      this.onPageChange({previousPageIndex: 0, pageIndex: 0, pageSize: 10, length: this.filteredProducts.length});
+      if (this.paginator) this.paginator.pageIndex = 0;
+    }
 
   sortData(sort: Sort) {
     // const data = this.stock;
@@ -86,8 +81,15 @@ export class StockComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
+  onPageChange($event: any) {
+    this.currentItemsToShow = this.filteredProducts.slice(
+      $event.pageIndex * $event.pageSize,
+      $event.pageIndex * $event.pageSize + $event.pageSize
+    );
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.subscription2.unsubscribe();   
+    this.subscription2.unsubscribe();
   }
 }

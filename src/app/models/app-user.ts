@@ -1,6 +1,7 @@
 export interface AppUser {
   name: string;
-  email: string;
-  isAdmin: boolean;
-  isSalesManager: boolean;
+  email?: string;
+  isAdmin?: boolean;
+  isOwner?: boolean;
+  isSalesManager?: boolean;
 }

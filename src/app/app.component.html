@@ -1,8 +1,15 @@
-<mat-navbar id="over-router"></mat-navbar>
-<div class="container-fluid">
+<div *ngIf="loading" class="SCContainer mt-5 ms-5 spinner-border text-primary" role="status">
+  <span class="visually-hidden"></span>
+</div>
+<mat-navbar *ngIf="!loading && user" id="over-router"></mat-navbar>
+<app-menu *ngIf="!loading && isMobile"></app-menu>
+<div class="container-fluid" *ngIf="!isMobile">
   <router-outlet></router-outlet>
 </div>
+
 <!-- <h2>&nbsp;&nbsp;--- Nueva url de la app: ---</h2>
 <h3>&nbsp;&nbsp;&nbsp;&nbsp;Haga click en el link: <a href="https://distribuidora-nb.web.app">https://distribuidora-nb.web.app</a></h3> -->
+
+
 
 
