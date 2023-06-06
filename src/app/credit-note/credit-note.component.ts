@@ -41,7 +41,7 @@ export class CreditNoteComponent implements OnInit {
         this.clients = clients;
         this.filteredClients = [];
         for (let i=0;i<this.clients.length;i++) {
-          if (this.clients[i].payload.val().designatedSeller == this.appUser.name || this.appUser.isAdmin == true)  {
+          if (this.clients[i].payload.val().designatedSeller == this.appUser?.name || this.appUser?.isAdmin == true)  {
             this.filteredClients.push(this.clients[i]);
           }
         }

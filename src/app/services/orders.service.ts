@@ -82,7 +82,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
             this.order = order;
               this.orderIndex = -1
               for (let i=0;i<this.order.length;i++) {
-                if (this.order && this.appUser && this.order[i].payload.val().sellerName == this.appUser.name) {
+                if (this.order && this.appUser && this.order[i].payload.val().sellerName == this.appUser?.name) {
                   this.orderIndex = i
                   this.orderId =  this.order[i].key;
                   break
@@ -159,7 +159,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     }
     let result = this.db.list('/order/').push({
       "orderItemsCount": 0,
-      "sellerName": this.appUser.name,
+      "sellerName": this.appUser?.name,
       "products": products
     });
   }
@@ -188,7 +188,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     //this.db.object('/order/').remove(); elimina todo "order" de la base
     if (!this.order) return;
     for (let i=0;i<this.order.length;i++) {
-      if (this.order[i].payload.val().sellerName == this.appUser.name) this.db.object('/order/'+ this.order[i].key).remove();
+      if (this.order[i].payload.val().sellerName == this.appUser?.name) this.db.object('/order/'+ this.order[i].key).remove();
     }
   }
 
@@ -530,7 +530,10 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   setOrdersPaymentDate(payment: any) {
+    debugger
+    if (payment.client == "Bee Tel") debugger
     let totalPayments = this.getTotalPayments(payment)
+    let lastPaymentDate = this.getLastPaymentDate(payment.client)
     let amounts = 0;
     this.orders.forEach((order) =>{
       if (order.payload.val().clientFantasyName.toLowerCase().includes(payment.client.toLowerCase())) {
@@ -546,7 +549,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
             "iva": order.payload.val().iva,
             "order": order.payload.val().order,
             "orderNumber": order.payload.val().hasOwnProperty('orderNumber') ? order.payload.val().orderNumber : 0,
-            "fullPaymentDate": Date.now()
+            "fullPaymentDate": lastPaymentDate
           })
         }
       }
@@ -564,6 +567,16 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
       totalPayments += payment.amount;
     }
     return totalPayments
+  }
+
+  getLastPaymentDate(client: string) {
+    let result = 0
+    this.payments.forEach((pay) => {
+      if (pay.payload.val().client.toLowerCase().includes(client.toLowerCase())) {
+        result = pay.payload.val().date > result ? pay.payload.val().date : result;
+      }
+    });
+    return result
   }
 
   setPaymentsToAll() {
@@ -595,7 +608,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   clearPayment() {
     if (!this.payment) return;
     for (let i=0;i<this.payment.length;i++) {
-      if (this.payment[i].payload.val().sellerName == this.appUser.name) this.db.object('/payment/'+ this.payment[i].key).remove();
+      if (this.payment[i].payload.val().sellerName == this.appUser?.name) this.db.object('/payment/'+ this.payment[i].key).remove();
     }
   }
 

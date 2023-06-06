@@ -117,7 +117,7 @@
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().fullPaymentDate | date:"dd/MM/yyyy"}}</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">${{order.payload.val().amount | number:'1.1-1'}}</td>
         <td *ngIf="order.payload.val().order.orderItemsCount !=0">{{order.payload.val().iva}}%</td>
-        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser!=undefined && appUser.isAdmin">aprobar</button></td>
+        <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="order.payload.val().aproved">SI</span><span *ngIf="!order.payload.val().aproved">NO</span>&nbsp;&nbsp;<button [disabled]="order.payload.val().aproved" (click)="aprove(order)" *ngIf="appUser?.isAdmin">aprobar</button></td>
         <!-- <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().debt | number:'1.1-1'}}&nbsp;&nbsp;</td> -->
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!order.payload.val().hasDiscount">NO</span><span *ngIf="order.payload.val().hasDiscount">SI</span>&nbsp;</td>
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0"><span *ngIf="!ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">NO</span><span *ngIf="ordersService.isClientInDebt(order.payload.val().clientFantasyName, userOrders)">SI</span>&nbsp;</td>

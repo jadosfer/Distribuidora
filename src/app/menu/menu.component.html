@@ -2,7 +2,7 @@
   <button mat-icon-button (click)="toggleMenu()">
     <mat-icon>menu</mat-icon>
   </button>
-  <span *ngIf="appUser" class="menu-title">{{appUser.name}}</span>
+  <span *ngIf="appUser" class="menu-title">{{appUser?.name}}</span>
 </mat-toolbar>
 
 <mat-sidenav-container class="menu-container">

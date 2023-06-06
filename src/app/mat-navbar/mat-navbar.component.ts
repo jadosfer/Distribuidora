@@ -52,13 +52,13 @@ export class MatNavbarComponent implements OnInit{
           this.sellers = sellers;
           let create = true;
           for (let i=0;i<this.sellers.length;i++) {
-            if (this.sellers[i].payload.val().name == this.appUser.name) create = false;
+            if (this.sellers[i].payload.val().name == this.appUser?.name) create = false;
           }
           if (create) {
             this.ordersService.createSeller({
               "address": "",
               "cuil": "",
-              "name": appUser.name,
+              "name": appUser?.name,
               "phone": ""
             });
           }

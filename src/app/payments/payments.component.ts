@@ -71,7 +71,7 @@ export class PaymentsComponent implements OnInit {
           this.clients = clients;
           this.userClients = [];
           for (let i=0;i<this.clients.length;i++) {
-            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
+            if (this.clients[i].payload.val().designatedSeller == this.appUser?.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
           this.payments = payments;
           this.userPayments = [];
@@ -79,7 +79,7 @@ export class PaymentsComponent implements OnInit {
           this.currentItemsToShow = [];
 
           for (let i=0;i<this.payments.length;i++) {
-            let isUserPayment = this.payments[i].payload.val().sellerName == this.appUser.name;
+            let isUserPayment = this.payments[i].payload.val().sellerName == this.appUser?.name;
             let isUserClient = this.isClientInUserClients(this.payments[i].payload.val().client, this.userClients);
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserPayment || isUserClient)) {
               this.userPayments.push(this.payments[i]);

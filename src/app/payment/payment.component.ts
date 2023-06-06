@@ -50,7 +50,7 @@ export class PaymentComponent implements OnInit {
           this.clients = clients;
           this.filteredClients = [];
           for (let i=0;i<this.clients.length;i++) {
-            if (appUser.isAdmin || this.clients[i].payload.val().designatedSeller == this.appUser.name) {
+            if (appUser.isAdmin || this.clients[i].payload.val().designatedSeller == this.appUser?.name) {
               this.filteredClients.push(this.clients[i]);
             }
           }

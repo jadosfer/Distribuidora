@@ -80,7 +80,7 @@ export class OrdersComponent implements OnInit {
           this.clients = clients;
           this.userClients = [];
           for (let i=0;i<this.clients.length;i++) {
-            if (this.clients[i].payload.val().designatedSeller == this.appUser.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
+            if (this.clients[i].payload.val().designatedSeller == this.appUser?.name) this.userClients.push(this.clients[i].payload.val().fantasyName)
           }
           this.ordersService.orders =  orders;
           this.recentUserOrders = [];
@@ -91,7 +91,7 @@ export class OrdersComponent implements OnInit {
           this.notAprovedOrders = [];
           this.ordersNotAproved = 0;
           for (let i=0;i<this.ordersService.orders.length;i++) {
-            let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name;
+            let isUserOrder = this.ordersService.orders[i].payload.val().order.sellerName == this.appUser?.name;
             let isUserClient = this.isClientInUserClients(this.ordersService.orders[i].payload.val().clientFantasyName, this.userClients);
             let isRecentOrder = Date.now() - this.ordersService.orders[i].payload.val().date < TOLERATED_DAYS*24*60*60*1000; //7 dias
             if (this.appUser && (this.appUser.isAdmin || this.appUser.isSalesManager || isUserOrder || isUserClient)) {
@@ -246,6 +246,7 @@ export class OrdersComponent implements OnInit {
 
   aprove(order: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
+      if (order.payload.val().clientInDebt && !this.appUser.isOwner) return
       this.stockService.aprove(order);
       this.ordersService.aproveOrder(order);
     }

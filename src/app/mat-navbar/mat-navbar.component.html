@@ -9,12 +9,12 @@
   <a mat-button class="foc" routerLink="payments/payments" *ngIf="appUser">Cobros</a>
   <a mat-button class="foc" routerLink="client/client" *ngIf="appUser">Clientes</a>
   <a mat-button class="foc" routerLink="stock/stock" *ngIf="appUser?.isAdmin">Stock</a>
-  <a mat-button class="foc" routerLink="pruebas/prueba" *ngIf="appUser && appUser.name=='Tecnología & Programación'">Prueba</a>
+  <a mat-button class="foc" routerLink="pruebas/prueba" *ngIf="appUser && appUser?.name=='Tecnología & Programación'">Prueba</a>
   <!-- <mat-chip class="navbar-chip" *ngIf="getTotalItems() !== 0" color="accent" selected>&nbsp;&nbsp;&nbsp;{{getTotalItems()}}&nbsp;&nbsp;&nbsp;</mat-chip> -->
 
   <a mat-menu-item></a>
 
-  <button class="me-5" mat-button *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser.name}}<mat-icon>expand_more</mat-icon></button>
+  <button class="me-5" mat-button *ngIf="appUser; else anonymousUser" [matMenuTriggerFor]="appMenu">{{appUser?.name}}<mat-icon>expand_more</mat-icon></button>
   <mat-menu #appMenu="matMenu" >
     <ng-container *ngIf="appUser!=undefined && (appUser.isAdmin || appUser.isSalesManager)">
       <a *ngIf="appUser!=undefined && appUser.isAdmin" mat-menu-item routerLink="/admin/clients">Administrar Clientes</a>

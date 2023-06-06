@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit {
         this.ordersService.orders = orders;
         this.userOrders = [];
         for (let i=0;i<this.ordersService.orders.length;i++) {
-          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().order.sellerName == this.appUser.name) {
+          if (this.appUser.isAdmin || this.ordersService.orders[i].payload.val().order.sellerName == this.appUser?.name) {
             this.userOrders.push(this.ordersService.orders[i]);
           }
         }
