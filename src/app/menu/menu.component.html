@@ -17,6 +17,7 @@
       <a mat-list-item routerLink="admin/prods" *ngIf="appUser?.isAdmin" (click)="isMenuOpen=false">Productos</a>
       <a mat-list-item routerLink="admin/sellers" *ngIf="appUser?.isAdmin" (click)="isMenuOpen=false">Vendedores</a>
       <a mat-list-item routerLink="dashboard" *ngIf="appUser?.isAdmin" (click)="isMenuOpen=false">Gráficos</a>
+      <a mat-list-item routerLink="commissions/commissionsDash" *ngIf="appUser?.isAdmin" (click)="isMenuOpen=false">Comisiones</a>
       <a mat-list-item *ngIf="appUser" (click)="logout(); isMenuOpen=false">Log Out</a>
     </mat-nav-list>
   </mat-sidenav>

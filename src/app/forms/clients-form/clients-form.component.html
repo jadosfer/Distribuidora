@@ -1,4 +1,8 @@
  <div class="container-form">
+  <div *ngIf="isMobile">
+    <br/><br/><br/><br/>
+  </div>
+
   <form #f="ngForm" (ngSubmit)="save(f.value)">
     <p>
       <mat-form-field appearance="legacy">
@@ -17,7 +21,7 @@
         <div class="alert alert-danger" *ngIf="fantasyName.touched && fantasyName.invalid">El Nombre de Fantasia es requerido</div>
       </mat-form-field>
     </p>
-    
+
       <mat-form-field appearance="fill">
         <mat-label>Canal de venta</mat-label>
         <mat-select #clientCategory="ngModel" [(ngModel)]="client.clientCategory" name="clientCategory" required>

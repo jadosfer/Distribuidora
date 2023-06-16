@@ -44,6 +44,7 @@ export class MatNavbarComponent implements OnInit{
   }
 
   ngOnInit() {
+    this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
     this.subscription = this.auth.appUser$.subscribe(appUser => {
       this.appUser = appUser;
       if (appUser) {

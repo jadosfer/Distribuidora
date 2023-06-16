@@ -11,8 +11,9 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class ClientsFormComponent {
   @Output() redirect:EventEmitter<boolean> = new EventEmitter();
-  fromEditing:boolean = true;
 
+  MOBILE_SIZE = 1000;
+  fromEditing:boolean = true;
   sellConditions:string[] = ["Contado", "Cuenta Corriente"];
   IVAConditions:string[] = ["Inscripto", "Monotributista", "Consumidor Final"];
   clientsCategories: Observable<any>;
@@ -20,6 +21,7 @@ export class ClientsFormComponent {
   client:any = {};
   id:any;
   subscription: Subscription;
+  isMobile = false;
 
   constructor(
     private router: Router,
@@ -27,7 +29,7 @@ export class ClientsFormComponent {
     private categoryService: CategoryService,
     private ordersService: OrdersService
     ) {
-
+    this.isMobile = window.innerWidth <= this.MOBILE_SIZE;
     this.clientsCategories = categoryService.getAllClientsCategories();
     this.sellers$ = ordersService.getAllSellers();
     this.id = this.route.snapshot.paramMap.get('id');
