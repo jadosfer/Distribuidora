@@ -246,7 +246,10 @@ export class OrdersComponent implements OnInit {
 
   aprove(order: any) {
     if (confirm('Está segur@ que quiere aprobar el pedido para que pueda ser entregada la mercadería?')) {
-      if (order.payload.val().clientInDebt && !this.appUser.isOwner) return
+      if (order.payload.val().clientInDebt && !this.appUser.isOwner) {
+        alert("El cliente tiene deuda. Mauro debe aprobar el pedido")
+        return
+      }
       this.stockService.aprove(order);
       this.ordersService.aproveOrder(order);
     }

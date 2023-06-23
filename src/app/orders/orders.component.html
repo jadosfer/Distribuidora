@@ -125,7 +125,7 @@
         <td *ngIf="!isExpanded && order.payload.val().order.orderItemsCount !=0">{{order.payload.val().orderNumber}}&nbsp;</td>
 
         <td>
-          <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0">
+          <mat-accordion *ngIf="order.payload.val().order.orderItemsCount !=0 && order.payload.val().aproved">
             <mat-expansion-panel hideToggle (opened)="isExpanded = true" (closed)="isExpanded = false">
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -156,7 +156,7 @@
             </mat-expansion-panel>
           </mat-accordion>
         </td>
-        <td *ngIf="this.ordersService.clients"><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
+        <td *ngIf="this.ordersService.clients && order.payload.val().aproved"><button mat-icon-button (click)="exportAsPDF(order)" color="primary" ><mat-icon>picture_as_pdf</mat-icon></button></td>
         <td *ngIf ="appUser.isAdmin"><button mat-icon-button (click)="remove(order)" color="accent" ><mat-icon>delete</mat-icon></button></td>
       </tr>
       <tr>
