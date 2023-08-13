@@ -685,23 +685,11 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
 
     while (paymentsCount < payments.length && ordersCount < orders.length) {
       if (paymentsSum > ordersSum - TOLERATED_DEBT) {
-        if (payments[paymentsCount].payload.val().paymentDate) {
-          console.log(
-            'payments[paymentsCount].payload.val(),',
-            payments[paymentsCount].payload.val()
-          );
-          this.updateOrder(orders[ordersCount].key, {
-            ...orders[ordersCount].payload.val(),
-            clientInDebt: false,
-            fullPaymentDate: payments[paymentsCount].payload.val().paymentDate,
-          });
-        } else {
-          this.updateOrder(orders[ordersCount].key, {
-            ...orders[ordersCount].payload.val(),
-            clientInDebt: false,
-            fullPaymentDate: payments[paymentsCount].payload.val().date,
-          });
-        }
+        this.updateOrder(orders[ordersCount].key, {
+          ...orders[ordersCount].payload.val(),
+          clientInDebt: false,
+          fullPaymentDate: payments[paymentsCount].payload.val().date,
+        });
         ordersCount++;
         if (ordersCount !== orders.length)
           ordersSum += +orders[ordersCount].payload.val().amount;
