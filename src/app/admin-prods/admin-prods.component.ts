@@ -24,7 +24,7 @@ export class AdminProdsComponent implements OnInit {
   toSave: any[] = [];
   pageSize: number = 20;
   pageIndex: number = 0;
-  prodCat: String;
+  prodCat: string;
   prodCategory:any = {};
 
   dist:number;
@@ -52,7 +52,6 @@ export class AdminProdsComponent implements OnInit {
 
   constructor(private productService: ProductService, private commissionsService: CommissionsService,
     private router: Router, private categoryService: CategoryService) {
-      console.log('constructor');
 
       this.subscription = this.categoryService.getAllClientsCategories().subscribe(clientCategories => {
         this.clientCategories = clientCategories;

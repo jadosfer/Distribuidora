@@ -69,8 +69,8 @@ export class PaymentComponent implements OnInit {
       payment.sellerName = this.appUser.name;
       payment.client = this.clientFantasyName;
       this.ordersService.createPayment(payment, this.clients);
-      // IMPORTANTE LO DE ABAJO!!!!!!!!!!!!!!!!!!!!!!!!!
-      this.ordersService.setPaymentsToAll(); // aca aseguro que los pedidos pagos queden con fecha de pago.
+      // IMPORTANTE LO DE ABAJO REORDENA TODOS LOS PEDIDOS!!!!!!!!!!!!!!!!!!!!!!!!!
+      //this.ordersService.setPaymentsToAll(); // aca aseguro que los pedidos pagos queden con fecha de pago.
       this.router.navigate(['/payments/payments']);
     }
   }

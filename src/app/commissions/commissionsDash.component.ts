@@ -130,7 +130,7 @@ export class CommissionsDashComponent implements OnInit {
     this.sellers = activeSellers;
   }
 
-  isSellerActive(name: String) {
+  isSellerActive(name: string) {
     for (let i=this.ordersService.orders.length - 1;i>0;i--) {
       let orderDate = this.ordersService.orders[i].payload.val().date;
       let timeAfterOrder = (Date.now() - orderDate)/(1000*3600*24);

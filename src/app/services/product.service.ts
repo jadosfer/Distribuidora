@@ -79,7 +79,6 @@ export class ProductService implements OnInit{
   }
 
   update(productId: any, product:any) {
-    console.log('product an pdId', product, productId);
     return this.db.object('/products/' + productId).update(product);
   }
 

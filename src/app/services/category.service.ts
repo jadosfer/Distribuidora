@@ -30,11 +30,11 @@ export class CategoryService {
     return this.db.list('payWay').valueChanges();
   }
 
-  // setNewProdCategory(category: String) {
+  // setNewProdCategory(category: string) {
   //   return this.db.list('/productsCategories').push({name: category});
   // }
 
-  addProdCategory(category: String) {
+  addProdCategory(category: string) {
     return this.db.list('/productsCategories').push({name: category});
   }
 }
