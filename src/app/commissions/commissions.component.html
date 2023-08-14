@@ -20,7 +20,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let commissionByMonth of this.commissionsByMonth">
+      <tr *ngFor="let commissionByMonth of this.commissionsByMonth.reverse()">
         <td>{{commissionByMonth.payload.val().month}}/{{commissionByMonth.payload.val().year}}</td>
         <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().minRetailTotalSales}}</td>
         <td *ngIf="!prodCatDetails">{{commissionByMonth.payload.val().retailPercent}}</td>

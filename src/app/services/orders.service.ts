@@ -757,7 +757,7 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
   }
 
   removePayment(paymentId: any) {
-    this.db.object('/payments/' + paymentId).remove();
+    return this.db.object('/payments/' + paymentId).remove();
   }
 
   resetPayment(paymentIndex: any) {
