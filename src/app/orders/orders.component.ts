@@ -115,7 +115,7 @@ export class OrdersComponent implements OnInit {
               this.ordersNotAproved = 0;
               for (let i = 0; i < this.ordersService.orders.length; i++) {
                 let isUserOrder =
-                  this.ordersService.orders[i].payload.val().order.sellerName ==
+                  this.ordersService.orders[i].payload.val().order?.sellerName ==
                   this.appUser?.name;
                 let isUserClient = this.isClientInUserClients(
                   this.ordersService.orders[i].payload.val().clientFantasyName,
@@ -237,7 +237,7 @@ export class OrdersComponent implements OnInit {
       if (
         this.userOrders[i].payload
           .val()
-          .clientFantasyName.toLowerCase()
+          .clientFantasyName?.toLowerCase()
           .includes(query.toLowerCase()) &&
         this.userOrders[i].payload
           .val()
@@ -272,7 +272,7 @@ export class OrdersComponent implements OnInit {
       if (
         this.userOrders[i].payload
           .val()
-          .clientFantasyName.toLowerCase()
+          .clientFantasyName?.toLowerCase()
           .includes(this.query.client.toLowerCase()) &&
         this.userOrders[i].payload
           .val()
@@ -307,7 +307,7 @@ export class OrdersComponent implements OnInit {
       if (
         this.userOrders[i].payload
           .val()
-          .clientFantasyName.toLowerCase()
+          .clientFantasyName?.toLowerCase()
           .includes(this.query.client.toLowerCase()) &&
         this.userOrders[i].payload
           .val()
@@ -341,7 +341,7 @@ export class OrdersComponent implements OnInit {
         if (
           this.userOrders[i].payload
             .val()
-            .clientFantasyName.toLowerCase()
+            .clientFantasyName?.toLowerCase()
             .includes(this.query.client.toLowerCase()) &&
           this.userOrders[i].payload
             .val()
@@ -597,6 +597,15 @@ export class OrdersComponent implements OnInit {
         this.filter(this.query.client);
         this.filterBySeller(this.query.seller);
         this.filterByDate(this.query.date);
+        //metodo para registrar la eliminacion:
+        const { date, clientFantasyName, amount } = order.payload.val();
+        const deletedOperation = {
+          date: date,
+          client: clientFantasyName,
+          amount: amount,
+          operation: "pedido"
+        };
+        this.ordersService.saveDeleteOperation(deletedOperation);
       });
     }
   }
@@ -617,7 +626,7 @@ export class OrdersComponent implements OnInit {
   ): boolean {
     for (let i = 0; i < userClients.length; i++) {
       if (
-        clientFantasyName.toLowerCase().includes(userClients[i].toLowerCase())
+        clientFantasyName?.toLowerCase().includes(userClients[i].toLowerCase())
       ) {
         return true;
       }

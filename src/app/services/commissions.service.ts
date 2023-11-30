@@ -64,17 +64,11 @@ export class CommissionsService {
 
   update(commissions: any, commissionsForm: any) {
     return this.db.object('/commissions/' + commissions[0].key).update({
-      "minRetailTotalSales": commissionsForm.minRetailTotalSales,
-      "retailPercent": commissionsForm.retailPercent,
-      "wholesalerPercent": commissionsForm.wholesalerPercent,
-      "monthlyRate": commissionsForm.monthlyRate,
-      "rewards" : commissionsForm.rewards,
-      "rewardsGoals" : commissionsForm.rewardsGoals,
-      //"productsCategories" : commissions[0].payload.val().productsCategories,
-      "monthCommissionsSavedDate" : {
-        'month' : commissions[0].payload.val().monthCommissionsSavedDate.month,
-        'year' : commissions[0].payload.val().monthCommissionsSavedDate.year
-      }
+      ...commissions[0].payload.val(),
+      monthCommissionsSavedDate: {
+        month: commissions[0].payload.val().monthCommissionsSavedDate.month,
+        year: commissions[0].payload.val().monthCommissionsSavedDate.year,
+      },
     });
   }
 
@@ -104,17 +98,11 @@ export class CommissionsService {
       year -= 1;
     }
     let result = this.db.object('/commissions/' + commissions[0].key).update({
-      "minRetailTotalSales": commissions[0].payload.val().minRetailTotalSales,
-      "retailPercent": commissions[0].payload.val().retailPercent,
-      "wholesalerPercent": commissions[0].payload.val().wholesalerPercent,
-      "monthlyRate": commissions[0].payload.val().monthlyRate,
-      //"productsCategories": commissions[0].payload.val().productsCategories,
-      "rewardsGoals": commissions[0].payload.val().rewardsGoals,
-      "rewards": commissions[0].payload.val().rewards,
-      "monthCommissionsSavedDate" : {
-        'month' : month,
-        'year' : year
-      }
+      ...commissions[0].payload.val(),
+      monthCommissionsSavedDate: {
+        month: month,
+        year: year,
+      },
     });
     this.db.list('/commissionsByMonth/').push(monthCommissions);
   }

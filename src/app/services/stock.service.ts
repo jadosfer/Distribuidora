@@ -109,8 +109,9 @@ export class StockService {
     }
 
       return this.db.object('/buy/' + this.buy[0].key).update({
-        "buyItemsCount": 0,
-        "products": productsBuy
+        ...this.buy[0].payload.val(),
+        buyItemsCount: 0,
+        products: productsBuy,
       });
     }
     return null
@@ -145,8 +146,9 @@ export class StockService {
     }
 
     this.db.object('/buy/' + buy[0].key).update({
-      "buyItemsCount": buyItemsCount,
-      "products": products
+      ...buy[0].payload.val(),
+      buyItemsCount: buyItemsCount,
+      products: products,
     });
   }
 
@@ -175,8 +177,9 @@ export class StockService {
     }
 
     this.db.object('/buy/' + buy[0].key).update({
-      "buyItemsCount": buyItemsCount,
-      "products": products
+      ...buy[0].payload.val(),
+      buyItemsCount: buyItemsCount,
+      products: products,
     });
   }
 

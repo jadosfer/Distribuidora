@@ -433,6 +433,12 @@ export class PaymentsComponent implements OnInit {
     if (confirm('Está segur@ que quiere eliminar este cobro?')) {
       this.ordersService.removePayment(pay.key).then(() => {
         this.filter(this.query.client);
+        this.ordersService.reorderPaymentDates(pay.payload.val().client);
+
+        //metodo para registrar la eliminacion:
+        const { date, client, amount } = pay.payload.val();
+        const deletedOperation = {date: date, client: client, amount: amount, operation: "pago"};
+        this.ordersService.saveDeleteOperation(deletedOperation);
       });
     }
   }

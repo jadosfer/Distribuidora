@@ -46,194 +46,195 @@ export class PrintService {
   }
 
   exportResume(client: any) {
-    if (confirm('Descargar PDF')) {
-      const line1 = 20;
-      const line2 = line1 + 10;
-      const line3 = line2 + 20;
-      const col1 = 10;
-      const col2 = 45;
-      const col3 = 80;
-      const col4 = 115;
-      const col5 = 150;
-      const col6 = 175;
+    const line1 = 20;
+    const line2 = line1 + 10;
+    const line3 = line2 + 20;
+    const col1 = 10;
+    const col2 = 45;
+    const col3 = 80;
+    const col4 = 115;
+    const col5 = 150;
+    const col6 = 175;
 
-      var doc = new jsPDF();
-      let pageHeight = 0;
-      doc.setFontSize(9);
-      doc.text('GENTECH - MAR DEL PLATA', 10, 10);
-      doc.text('RESUMEN DE CUENTA', 10, line1);
-      doc.text('CLIENTE: ' + client.fantasyName, 60, line1);
-      doc.text('DIRECCIÓN: ' + client.address, 112, line1);
-      doc.text('TELÉFONO: ' + client.phone, 164, line1);
+    var doc = new jsPDF();
+    let pageHeight = 0;
+    doc.setFontSize(9);
+    doc.text('GENTECH - MAR DEL PLATA', 10, 10);
+    doc.text('RESUMEN DE CUENTA', 60, 10);
+    doc.text('CLIENTE: ' + client.fantasyName, 10, line1);
 
-      doc.text('FECHA', col1, line2);
-      doc.text('TIPO', col2, line2);
-      doc.text('NÚMERO', col3 - 1, line2);
-      doc.text('HABER', col4, line2);
-      doc.text('DEBE', col5, line2);
-      doc.text('SALDO', col6, line2);
-      doc.setFontSize(7);
+    const clientWidth = doc.getTextWidth('CLIENTE: ' + client.fantasyName); // Calcula el ancho del texto cliente
+    const addressXPosition = 10 + clientWidth + 10; // Añade un espacio de 10 unidades entre los campos
+    doc.text('DIRECCIÓN: ' + client.address, addressXPosition, line1);
 
-      this.subscription4 = this.ordersService
-        .getAllOrders()
-        .subscribe((ordrs) => {
-          this.ordersService.orders = ordrs;
-          this.subscription5 = this.ordersService
-            .getAllPayments()
-            .subscribe((paymnts) => {
-              this.payments = paymnts;
-              let orders = [];
-              let payments = [];
-              for (let i = 0; i < this.ordersService.orders.length; i++) {
-                if (
-                  this.ordersService.orders[i].payload.val()
-                    .clientFantasyName == client.fantasyName
-                ) {
-                  orders.push(this.ordersService.orders[i].payload.val());
-                }
+    const addressWidth = doc.getTextWidth('DIRECCIÓN: ' + client.address);
+    const phoneXPosition = 10 + clientWidth + 10 + addressWidth + 10;
+    doc.text('TELÉFONO: ' + client.phone, phoneXPosition, line1);
+
+    doc.text('FECHA', col1, line2);
+    doc.text('TIPO', col2, line2);
+    doc.text('NÚMERO', col3 - 1, line2);
+    doc.text('HABER', col4, line2);
+    doc.text('DEBE', col5, line2);
+    doc.text('SALDO', col6, line2);
+    doc.setFontSize(7);
+
+    this.subscription4 = this.ordersService
+      .getAllOrders()
+      .subscribe((ordrs) => {
+        this.ordersService.orders = ordrs;
+        this.subscription5 = this.ordersService
+          .getAllPayments()
+          .subscribe((paymnts) => {
+            this.payments = paymnts;
+            let orders = [];
+            let payments = [];
+            for (let i = 0; i < this.ordersService.orders.length; i++) {
+              if (
+                this.ordersService.orders[i].payload.val().clientFantasyName ==
+                client.fantasyName
+              ) {
+                orders.push(this.ordersService.orders[i].payload.val());
               }
-              for (let i = 0; i < this.payments.length; i++) {
-                if (
-                  this.payments[i].payload
-                    .val()
-                    .client.toLowerCase()
-                    .includes(client.fantasyName.toLowerCase())
-                )
-                  payments.push(this.payments[i].payload.val());
+            }
+            for (let i = 0; i < this.payments.length; i++) {
+              if (
+                this.payments[i].payload
+                  .val()
+                  .client.toLowerCase()
+                  .includes(client.fantasyName.toLowerCase())
+              )
+                payments.push(this.payments[i].payload.val());
+            }
+            orders = this.sortArrayByDate(orders);
+            payments = this.sortArrayByDate(payments);
+
+            let y = 0;
+            let k = 0;
+            //let balance = 0;
+            let loopSize = orders.length + payments.length;
+
+            let balance = this.getBalance(orders, payments);
+            for (let i = 0; i < loopSize; i++) {
+              pageHeight = doc.internal.pageSize.height;
+              if (y >= pageHeight - 70) {
+                doc.addPage();
+                k = i;
               }
-              orders = this.sortArrayByDate(orders);
-              payments = this.sortArrayByDate(payments);
+              y = 7 * (i + 1 - k) - line1;
 
-              let y = 0;
-              let k = 0;
-              //let balance = 0;
-              let loopSize = orders.length + payments.length;
+              let pos1 = 0;
+              let pos2 = 0;
 
-              let balance = this.getBalance(orders, payments);
-              for (let i = 0; i < loopSize; i++) {
-                pageHeight = doc.internal.pageSize.height;
-                if (y >= pageHeight - 70) {
-                  doc.addPage();
-                  k = i;
-                }
-                y = 7 * (i + 1 - k) - line1;
+              if (orders.length > 0 && payments.length > 0) {
+                // pos1 = this.getMinPos(orders);
+                // pos2 = this.getMinPos(payments);
+                pos1 = this.getMaxPos(orders);
+                pos2 = this.getMaxPos(payments);
+                this.orderOrPayment = orders[pos1].date >= payments[pos2].date;
+              } else if (orders.length > 0) {
+                this.orderOrPayment = true;
+                // pos1 = this.getMinPos(orders);
+                pos1 = this.getMaxPos(orders);
+              } else {
+                this.orderOrPayment = false;
+                // pos2 = this.getMinPos(payments);
+                pos2 = this.getMaxPos(payments);
+              }
 
-                let pos1 = 0;
-                let pos2 = 0;
+              if (this.orderOrPayment && orders.length > 0) {
+                let paymentD = orders[pos1].date ? orders[pos1].date : '-';
+                if (paymentD !== '-') {
+                  let humanDateFormat = new Date(paymentD);
+                  let dd = humanDateFormat.getDate();
+                  let mm = humanDateFormat.getMonth() + 1;
+                  let day;
+                  let month;
+                  let yyyy = humanDateFormat.getFullYear().toString();
+                  if (dd < 10) {
+                    day = '0' + dd.toString();
+                  } else day = dd.toString();
+                  if (mm < 10) {
+                    month = '0' + mm.toString();
+                  } else month = mm.toString();
+                  let stringDate = day + '/' + month + '/' + yyyy;
 
-                if (orders.length > 0 && payments.length > 0) {
-                  // pos1 = this.getMinPos(orders);
-                  // pos2 = this.getMinPos(payments);
-                  pos1 = this.getMaxPos(orders);
-                  pos2 = this.getMaxPos(payments);
-                  this.orderOrPayment =
-                    orders[pos1].date >= payments[pos2].date;
-                } else if (orders.length > 0) {
-                  this.orderOrPayment = true;
-                  // pos1 = this.getMinPos(orders);
-                  pos1 = this.getMaxPos(orders);
-                } else {
-                  this.orderOrPayment = false;
-                  // pos2 = this.getMinPos(payments);
-                  pos2 = this.getMaxPos(payments);
-                }
+                  doc.text(stringDate, col1, line3 + y);
+                } else doc.text(paymentD, col1, line3 + y);
 
-                if (this.orderOrPayment && orders.length > 0) {
-                  let paymentD = orders[pos1].date ? orders[pos1].date : '-';
-                  if (paymentD !== '-') {
-                    let humanDateFormat = new Date(paymentD);
-                    let dd = humanDateFormat.getDate();
-                    let mm = humanDateFormat.getMonth() + 1;
-                    let day;
-                    let month;
-                    let yyyy = humanDateFormat.getFullYear().toString();
-                    if (dd < 10) {
-                      day = '0' + dd.toString();
-                    } else day = dd.toString();
-                    if (mm < 10) {
-                      month = '0' + mm.toString();
-                    } else month = mm.toString();
-                    let stringDate = day + '/' + month + '/' + yyyy;
-
-                    doc.text(stringDate, col1, line3 + y);
-                  } else doc.text(paymentD, col1, line3 + y);
-
-                  doc.text('FACTURA', col2, line3 + y);
-                  let orderNum =
-                    orders[pos1].orderNumber &&
-                    !orders[pos1].orderNumber.isNaN()
-                      ? orders[pos1].orderNumber
-                      : '-';
-                  doc.text(orderNum, col3, line3 + y);
-                  doc.text(
-                    parseFloat(orders[pos1].amount).toFixed(2).toString(),
-                    col5,
-                    line3 + y
-                  );
-                  // doc.text(balance.toFixed(2).toString(), col6, line3 + y);
-                  doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
-                  orders = this.splice2(orders, pos1);
-                  doc.text(
-                    '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
-                    10,
-                    line3 + y + 3
-                  );
-                } else if (!this.orderOrPayment && payments.length > 0) {
-                  //balance -=  parseFloat(payments[pos2].amount)
-                  let paymentDate = payments[pos2].date
-                    ? payments[pos2].date
+                doc.text('FACTURA', col2, line3 + y);
+                let orderNum =
+                  !isNaN(orders[pos1].orderNumber) &&
+                  typeof orders[pos1].orderNumber === 'number'
+                    ? orders[pos1].orderNumber.toString()
                     : '-';
-                  if (paymentDate !== '-') {
-                    let humanDateFormat = new Date(paymentDate);
-                    let dd = humanDateFormat.getDate();
-                    let mm = humanDateFormat.getMonth() + 1;
-                    let day;
-                    let month;
-                    let yyyy = humanDateFormat.getFullYear().toString();
-                    if (dd < 10) {
-                      day = '0' + dd.toString();
-                    } else day = dd.toString();
-                    if (mm < 10) {
-                      month = '0' + mm.toString();
-                    } else month = mm.toString();
-                    let stringDate = day + '/' + month + '/' + yyyy;
+                doc.text(orderNum, col3, line3 + y);
+                doc.text(
+                  parseFloat(orders[pos1].amount).toFixed(2).toString(),
+                  col5,
+                  line3 + y
+                );
+                // doc.text(balance.toFixed(2).toString(), col6, line3 + y);
+                doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
+                orders = this.splice2(orders, pos1);
+                doc.text(
+                  '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
+                  10,
+                  line3 + y + 3
+                );
+              } else if (!this.orderOrPayment && payments.length > 0) {
+                //balance -=  parseFloat(payments[pos2].amount)
+                let paymentDate = payments[pos2].date
+                  ? payments[pos2].date
+                  : '-';
+                if (paymentDate !== '-') {
+                  let humanDateFormat = new Date(paymentDate);
+                  let dd = humanDateFormat.getDate();
+                  let mm = humanDateFormat.getMonth() + 1;
+                  let day;
+                  let month;
+                  let yyyy = humanDateFormat.getFullYear().toString();
+                  if (dd < 10) {
+                    day = '0' + dd.toString();
+                  } else day = dd.toString();
+                  if (mm < 10) {
+                    month = '0' + mm.toString();
+                  } else month = mm.toString();
+                  let stringDate = day + '/' + month + '/' + yyyy;
 
-                    doc.text(stringDate, col1, line3 + y);
-                  }
-                  else doc.text(paymentDate, col1, line3 + y);
+                  doc.text(stringDate, col1, line3 + y);
+                } else doc.text(paymentDate, col1, line3 + y);
+                let orderN =
+                  !isNaN(payments[pos2].orderNumber) &&
+                  typeof payments[pos2].orderNumber === 'number'
+                    ? payments[pos2].orderNumber.toString()
+                    : '-';
+                doc.text(orderN, col3, line3 + y);
+                doc.text(
+                  parseFloat(payments[pos2].amount).toFixed(2).toString(),
+                  col4,
+                  line3 + y
+                );
 
-                  let orderN =
-                    payments[pos2].orderNumber &&
-                    !payments[pos2].orderNumber.isNaN()
-                      ? payments[pos2]
-                      : '-';
-                  doc.text(orderN, col3, line3 + y);
-                  doc.text(
-                    parseFloat(payments[pos2].amount).toFixed(2).toString(),
-                    col4,
-                    line3 + y
-                  );
-
-                  doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
-                  doc.text(
-                    '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
-                    10,
-                    line3 + y + 3
-                  );
-                  if (payments[pos2].payWay == 'Nota de Crédito')
-                    doc.text('NOTA CRED.', col2, line3 + y);
-                  else doc.text('RECIBO', col2, line3 + y);
-                  payments = this.splice2(payments, pos2);
-                }
+                doc.text(balance[i].toFixed(2).toString(), col6, line3 + y);
+                doc.text(
+                  '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
+                  10,
+                  line3 + y + 3
+                );
+                if (payments[pos2].payWay == 'Nota de Crédito')
+                  doc.text('NOTA CRED.', col2, line3 + y);
+                else doc.text('RECIBO', col2, line3 + y);
+                payments = this.splice2(payments, pos2);
               }
+            }
 
-              doc.setFontSize(8);
+            doc.setFontSize(8);
 
-              // Save the PDF
-              doc.save('Resumen.pdf');
-            });
-        });
-    }
+            // Save the PDF
+            doc.save(`Estado_Cuenta ${client.fantasyName}.pdf`);
+          });
+      });
   }
   getBalance(ord: any[], pay: any[]) {
     let orders = ord;

@@ -13,7 +13,7 @@ import { UtilityService } from '../services/utility.service';
 })
 export class MatNavbarComponent implements OnInit{
 
-  VERSION = "V051533";
+  VERSION = "V1252";
   MOBILE_SIZE: number = 1000;
   appUser: AppUser;
   sellers: any;

@@ -1,33 +1,63 @@
-<div id='productsList'>
+<div id="productsList">
   <h1>COBRO</h1>
-  <hr>
-  <h3>*IMPORTANTE VENDEDORES: Si el cobro fue menor al valor exacto del pedido, porque por ejemplo se redondeoó para abajo, igual deben cargar un monto total que llegué a cubrir la totalidad del pedido, sino se arrastrará una deuda que va a generar inconvenientes para calcular las deudas del cliente. Por ejemplo, si el pedido era de $126.200 y uds le cobraron 126.000, a la hora de cargar el cobro deberán cargar los $126.200 y avisar.</h3>
-  <hr>
+  <hr />
+  <h3>
+    *IMPORTANTE VENDEDORES: Si el cobro fue menor al valor exacto del pedido,
+    porque por ejemplo se redondeoó para abajo, igual deben cargar un monto
+    total que llegué a cubrir la totalidad del pedido, sino se arrastrará una
+    deuda que va a generar inconvenientes para calcular las deudas del cliente.
+    Por ejemplo, si el pedido era de $126.200 y uds le cobraron 126.000, a la
+    hora de cargar el cobro deberán cargar los $126.200 y avisar.
+  </h3>
+  <hr />
   <form #f="ngForm" (ngSubmit)="save(f.value)" class="example-form">
-
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Cliente</mat-label>
-      <input name="client" type="text" placeholder="Elija uno" matInput required
-      [formControl]="myControl" [matAutocomplete]="auto" [(ngModel)]="clientFantasyName">
+      <input
+        name="client"
+        type="text"
+        placeholder="Elija uno"
+        matInput
+        required
+        [formControl]="myControl"
+        [matAutocomplete]="auto"
+        [(ngModel)]="clientFantasyName"
+      />
       <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let client of this.filteredOptions | async" [value]="client.payload.val().fantasyName">
-          {{client.payload.val().fantasyName}}
+        <mat-option
+          *ngFor="let client of this.filteredOptions | async"
+          [value]="client.payload.val().fantasyName"
+        >
+          {{ client.payload.val().fantasyName }}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>Seleccione el cliente</mat-hint>
     </mat-form-field>
 
-
     <mat-form-field class="example-full-width m-sm-1" appearance="fill">
       <mat-label>Monto</mat-label>
-      <input matInput  [(ngModel)]="payment.amount" name="amount" placeholder="Monto" [min]="0" required>
+      <input
+        matInput
+        [(ngModel)]="payment.amount"
+        name="amount"
+        placeholder="Monto"
+        [min]="0"
+        required
+      />
     </mat-form-field>
 
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Nº de factura asociado</mat-label>
-      <mat-select #orderNumber="ngModel" [(ngModel)]="payment.orderNumber" name="orderNumber">
-        <mat-option *ngFor="let order of filteredOrders" [value]="order.payload.val().orderNumber">
-          {{order.payload.val().orderNumber}}
+      <mat-select
+        #orderNumber="ngModel"
+        [(ngModel)]="payment.orderNumber"
+        name="orderNumber"
+      >
+        <mat-option
+          *ngFor="let order of filteredOrders"
+          [value]="order.payload.val().orderNumber"
+        >
+          {{ order.payload.val().orderNumber }}
         </mat-option>
       </mat-select>
       <mat-hint>Dato Opcional</mat-hint>
@@ -35,31 +65,51 @@
 
     <mat-form-field class="example-full-width ms-lg-1" appearance="fill">
       <mat-label>Modo de Pago</mat-label>
-      <mat-select #payWay="ngModel" [(ngModel)]="payment.payWay" name="payWay" required>
+      <mat-select
+        #payWay="ngModel"
+        [(ngModel)]="payment.payWay"
+        name="payWay"
+        required
+      >
         <mat-option *ngFor="let p of payWays" [value]="p.name">
-          {{p.name}}
+          {{ p.name }}
         </mat-option>
       </mat-select>
       <mat-hint>Seleccione el modo de pago</mat-hint>
-
     </mat-form-field>
 
     <mat-form-field class="example-full-width m-sm-1" appearance="fill">
-      <mat-label>Ingrese la fecha</mat-label>
-      <input matInput [(ngModel)]="payment.date" [matDatepicker]="picker" name="date" required>
+      <mat-label>Ingrese la fecha desde el calendario</mat-label>
+      <input
+        matInput
+        [(ngModel)]="payment.date"
+        [matDatepicker]="picker"
+        name="date"
+        readonly
+        required
+        [max]="getToday()"
+      />
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="payment.date > getToday()">La fecha no puede ser futura</mat-error>
     </mat-form-field>
 
     <div class="row">
       <div class="col-3 col-lg-1">
-        <button mat-raised-button type="submit" color="primary" [disabled]="!f.valid">Guardar</button>
+        <button
+          mat-raised-button
+          type="submit"
+          color="primary"
+          [disabled]="!f.valid"
+        >
+          Guardar
+        </button>
       </div>
       <div class="col">
-        <button (click)="cancel()" mat-raised-button type="button" color="warn">Descartar</button>
+        <button (click)="cancel()" mat-raised-button type="button" color="warn">
+          Descartar
+        </button>
       </div>
     </div>
   </form>
 </div>
-
-
