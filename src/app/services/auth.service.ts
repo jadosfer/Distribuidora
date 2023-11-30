@@ -12,59 +12,46 @@ import { AppUser } from '../models/app-user';
 
 @Injectable()
 export class AuthService {
-
   user$: Observable<firebase.User | null>;
   appUser: AppUser;
   isAdmin: boolean;
+  isOwner: boolean;
 
-  constructor(public afAuth: AngularFireAuth, private route: ActivatedRoute, private router: Router, private userService: UserService) {
-      // if (!environment.production) {
-      //       this.afAuth.useEmulator('http://localhost:9099/');
-      // }
-
-      this.user$ = afAuth.authState;
-      //borrar desde aca
-      // const ordersRef = firebase.database().ref('orders');
-      // ordersRef.once('value')
-      // .then((snapshot) => {
-      //   const numChildren = snapshot.numChildren();
-      //   console.log('numero de orders:', numChildren);
-      // })
-
-      // const ordersDetail = firebase.database().ref('ordersDetail');
-      // ordersDetail.once('value')
-      // .then((snapshot) => {
-      //   const numChildren = snapshot.numChildren();
-      //   console.log('numero de ordersDetail:', numChildren);
-      // })
-
-    //borrar hasta aca
+  constructor(
+    public afAuth: AngularFireAuth,
+    private route: ActivatedRoute,
+    private router: Router,
+    private userService: UserService
+  ) {
+    // if (!environment.production) {
+    //       this.afAuth.useEmulator('http://localhost:9099/');
+    // }
+    this.user$ = afAuth.authState;
   }
-
 
   login() {
     let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
     localStorage.setItem('returnUrl', returnUrl);
-    return this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(()=> {
-      let returnUrl = localStorage.getItem('returnUrl');
-      if (returnUrl) {
-        this.router.navigateByUrl(returnUrl);
-      }
-    });
+    return this.afAuth
+      .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(() => {
+        let returnUrl = localStorage.getItem('returnUrl');
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        }
+      });
   }
 
   logout() {
-    this.afAuth.signOut()
+    this.afAuth.signOut();
     this.router.navigateByUrl('/');
   }
 
-  get appUser$() : Observable<AppUser> {
-    return this.user$
-    .switchMap(user => {
+  get appUser$(): Observable<AppUser> {
+    return this.user$.switchMap((user) => {
       if (user) return this.userService.get(user.uid);
 
       return Observable.of(null);
-    })
+    });
   }
-
 }

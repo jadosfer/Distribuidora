@@ -27,36 +27,88 @@ import { EditProductPricesComponent } from './edit-product-prices/edit-product-p
 
 const routes: Routes = [
   //{ path: "", redirectTo: "home", pathMatch: "full" },
+  { path: 'login', component: LogCheckComponent },
+  { path: '', component: LogCheckComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'orders/order', component: OrderComponent },
+  { path: 'payments/creditNote', component: CreditNoteComponent },
+  { path: 'payments/payment', component: PaymentComponent },
+  {
+    path: 'payments/payments/:id',
+    component: PaymentComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  { path: 'payments/payments', component: PaymentsComponent },
+  { path: 'client/client', component: ClientsComponent },
+  { path: 'orders/orders', component: OrdersComponent },
+  { path: 'pruebas/prueba', component: PruebaComponent },
+  { path: 'stock/stock', component: StockComponent },
+  {
+    path: 'stock/buy',
+    component: BuyComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'buys',
+    component: BuysComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'editProductPrices',
+    component: EditProductPricesComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
 
-  { path: "", component: LogCheckComponent },
-  { path: "dashboard", component: DashboardComponent },
-  { path: "orders/order", component: OrderComponent },
-  { path: "payments/creditNote", component: CreditNoteComponent },
-  { path: "payments/payment", component: PaymentComponent },
-  { path: "payments/payments/:id", component: PaymentComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "payments/payments", component: PaymentsComponent },
-  { path: "client/client", component: ClientsComponent },
-  { path: "orders/orders", component: OrdersComponent },
-  { path: "pruebas/prueba", component: PruebaComponent },
-  { path: "stock/stock", component: StockComponent},
-  { path: "stock/buy", component: BuyComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "buys", component: BuysComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "editProductPrices", component: EditProductPricesComponent, canActivate: [AuthGuard, AdminAuthGuard] },
+  {
+    path: 'admin/clients/new',
+    component: ClientsFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'admin/clients/:id',
+    component: ClientsFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  { path: 'admin/clients', component: AdminClientsComponent },
 
-  { path: "admin/clients/new", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/clients/:id", component: ClientsFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/clients", component: AdminClientsComponent },
+  {
+    path: 'admin/prods/new',
+    component: ProductFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'admin/prods/:id',
+    component: ProductFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'admin/prods',
+    component: AdminProdsComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
 
-  { path: "admin/prods/new", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/prods/:id", component: ProductFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/prods", component: AdminProdsComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-
-  { path: "admin/sellers/new", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/sellers/:id", component: SellersFormComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "admin/sellers", component: AdminSellersComponent, canActivate: [AuthGuard, AdminAuthGuard] },
-  { path: "replaces/replaces", component: ReplacesComponent, canActivate: [AuthGuard, AdminAuthGuard]},
-  { path: "commissions/commissionsDash", component: CommissionsDashComponent},
-  { path: "commissions/commissions", component: CommissionsComponent},
+  {
+    path: 'admin/sellers/new',
+    component: SellersFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'admin/sellers/:id',
+    component: SellersFormComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'admin/sellers',
+    component: AdminSellersComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  {
+    path: 'replaces/replaces',
+    component: ReplacesComponent,
+    canActivate: [AuthGuard, AdminAuthGuard],
+  },
+  { path: 'commissions/commissionsDash', component: CommissionsDashComponent },
+  { path: 'commissions/commissions', component: CommissionsComponent },
 ];
 
 @NgModule({

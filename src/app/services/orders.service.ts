@@ -337,7 +337,6 @@ export class OrdersService implements OnDestroy, OnInit, OnChanges {
     date: any,
     clientDebt: number
   ) {
-    debugger;
     let prods = [];
     let clientCategory = this.getClientCategory(clientFantasyName);
     let amount = 0;
